@@ -13,27 +13,15 @@ import {
   Briefcase,
   Brain,
   Award,
-  Zap,
-  Clock,
-  Share2,
-  DollarSign,
-  Target,
-  ShieldAlert,
-  Search,
-  Flame,
-  Unlock,
-  Globe,
-  Coins,
-  Layers,
-  Flag
+  Zap
 } from 'lucide-react';
 
 // --- Data & Content ---
 
 const bookData = {
   title: "The Entrepreneur's Blueprint",
-  subtitle: "Roadmap & Strategies",
-  author: "Course Notes",
+  subtitle: "Course Notes & Strategies",
+  author: "My Course Notes",
   chapters: [
     {
       id: "intro",
@@ -45,6 +33,10 @@ const bookData = {
             This digital book compiles the essential notes from the Entrepreneurship & Business Fundamentals course. 
             It is designed to serve as a quick reference guide for the journey from idea to execution.
           </p>
+          <p className="text-lg leading-relaxed text-gray-700 font-serif">
+            The concepts within cover the psychological preparation needed for a founder, the operational pillars of a business, 
+            and the developmental models required for continuous learning.
+          </p>
           <div className="mt-8 p-6 bg-amber-50 border-l-4 border-amber-600 rounded-r-lg">
             <h3 className="font-bold text-amber-800 uppercase tracking-wide text-sm mb-2">Key Theme</h3>
             <p className="italic text-gray-700 font-serif text-xl">
@@ -55,187 +47,8 @@ const bookData = {
       )
     },
     {
-      id: "roadmap",
-      title: "Chapter 1: The Roadmap",
-      content: (
-        <div className="space-y-8">
-          <h2 className="text-3xl font-serif font-bold text-gray-800 mb-2">The 20-Step Journey</h2>
-          <p className="text-gray-600 font-serif italic mb-6">
-            A comprehensive path from the initial motive to long-term sustainability.
-          </p>
-          
-          {/* Phase 1 */}
-          <div className="relative border-l-4 border-blue-200 pl-6 pb-2">
-            <h3 className="text-xl font-bold text-blue-800 mb-4 uppercase tracking-wider">Phase 1: Discovery & Strategy</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {[
-                "1. The Motive", "2. The Exploration", "3. The Bigger Picture / Market", 
-                "4. The Options: Big Roads", "5. The Options: Narrow Path", 
-                "6. The Assessment", "7. Testing The Waters", "8. The Set Up"
-              ].map((step, i) => (
-                <div key={i} className="bg-white p-3 rounded shadow-sm border border-blue-100 flex items-center">
-                  <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold mr-3">{i+1}</div>
-                  <span className="text-gray-700 font-medium text-sm">{step.split('. ')[1]}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Phase 2 */}
-          <div className="relative border-l-4 border-purple-200 pl-6 pb-2">
-            <h3 className="text-xl font-bold text-purple-800 mb-4 uppercase tracking-wider">Phase 2: Execution & Launch</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {[
-                 "9. The Iterative Game", "10. Dimensions Planning", "11. The Options: Format",
-                 "12. The Alliances", "13. Risks & Mitigation", "14. Money Matters",
-                 "15. The Birth (Launch)", "16. Challenges"
-              ].map((step, i) => (
-                <div key={i} className="bg-white p-3 rounded shadow-sm border border-purple-100 flex items-center">
-                   <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold mr-3">{i+9}</div>
-                  <span className="text-gray-700 font-medium text-sm">{step.split('. ')[1]}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Phase 3 */}
-          <div className="relative border-l-4 border-amber-200 pl-6 pb-2">
-            <h3 className="text-xl font-bold text-amber-800 mb-4 uppercase tracking-wider">Phase 3: Growth & Evolution</h3>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {[
-                 "17. Turning Points", "18. The Second Wind", 
-                 "19. The Sustainability", "20. The Options: Big Roads"
-              ].map((step, i) => (
-                <div key={i} className="bg-white p-3 rounded shadow-sm border border-amber-100 flex items-center">
-                   <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold mr-3">{i+17}</div>
-                  <span className="text-gray-700 font-medium text-sm">{step.split('. ')[1]}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 text-xs text-gray-400 italic">
-              * Note: Step 20 returns to "Big Roads", implying expansion or exit strategies.
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: "motive",
-      title: "Chapter 2: The Motive",
-      content: (
-        <div className="space-y-8">
-          <div className="flex items-center gap-4 mb-2">
-            <div className="p-3 bg-red-100 rounded-full text-red-600">
-              <Target size={32} />
-            </div>
-            <div>
-              <h2 className="text-3xl font-serif font-bold text-gray-800">The "Why"</h2>
-              <p className="text-gray-500">Deep dive into Step 1 of the Roadmap.</p>
-            </div>
-          </div>
-
-          <p className="text-lg text-gray-700 font-serif">
-            A successful venture starts with a powerful driver. There are 6 primary motives that push an entrepreneur to break barriers.
-          </p>
-
-          <div className="space-y-4">
-            {/* 1. Burning Fire */}
-            <div className="flex gap-4 p-4 rounded-lg bg-gradient-to-r from-red-50 to-white border border-red-100 transform hover:scale-[1.02] transition-transform">
-              <div className="mt-1">
-                <div className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg shadow-red-200">
-                  <Flame size={20} />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">1. Burning Fire</h3>
-                <p className="text-gray-600 font-serif text-sm mt-1">
-                  Passion, obsession, or an urgent problem that you personally need to solve. This is the internal fuel.
-                </p>
-              </div>
-            </div>
-
-            {/* 2. Untapped Potential */}
-            <div className="flex gap-4 p-4 rounded-lg bg-white border border-gray-100 hover:shadow-md transition-shadow">
-              <div className="mt-1">
-                <div className="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center">
-                  <Unlock size={20} />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">2. Untapped Potential</h3>
-                <p className="text-gray-600 font-serif text-sm mt-1">
-                  Realizing there are skills, talents, or capabilities currently being wasted that could be monetized.
-                </p>
-              </div>
-            </div>
-
-            {/* 3. Open Market */}
-            <div className="flex gap-4 p-4 rounded-lg bg-white border border-gray-100 hover:shadow-md transition-shadow">
-              <div className="mt-1">
-                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center">
-                  <Globe size={20} />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">3. Open Market</h3>
-                <p className="text-gray-600 font-serif text-sm mt-1">
-                  Finding a "Blue Ocean"—a gap in the market with high demand and low/zero competition.
-                </p>
-              </div>
-            </div>
-
-             {/* 4. Abundance of Funding */}
-             <div className="flex gap-4 p-4 rounded-lg bg-white border border-gray-100 hover:shadow-md transition-shadow">
-              <div className="mt-1">
-                <div className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center">
-                  <Coins size={20} />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">4. Abundance of Funding</h3>
-                <p className="text-gray-600 font-serif text-sm mt-1">
-                  Starting because capital is readily available (investors, grants, family) to back the idea.
-                </p>
-              </div>
-            </div>
-
-            {/* 5. Unused Resources */}
-             <div className="flex gap-4 p-4 rounded-lg bg-white border border-gray-100 hover:shadow-md transition-shadow">
-              <div className="mt-1">
-                <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center">
-                  <Layers size={20} />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">5. Unused Resources</h3>
-                <p className="text-gray-600 font-serif text-sm mt-1">
-                  Leveraging assets that are sitting idle (e.g., empty real estate, patents, machinery).
-                </p>
-              </div>
-            </div>
-
-             {/* 6. Time of Local Power */}
-             <div className="flex gap-4 p-4 rounded-lg bg-white border border-gray-100 hover:shadow-md transition-shadow">
-              <div className="mt-1">
-                <div className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center">
-                  <Flag size={20} />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">6. Time of Local Power</h3>
-                <p className="text-gray-600 font-serif text-sm mt-1">
-                  A favorable climate for local businesses to thrive over global giants (e.g., "Buy Local" trends).
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )
-    },
-    {
       id: "strategy",
-      title: "Chapter 3: Strategy & Mindset",
+      title: "Chapter 1: The Strategy",
       content: (
         <div className="space-y-8">
           <h2 className="text-3xl font-serif font-bold text-gray-800">The Golden Rule</h2>
@@ -255,8 +68,8 @@ const bookData = {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-2xl font-serif font-bold text-gray-800 mt-8">Psychological Traps</h3>
-            <p className="text-gray-700 font-serif">Entering a new market is like entering unknown territory. Be aware of:</p>
+            <h3 className="text-2xl font-serif font-bold text-gray-800 mt-8">The Phases of a New Venture</h3>
+            <p className="text-gray-700 font-serif">Entering a new market is like entering "virgin land"—unknown territory. Be aware of the psychological traps:</p>
             
             <ul className="space-y-4 mt-4">
               <li className="flex items-start bg-red-50 p-4 rounded-lg">
@@ -264,8 +77,8 @@ const bookData = {
                   <Zap size={20} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-red-900">1. Deceiving Starts</h4>
-                  <p className="text-gray-700 text-sm">Excessive enthusiasm can blind you to risks. (Arabic: <em>حماس زائد</em>)</p>
+                  <h4 className="font-bold text-red-900">1. Deceiving Starts (Excessive Enthusiasm)</h4>
+                  <p className="text-gray-700 text-sm">Don't let initial excitement blind you to risks. (Arabic: <em>حماس زائد</em>)</p>
                 </div>
               </li>
               <li className="flex items-start bg-green-50 p-4 rounded-lg">
@@ -274,17 +87,21 @@ const bookData = {
                 </div>
                 <div>
                   <h4 className="font-bold text-green-900">2. Beginner's Luck</h4>
-                  <p className="text-gray-700 text-sm">Early success doesn't guarantee future stability. (Arabic: <em>حظ المبتدئين</em>)</p>
+                  <p className="text-gray-700 text-sm">Success early on doesn't guarantee future stability. (Arabic: <em>حظ المبتدئين</em>)</p>
                 </div>
               </li>
             </ul>
+          </div>
+          
+          <div className="bg-blue-50 p-4 rounded text-center font-serif text-blue-900">
+            <strong>Core Mandate:</strong> "Adapt and be flexible."
           </div>
         </div>
       )
     },
     {
       id: "pillars",
-      title: "Chapter 4: The 15 Pillars",
+      title: "Chapter 2: The 15 Pillars",
       content: (
         <div className="space-y-6">
           <h2 className="text-3xl font-serif font-bold text-gray-800 mb-6">The Business Ecosystem</h2>
@@ -322,10 +139,13 @@ const bookData = {
     },
     {
       id: "traits",
-      title: "Chapter 5: The Mindset",
+      title: "Chapter 3: The Mindset",
       content: (
         <div className="space-y-6">
           <h2 className="text-3xl font-serif font-bold text-gray-800 mb-4">Traits of Successful Entrepreneurs</h2>
+          <p className="text-gray-700 font-serif mb-6">
+            Success is not just about the business model, but the person running it.
+          </p>
           
           <div className="grid md:grid-cols-2 gap-6">
              <div className="bg-stone-50 p-5 rounded-lg border-l-4 border-stone-400">
@@ -335,7 +155,7 @@ const bookData = {
                <ul className="mt-3 space-y-2 text-stone-700 font-serif">
                  <li>• <strong>Focus:</strong> Ability to concentrate on the goal.</li>
                  <li>• <strong>Analysis:</strong> Breaking down complex problems.</li>
-                 <li>• <strong>Creativity:</strong> Thinking outside the box.</li>
+                 <li>• <strong>Creativity:</strong> Thinking outside the box (<em>التفكير خارج الصندوق</em>).</li>
                  <li>• <strong>Learning Agility:</strong> Fast adaptation.</li>
                </ul>
              </div>
@@ -345,9 +165,19 @@ const bookData = {
                  <Briefcase size={20} /> Operational Skills
                </h3>
                <ul className="mt-3 space-y-2 text-stone-700 font-serif">
-                 <li>• <strong>Multitasking:</strong> Flexibility.</li>
-                 <li>• <strong>Project Management:</strong> Scope, Cost, Time.</li>
-                 <li>• <strong>Business Acumen:</strong> Knowing how money is made.</li>
+                 <li>• <strong>Multitasking:</strong> Flexibility (<em>مرونة</em>).</li>
+                 <li>• <strong>Project Management:</strong> Search and learn this.</li>
+                 <li>• <strong>Business Acumen:</strong> Understanding how money is made.</li>
+               </ul>
+             </div>
+
+             <div className="bg-stone-50 p-5 rounded-lg border-l-4 border-stone-400 md:col-span-2">
+               <h3 className="font-bold text-stone-800 flex items-center gap-2">
+                 <Users size={20} /> Social & Resilience
+               </h3>
+               <ul className="mt-3 space-y-2 text-stone-700 font-serif grid md:grid-cols-2 gap-2">
+                 <li>• <strong>Perseverance:</strong> "Long Breath" (<em>نفس طويل</em>) - Endurance.</li>
+                 <li>• <strong>Communication Pack:</strong> Quantity of Relationships (<em>كمية العلاقات</em>).</li>
                </ul>
              </div>
           </div>
@@ -356,7 +186,7 @@ const bookData = {
     },
     {
       id: "learning",
-      title: "Chapter 6: Learning Model",
+      title: "Chapter 4: Learning Model",
       content: (
         <div className="space-y-8">
           <h2 className="text-3xl font-serif font-bold text-gray-800">The 70:20:10 Model</h2>
@@ -372,88 +202,39 @@ const bookData = {
               <div className="w-[20%] bg-amber-300 flex items-center justify-center text-amber-900 text-xs font-bold">20%</div>
               <div className="w-[10%] bg-amber-100 flex items-center justify-center text-amber-900 text-xs font-bold">10%</div>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="text-center p-4">
+                <div className="text-4xl mb-2">🛠️</div>
+                <h4 className="font-bold">Experiential</h4>
+                <p className="text-sm text-gray-500">Learning by doing.</p>
+              </div>
+              <div className="text-center p-4">
+                <div className="text-4xl mb-2">👥</div>
+                <h4 className="font-bold">Social</h4>
+                <p className="text-sm text-gray-500">Mentors & peers.</p>
+              </div>
+              <div className="text-center p-4">
+                <div className="text-4xl mb-2">📚</div>
+                <h4 className="font-bold">Formal</h4>
+                <p className="text-sm text-gray-500">Courses & books.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-200 pt-6">
+            <h3 className="text-2xl font-serif font-bold text-gray-800 mb-4">Types of Experience</h3>
+            <div className="flex flex-wrap gap-3">
+               {["Street Work (Challenges)", "Handicrafts (Manual Work)", "Local Travel (Know your country)", "Computer Work (Digital)", "Team Activity (Collaboration)"].map((tag, i) => (
+                 <span key={i} className="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 shadow-sm">
+                   {tag}
+                 </span>
+               ))}
+            </div>
           </div>
           
            <div className="mt-4 p-4 bg-stone-100 rounded text-center italic font-serif text-stone-600">
             "The inquisitive mind searches for facts and learns."
           </div>
-        </div>
-      )
-    },
-    {
-      id: "skills",
-      title: "Chapter 7: Essential Skills",
-      content: (
-        <div className="space-y-8">
-          <h2 className="text-3xl font-serif font-bold text-gray-800 mb-6">Core Competencies</h2>
-
-          {/* Project Management */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
-            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <Clock className="text-amber-600" /> 1. Project Management
-            </h3>
-            <p className="text-stone-600 mb-4 font-serif">The "Iron Triangle": Scope, Cost, and Time determining Quality.</p>
-          </div>
-
-          {/* Business Acumen */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
-            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <DollarSign className="text-green-600" /> 2. Business Acumen
-            </h3>
-            <div className="grid grid-cols-2 gap-4 text-center">
-               <div className="p-3 bg-stone-50 rounded">
-                 <span className="block text-xs font-bold text-stone-400 uppercase">Revenue</span>
-                 <span className="font-serif font-bold text-stone-800">Vanity</span>
-               </div>
-               <div className="p-3 bg-amber-50 rounded">
-                 <span className="block text-xs font-bold text-amber-600 uppercase">Profit</span>
-                 <span className="font-serif font-bold text-amber-900">Sanity</span>
-               </div>
-               <div className="p-3 bg-green-50 rounded col-span-2">
-                 <span className="block text-xs font-bold text-green-600 uppercase">Cash Flow</span>
-                 <span className="font-serif font-bold text-green-900">Reality</span>
-               </div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: "analysis",
-      title: "Chapter 8: Strategic Analysis",
-      content: (
-        <div className="space-y-6">
-          <h2 className="text-3xl font-serif font-bold text-gray-800 mb-6">Planning Tools</h2>
-
-          {/* SWOT */}
-          <div className="mb-8">
-            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <Target className="text-red-600" /> SWOT Analysis
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-green-50 p-4 rounded border border-green-100">
-                <h4 className="font-bold text-green-800 mb-2">Strengths (Internal)</h4>
-              </div>
-              <div className="bg-red-50 p-4 rounded border border-red-100">
-                <h4 className="font-bold text-red-800 mb-2">Weaknesses (Internal)</h4>
-              </div>
-              <div className="bg-blue-50 p-4 rounded border border-blue-100">
-                <h4 className="font-bold text-blue-800 mb-2">Opportunities (External)</h4>
-              </div>
-              <div className="bg-amber-50 p-4 rounded border border-amber-100">
-                <h4 className="font-bold text-amber-800 mb-2">Threats (External)</h4>
-              </div>
-            </div>
-          </div>
-           {/* Risk */}
-           <div>
-            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <ShieldAlert className="text-orange-600" /> Risk Management
-            </h3>
-             <p className="text-stone-600 font-serif bg-stone-50 p-4 rounded border-l-4 border-stone-400">
-               Categorize risks by <span className="font-bold">Probability</span> vs <span className="font-bold">Impact</span>.
-             </p>
-           </div>
         </div>
       )
     }
@@ -478,7 +259,7 @@ const Cover = ({ onOpen }) => (
         <p className="text-xl md:text-2xl font-light text-gray-300 text-center uppercase tracking-widest mb-12">
           {bookData.subtitle}
         </p>
-        <p className="mt-auto text-gray-400 font-mono text-sm">Est. 2025</p>
+        <p className="mt-auto text-gray-400 font-mono text-sm">Est. 2024</p>
         
         <button 
           onClick={onOpen}
@@ -505,7 +286,7 @@ const TableOfContents = ({ chapters, onSelect, onClose }) => (
         <X size={24} />
       </button>
     </div>
-    <div className="space-y-4 overflow-y-auto max-h-[70vh]">
+    <div className="space-y-4 overflow-y-auto">
       {chapters.map((chapter, index) => (
         <button
           key={chapter.id}
@@ -586,14 +367,15 @@ export default function App() {
               <div className="max-w-2xl mx-auto animate-slideUp">
                 {currentChapter && (
                   <>
-                      <div className="mb-8 pb-4 border-b-2 border-amber-100">
-                         <span className="text-amber-600 font-bold tracking-widest text-xs uppercase mb-2 block">
-                           Chapter {currentPage}
-                         </span>
-                      </div>
-                      <div className="prose prose-stone prose-lg max-w-none">
+                     <div className="mb-8 pb-4 border-b-2 border-amber-100">
+                        <span className="text-amber-600 font-bold tracking-widest text-xs uppercase mb-2 block">
+                          Chapter {currentPage}
+                        </span>
+                        {/* Title is handled inside content for intro, but let's standardize slightly if needed */}
+                     </div>
+                     <div className="prose prose-stone prose-lg max-w-none">
                         {currentChapter.content}
-                      </div>
+                     </div>
                   </>
                 )}
               </div>
