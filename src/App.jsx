@@ -10,6 +10,7 @@ import FractionSnakeGame from "./FractionSnakeGame";
 import FractionGardenGame from "./FractionGardenGame";
 import MatrixPortalQuest from "./MatrixPortalQuest";
 import MatrixCandyMixer from "./MatrixCandyMixer";
+import FarmMatrixAnimals from "./FarmMatrixAnimals";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/fraction-garden" element={<FractionGardenGame />} />
         <Route path="/matrix-garden" element={<MatrixPortalQuest />} />
         <Route path="/Matrix-Candy-Mixer" element={<MatrixCandyMixer />} />
+        <Route path="/Farm-Matrix-Animals" element={<FarmMatrixAnimals />} />
       </Routes>
     </BrowserRouter>
   );
