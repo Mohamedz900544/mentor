@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+.max-w-5xl{
+max-width: 100%;
+}
 /* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
