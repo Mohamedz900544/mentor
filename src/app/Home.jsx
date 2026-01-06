@@ -13,6 +13,7 @@ export default function Home() {
         <Link to="/fraction-smash" className="menu-btn">Fraction Smash</Link>
         <Link to="/fraction-snake" className="menu-btn">Fraction Snake</Link>
         <Link to="/fraction-garden" className="menu-btn">Fraction Garden</Link>
+        <Link to="/matrix-garden" className="menu-btn">Matrix Garden</Link>
       </div>
     </div>
   );
