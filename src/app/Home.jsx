@@ -14,6 +14,9 @@ export default function Home() {
         <Link to="/fraction-snake" className="menu-btn">Fraction Snake</Link>
         <Link to="/fraction-garden" className="menu-btn">Fraction Garden</Link>
         <Link to="/matrix-garden" className="menu-btn">Matrix Garden</Link>
+        <Link to="/Matrix-Candy-Mixer" className="menu-btn">Matrix-Candy-Mixer</Link>
+        <Link to="/Farm-Matrix-Animals" className="menu-btn">Farm-Matrix-Animals</Link>
+
       </div>
     </div>
   );
