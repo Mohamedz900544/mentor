@@ -1,5 +1,5 @@
-// MirrorBounceLab.jsx (Advanced, fixed & unsolved by default)
-import React, { useState, useMemo } from "react";
+// MirrorBounceLab.jsx – FINAL FIX (2-mirror geometry corrected)
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Sun,
   Target,
@@ -9,14 +9,37 @@ import {
   Home,
   ChevronLeft,
   ChevronRight,
+  Lightbulb,
 } from "lucide-react";
 
+// Board size
 const WIDTH = 360;
 const HEIGHT = 240;
+const MIRROR_LENGTH = 80;
 
-// ---------- MATH HELPERS ----------
+// LocalStorage for stars
+const PROGRESS_KEY = "mirror_bounce_lab_progress_final";
+
+const loadProgress = () => {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+};
+
+const saveProgress = (progress) => {
+  try {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  } catch {
+    // ignore
+  }
+};
+
+// ---- Math helpers ----
 const toRad = (deg) => (deg * Math.PI) / 180;
-const toDeg = (rad) => (rad * 180) / Math.PI;
 
 const normalize = (v) => {
   const len = Math.hypot(v.x, v.y) || 1;
@@ -25,148 +48,148 @@ const normalize = (v) => {
 
 const cross = (a, b) => a.x * b.y - a.y * b.x;
 
-// Ray: p + t r, t >= 0
-// Line: q + u s, u any
-const intersectRayWithLine = (rayOrigin, rayDir, linePoint, lineDir) => {
+// Ray p + t r, t>=0 vs finite mirror segment
+const intersectRayWithSegment = (rayOrigin, rayDir, center, dir, halfLen) => {
   const p = rayOrigin;
   const r = rayDir;
-  const q = linePoint;
-  const s = lineDir;
+  const q = center;
+  const s = dir;
 
   const rxs = cross(r, s);
   if (Math.abs(rxs) < 1e-6) return null; // parallel
 
   const qmp = { x: q.x - p.x, y: q.y - p.y };
   const t = cross(qmp, s) / rxs;
-  if (t < 0) return null; // intersection behind origin
+  if (t < 0) return null;
 
-  return {
-    x: p.x + r.x * t,
-    y: p.y + r.y * t,
-  };
+  const hit = { x: p.x + r.x * t, y: p.y + r.y * t };
+
+  // inside segment?
+  const vx = hit.x - center.x;
+  const vy = hit.y - center.y;
+  const proj = vx * s.x + vy * s.y;
+  if (Math.abs(proj) > halfLen) return null;
+
+  return hit;
 };
 
+// Reflect dIn across mirror line with given angle (deg)
 const computeReflection = (dIn, mirrorAngleDeg) => {
   const theta = toRad(mirrorAngleDeg);
   const mirrorDir = { x: Math.cos(theta), y: Math.sin(theta) };
   const normal = normalize({ x: -mirrorDir.y, y: mirrorDir.x });
+
   const d = normalize(dIn);
   const dot = d.x * normal.x + d.y * normal.y;
 
-  // r = d - 2(d·n)n
   const out = {
     x: d.x - 2 * dot * normal.x,
     y: d.y - 2 * dot * normal.y,
   };
 
-  const incAngleDeg = toDeg(
-    Math.acos(Math.min(1, Math.max(-1, Math.abs(dot))))
+  const incAngleRad = Math.acos(
+    Math.min(1, Math.max(-1, Math.abs(dot)))
   );
+  const incAngleDeg = (incAngleRad * 180) / Math.PI;
 
   return {
     normal,
     out: normalize(out),
     incAngleDeg,
-    refAngleDeg: incAngleDeg, // equal for ideal mirror
+    refAngleDeg: incAngleDeg,
   };
 };
 
-// ---------- LEVELS ----------
-// These targets were computed from "solution angles".
-// initialAngle is shifted so the level is NOT solved by default.
+// ---- LEVELS ----
+// All levels start with a horizontal ray from the left.
+// Geometry was computed so at the solution angles the light hits:
+// source -> mirror1 -> (mirror2 if exists) -> target.
 const LEVELS = [
-  // LEVEL 1 – single bounce, target bottom-right
   {
     id: 1,
-    name: "Warm-Up Bounce",
-    intro: "Rotate the mirror so the light bounces down to hit the target.",
-    target: {
-      x: 340.35,
-      y: 174.72,
-      r: 20,
-    },
+    name: "Floor Bounce",
+    intro: "Rotate the mirror so the beam bounces down towards the floor target.",
     mirrors: [
       {
-        cx: 190,
+        cx: 180, // reflection point on the horizontal middle line
         cy: 120,
-        // solution angle ≈ 10°, but we start at 30° so it's not solved
-        initialAngle: 30,
+        solutionAngle: 16.4, // works with the physics engine
+        initialAngle: 16.4 + 20, // starts UNSOLVED
       },
     ],
+    target: {
+      x: 320,
+      y: 210,
+      r: 22,
+    },
   },
-
-  // LEVEL 2 – single bounce, target top-right
   {
     id: 2,
-    name: "High Shot",
-    intro: "Aim the beam upward to reach the high target.",
-    target: {
-      x: 328.56,
-      y: 40.0,
-      r: 20,
-    },
+    name: "Sky Shot",
+    intro: "Now aim the beam upwards to hit the high target near the top.",
     mirrors: [
       {
-        cx: 190,
+        cx: 180,
         cy: 120,
-        // solution angle ≈ -15°, start at 5°
-        initialAngle: 5,
+        solutionAngle: -14.9,
+        initialAngle: -14.9 + 20,
       },
     ],
+    target: {
+      x: 320,
+      y: 40,
+      r: 20,
+    },
   },
-
-  // LEVEL 3 – double bounce, target near top middle
   {
     id: 3,
     name: "Double Bounce Up",
     intro:
       "Use BOTH mirrors. First bounce, second bounce, then steer the beam up to the target.",
-    target: {
-      x: 145.86,
-      y: 34.26,
-      r: 22,
-    },
     mirrors: [
       {
-        cx: 160,
-        cy: 140,
-        // solution ≈ 25°, start far at 5° so NOT solved
-        initialAngle: 5,
+        cx: 150, // first reflection point (on the beam)
+        cy: 120,
+        solutionAngle: -10.9,
+        initialAngle: -10.9 + 20,
       },
       {
-        cx: 240,
-        cy: 120,
-        // solution ≈ -20°, start at -50°
-        initialAngle: -50,
+        cx: 250, // second reflection point
+        cy: 80,
+        solutionAngle: -24.2,
+        initialAngle: -24.2 + 20,
       },
     ],
+    target: {
+      x: 330,
+      y: 40,
+      r: 22,
+    },
   },
-
-  // LEVEL 4 – double bounce, target bottom-right
   {
     id: 4,
-    name: "Double Bounce Down",
+    name: "Double Bounce Around",
     intro:
-      "Bounce from mirror 1 to mirror 2, then send the beam down to the lower target.",
-    target: {
-      x: 324.51,
-      y: 31.04,
-      r: 22,
-    },
+      "Bounce off mirror 1 then mirror 2 to curve the light around and hit the side target.",
     mirrors: [
       {
         cx: 160,
-        cy: 100,
-        // solution ≈ 25°, start at 45°
-        initialAngle: 45,
+        cy: 120,
+        solutionAngle: 14.3,
+        initialAngle: 14.3 + 20,
       },
       {
-        cx: 240,
-        cy: 170,
-        // solution ≈ -5°, start at 15°
-        initialAngle: 15,
+        cx: 270,
+        cy: 180,
+        solutionAngle: -58.5,
+        initialAngle: -58.5 + 20,
       },
     ],
+    target: {
+      x: 80,
+      y: 50,
+      r: 22,
+    },
   },
 ];
 
@@ -175,24 +198,28 @@ const MirrorBounceLab = () => {
   const [view, setView] = useState("game"); // "game" | "win"
   const [attempts, setAttempts] = useState(0);
   const [message, setMessage] = useState(LEVELS[0].intro);
-
-  // Angles per mirror (start from initialAngle so levels are unsolved)
   const [angles, setAngles] = useState(
     LEVELS[0].mirrors.map((m) => m.initialAngle)
   );
+  const [progress, setProgress] = useState(() => loadProgress());
 
   const currentLevel = LEVELS[levelIndex];
   const source = { x: 60, y: HEIGHT / 2 };
+  const rayStartDir = { x: 1, y: 0 }; // always horizontal
 
-  // ---------- GEOMETRY / RAY-TRACING ----------
+  const totalMaxStars = LEVELS.length * 3;
+  const totalStars = Object.values(progress).reduce((a, b) => a + b, 0);
+
+  // ---------- GEOMETRY ----------
   const geom = useMemo(() => {
     const { mirrors, target } = currentLevel;
 
     let rayOrigin = { ...source };
-    let rayDir = { x: 1, y: 0 }; // start horizontal to the right
+    let rayDir = normalize(rayStartDir);
 
     const pathPoints = [source];
     const mirrorData = [];
+    const halfLen = MIRROR_LENGTH / 2;
 
     let lastIncAngle = null;
     let lastRefAngle = null;
@@ -206,14 +233,15 @@ const MirrorBounceLab = () => {
       const theta = toRad(angleDeg);
       const lineDir = { x: Math.cos(theta), y: Math.sin(theta) };
 
-      // Real intersection with mirror line (depending on ray direction)
-      const hitPoint = intersectRayWithLine(rayOrigin, rayDir, center, lineDir);
-      if (!hitPoint) {
-        // Ray never hits this mirror (for current angles)
-        break;
-      }
+      const hitPoint = intersectRayWithSegment(
+        rayOrigin,
+        rayDir,
+        center,
+        lineDir,
+        halfLen
+      );
+      if (!hitPoint) break;
 
-      // Compute reflection on this mirror
       const { normal, out, incAngleDeg, refAngleDeg } = computeReflection(
         rayDir,
         angleDeg
@@ -238,7 +266,7 @@ const MirrorBounceLab = () => {
       rayDir = out;
     }
 
-    // Final segment after last mirror
+    // Final segment
     const finalOrigin = { ...rayOrigin };
     const finalDir = normalize(rayDir);
     const finalLen = 500;
@@ -248,7 +276,7 @@ const MirrorBounceLab = () => {
     };
     pathPoints.push(finalEnd);
 
-    // Check distance from target to this final ray
+    // Distance from target to this final ray
     const toTarget = {
       x: target.x - finalOrigin.x,
       y: target.y - finalOrigin.y,
@@ -273,14 +301,13 @@ const MirrorBounceLab = () => {
       mirrorData,
       finalOrigin,
       finalEnd,
-      finalDir,
       lastIncAngle,
       lastRefAngle,
       lastNormal,
       hit,
       closestPoint,
     };
-  }, [angles, currentLevel, source]);
+  }, [angles, currentLevel, rayStartDir, source]);
 
   const {
     pathPoints,
@@ -303,9 +330,9 @@ const MirrorBounceLab = () => {
 
   const goNext = () => {
     if (levelIndex < LEVELS.length - 1) {
-      const next = levelIndex + 1;
-      const nextLevel = LEVELS[next];
-      setLevelIndex(next);
+      const nextIndex = levelIndex + 1;
+      const nextLevel = LEVELS[nextIndex];
+      setLevelIndex(nextIndex);
       setAngles(nextLevel.mirrors.map((m) => m.initialAngle));
       setAttempts(0);
       setMessage(nextLevel.intro);
@@ -321,6 +348,26 @@ const MirrorBounceLab = () => {
     }
   };
 
+  const starsEarned = useMemo(() => {
+    if (attempts === 0) return 3;
+    if (attempts === 1) return 2;
+    if (attempts <= 3) return 1;
+    return 1;
+  }, [attempts]);
+
+  // Save progress on win
+  useEffect(() => {
+    if (view !== "win") return;
+    const levelId = currentLevel.id;
+    setProgress((prev) => {
+      const prevStars = prev[levelId] || 0;
+      const best = Math.max(prevStars, starsEarned);
+      const next = { ...prev, [levelId]: best };
+      saveProgress(next);
+      return next;
+    });
+  }, [view, currentLevel.id, starsEarned]);
+
   const checkAnswer = () => {
     if (hit) {
       setView("win");
@@ -328,34 +375,46 @@ const MirrorBounceLab = () => {
       setAttempts((a) => a + 1);
 
       if (!closestPoint) {
-        setMessage("Rotate the mirror(s) so the final beam reaches the target.");
-      } else if (closestPoint.dist > currentLevel.target.r) {
-        if (closestPoint.y < currentLevel.target.y) {
-          setMessage(
-            "Your beam is passing above the target. Adjust the mirror angles to aim lower."
-          );
-        } else {
-          setMessage(
-            "Your beam is passing below the target. Adjust the mirror angles to aim higher."
-          );
-        }
+        setMessage(
+          "Rotate the mirrors so the final beam gets closer to the target circle."
+        );
+        return;
+      }
+
+      if (closestPoint.dist <= currentLevel.target.r * 1.5) {
+        setMessage(
+          "So close! Tiny changes in one mirror angle will nudge the beam onto the target."
+        );
+      } else if (closestPoint.y < currentLevel.target.y) {
+        setMessage(
+          "Your beam is passing above the target. Tilt a mirror so the final ray aims lower."
+        );
       } else {
-        setMessage("Almost there! Tiny angle changes can make a big difference.");
+        setMessage(
+          "Your beam is passing below the target. Tilt a mirror so the final ray aims higher."
+        );
       }
     }
   };
 
-  const starsEarned = useMemo(() => {
-    if (attempts === 0) return 3;
-    if (attempts === 1) return 2;
-    return 1;
-  }, [attempts]);
-
-  const totalStars = LEVELS.length * 3;
-
   const handleAngleChange = (index, newAngle) => {
-    const clamped = Math.max(-70, Math.min(70, newAngle));
+    const clamped = Math.max(-90, Math.min(90, newAngle));
     setAngles((prev) => prev.map((a, i) => (i === index ? clamped : a)));
+  };
+
+  const giveHint = () => {
+    const updated = currentLevel.mirrors.map((m, i) => {
+      const current = angles[i];
+      const target = m.solutionAngle;
+      const diff = target - current;
+      if (Math.abs(diff) < 1) return current;
+      const step = diff > 0 ? 3 : -3;
+      return current + step;
+    });
+    setAngles(updated);
+    setMessage(
+      "Hint used: I nudged each mirror closer to the perfect angles. Watch how the path changed!"
+    );
   };
 
   // ---------- RENDER ----------
@@ -377,28 +436,36 @@ const MirrorBounceLab = () => {
           </div>
         </div>
 
-        <div className="hidden sm:flex items-center gap-3 text-xs sm:text-sm text-slate-500">
-          <Sun size={18} className="text-yellow-400" />
-          <span className="font-semibold">
-            Level {currentLevel.id} / {LEVELS.length}
-          </span>
+        <div className="flex items-center gap-3 text-xs sm:text-sm text-slate-500">
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
+            <Sun size={16} className="text-yellow-400" />
+            <span className="font-semibold">
+              Level {currentLevel.id} / {LEVELS.length}
+            </span>
+          </div>
+          <div className="px-3 py-1 rounded-full bg-slate-900 text-white flex items-center gap-1 text-[11px] sm:text-xs">
+            <Star size={14} className="text-amber-400 fill-amber-400" />
+            <span className="font-semibold">
+              {totalStars} / {totalMaxStars} stars
+            </span>
+          </div>
         </div>
       </header>
 
-      {/* MAIN VIEW */}
+      {/* GAME VIEW */}
       {view === "game" && (
         <div className="flex-1 flex flex-col md:flex-row max-w-5xl mx-auto w-full">
-          {/* LEFT: Visual lab */}
+          {/* LEFT: visual board */}
           <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-8 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
             <div className="mb-4 sm:mb-6 text-center">
               <p className="text-xs sm:text-sm font-semibold text-sky-300 uppercase tracking-wide">
                 Level {currentLevel.id} · {currentLevel.name}
               </p>
               <p className="mt-1 text-sm sm:text-base text-slate-100 font-medium max-w-md">
-                Light bounces every time it hits a mirror. The{" "}
+                Light bounces when it hits a mirror. The{" "}
                 <span className="font-semibold">angle of incidence</span> equals
-                the <span className="font-semibold">angle of reflection</span>{" "}
-                at that mirror. Use one or two bounces to reach the target.
+                the <span className="font-semibold">angle of reflection</span>.
+                With two mirrors you can bend light around corners.
               </p>
             </div>
 
@@ -408,7 +475,7 @@ const MirrorBounceLab = () => {
                 viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
                 className="w-full h-auto rounded-xl bg-slate-900"
               >
-                {/* Background grid */}
+                {/* Grid */}
                 <defs>
                   <pattern
                     id="grid"
@@ -434,19 +501,20 @@ const MirrorBounceLab = () => {
                     cx={currentLevel.target.x}
                     cy={currentLevel.target.y}
                     r={currentLevel.target.r}
-                    fill="rgba(56,189,248,0.25)"
-                    stroke="#38bdf8"
+                    fill={hit ? "rgba(34,197,94,0.35)" : "rgba(56,189,248,0.25)"}
+                    stroke={hit ? "#22c55e" : "#38bdf8"}
                     strokeWidth="2"
+                    className={hit ? "animate-pulse" : ""}
                   />
                   <circle
                     cx={currentLevel.target.x}
                     cy={currentLevel.target.y}
                     r={6}
-                    fill="#38bdf8"
+                    fill={hit ? "#22c55e" : "#38bdf8"}
                   />
                 </g>
 
-                {/* Light source */}
+                {/* Source */}
                 <g>
                   <circle
                     cx={source.x}
@@ -458,7 +526,7 @@ const MirrorBounceLab = () => {
                   />
                 </g>
 
-                {/* Beam path segments */}
+                {/* Beam */}
                 {pathPoints.map((p, i) => {
                   if (i === 0) return null;
                   const p0 = pathPoints[i - 1];
@@ -483,20 +551,18 @@ const MirrorBounceLab = () => {
                   );
                 })}
 
-                {/* Mirrors */}
+                {/* Mirrors (only the ones actually hit are drawn with hit point) */}
                 {mirrorData.map((m, idx) => {
-                  const length = 60;
+                  const length = MIRROR_LENGTH;
                   const half = length / 2;
                   const mx1 = m.center.x - m.dir.x * half;
                   const my1 = m.center.y - m.dir.y * half;
                   const mx2 = m.center.x + m.dir.x * half;
                   const my2 = m.center.y + m.dir.y * half;
-
                   const normalScale = 20;
 
                   return (
                     <g key={idx}>
-                      {/* Mirror line */}
                       <line
                         x1={mx1}
                         y1={my1}
@@ -506,14 +572,12 @@ const MirrorBounceLab = () => {
                         strokeWidth="6"
                         strokeLinecap="round"
                       />
-                      {/* Mirror center */}
                       <circle
                         cx={m.center.x}
                         cy={m.center.y}
                         r={5}
                         fill="#e5e7eb"
                       />
-                      {/* Normal indicator */}
                       <line
                         x1={m.center.x}
                         y1={m.center.y}
@@ -523,7 +587,6 @@ const MirrorBounceLab = () => {
                         strokeWidth="2"
                         strokeDasharray="3 3"
                       />
-                      {/* Hit point on mirror */}
                       <circle
                         cx={m.hitPoint.x}
                         cy={m.hitPoint.y}
@@ -536,7 +599,7 @@ const MirrorBounceLab = () => {
               </svg>
             </div>
 
-            {/* Angle info */}
+            {/* Info */}
             <div className="mt-4 text-[11px] sm:text-xs text-slate-300 text-center max-w-xs space-y-1">
               <p>
                 Mirrors used:{" "}
@@ -548,20 +611,29 @@ const MirrorBounceLab = () => {
               {lastIncAngle != null && lastRefAngle != null && (
                 <p>
                   At the <span className="font-semibold">last mirror</span> ·
-                  Incidence angle ≈{" "}
+                  incidence ≈{" "}
                   <span className="font-semibold text-amber-200">
                     {lastIncAngle.toFixed(1)}°
                   </span>{" "}
-                  · Reflection angle ≈{" "}
+                  · reflection ≈{" "}
                   <span className="font-semibold text-emerald-200">
                     {lastRefAngle.toFixed(1)}°
                   </span>
                 </p>
               )}
+              {closestPoint && !hit && (
+                <p>
+                  Distance to target center ≈{" "}
+                  <span className="font-semibold text-sky-200">
+                    {closestPoint.dist.toFixed(1)} px
+                  </span>
+                  .
+                </p>
+              )}
             </div>
           </div>
 
-          {/* RIGHT: Tutor + controls */}
+          {/* RIGHT: controls */}
           <div className="w-full md:w-[380px] bg-white border-t md:border-t-0 md:border-l border-slate-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] md:shadow-none flex flex-col">
             <div className="flex-1 px-4 sm:px-6 py-5 sm:py-6 flex flex-col justify-between">
               <div>
@@ -578,68 +650,79 @@ const MirrorBounceLab = () => {
                 {/* Concept card */}
                 <div className="bg-sky-50 rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6 text-xs sm:text-sm text-sky-900">
                   <p className="font-semibold mb-1">
-                    Physics idea: Multi-bounce reflection
+                    Physics idea: Angle of incidence = angle of reflection
                   </p>
                   <p>
-                    Every time the ray hits a mirror, it bounces with the{" "}
-                    <span className="font-bold">same angle</span> to the normal
-                    as it arrived. With two mirrors you can steer light around
-                    corners like in periscopes and laser mazes.
+                    The ray and its reflection make the same angle with the
+                    normal line to the mirror. With two mirrors you can send
+                    light round corners, like a periscope or laser maze.
                   </p>
                 </div>
 
-                {/* Mirror sliders */}
+                {/* Sliders */}
                 <div className="space-y-3 sm:space-y-4">
-                  {currentLevel.mirrors.map((m, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-slate-100 rounded-2xl p-3 sm:p-4"
-                    >
-                      <p className="text-xs sm:text-sm font-semibold text-slate-700 mb-2">
-                        Mirror {idx + 1} angle{" "}
-                        <span className="text-slate-500">
-                          ({angles[idx].toFixed(0)}°)
-                        </span>
-                      </p>
-                      <div className="flex items-center gap-2 mb-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleAngleChange(idx, angles[idx] - 5)
-                          }
-                          className="p-2 rounded-xl bg-white border border-slate-200 hover:border-sky-300 shadow-sm active:scale-95 transition-transform"
-                        >
-                          <ChevronLeft size={16} />
-                        </button>
-                        <input
-                          type="range"
-                          min={-70}
-                          max={70}
-                          value={angles[idx]}
-                          onChange={(e) =>
-                            handleAngleChange(
-                              idx,
-                              parseInt(e.target.value, 10)
-                            )
-                          }
-                          className="flex-1 accent-sky-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleAngleChange(idx, angles[idx] + 5)
-                          }
-                          className="p-2 rounded-xl bg-white border border-slate-200 hover:border-sky-300 shadow-sm active:scale-95 transition-transform"
-                        >
-                          <ChevronRight size={16} />
-                        </button>
+                  {currentLevel.mirrors.map((m, idx) => {
+                    const diff = angles[idx] - m.solutionAngle;
+                    return (
+                      <div
+                        key={idx}
+                        className="bg-slate-100 rounded-2xl p-3 sm:p-4"
+                      >
+                        <div className="flex justify-between items-center mb-1.5">
+                          <p className="text-xs sm:text-sm font-semibold text-slate-700">
+                            Mirror {idx + 1} angle{" "}
+                            <span className="text-slate-500">
+                              ({angles[idx].toFixed(1)}°)
+                            </span>
+                          </p>
+                          <p className="text-[10px] sm:text-[11px] text-slate-500">
+                            Target ≈{" "}
+                            <span className="font-semibold">
+                              {m.solutionAngle.toFixed(1)}°
+                            </span>{" "}
+                            (Δ {diff.toFixed(1)}°)
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleAngleChange(idx, angles[idx] - 5)
+                            }
+                            className="p-2 rounded-xl bg-white border border-slate-200 hover:border-sky-300 shadow-sm active:scale-95 transition-transform"
+                          >
+                            <ChevronLeft size={16} />
+                          </button>
+                          <input
+                            type="range"
+                            min={-90}
+                            max={90}
+                            value={angles[idx]}
+                            onChange={(e) =>
+                              handleAngleChange(
+                                idx,
+                                parseFloat(e.target.value)
+                              )
+                            }
+                            className="flex-1 accent-sky-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleAngleChange(idx, angles[idx] + 5)
+                            }
+                            className="p-2 rounded-xl bg-white border border-slate-200 hover:border-sky-300 shadow-sm active:scale-95 transition-transform"
+                          >
+                            <ChevronRight size={16} />
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-slate-500">
+                          Tiny changes in angle move the beam a lot. Nudge, then
+                          press <span className="font-semibold">Check Beam</span>.
+                        </p>
                       </div>
-                      <p className="text-[11px] text-slate-500">
-                        Small angle changes move the beam a lot. Try nudging it
-                        and watch how the path bends.
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
@@ -653,13 +736,27 @@ const MirrorBounceLab = () => {
                   <ArrowRight size={20} />
                 </button>
 
-                <button
-                  onClick={resetLevel}
-                  className="w-full bg-slate-900 text-white py-3 rounded-2xl font-bold text-sm sm:text-base shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2"
-                >
-                  <RotateCcw size={18} />
-                  Reset Level
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={giveHint}
+                    className="flex-1 bg-amber-50 text-amber-700 py-2.5 sm:py-3 rounded-2xl font-semibold text-xs sm:text-sm shadow-sm border border-amber-200 active:scale-95 transition-transform flex items-center justify-center gap-1.5"
+                  >
+                    <Lightbulb size={16} />
+                    Hint (nudge mirrors)
+                  </button>
+                  <button
+                    onClick={resetLevel}
+                    className="flex-1 bg-slate-900 text-white py-2.5 sm:py-3 rounded-2xl font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2"
+                  >
+                    <RotateCcw size={16} />
+                    Reset Level
+                  </button>
+                </div>
+
+                <p className="text-[11px] text-slate-400 text-center">
+                  Attempts this level:{" "}
+                  <span className="font-semibold">{attempts}</span>
+                </p>
               </div>
             </div>
           </div>
@@ -677,9 +774,10 @@ const MirrorBounceLab = () => {
               Laser Locked On!
             </h2>
             <p className="text-sm sm:text-base text-slate-600 mb-5 sm:mb-6">
-              You used one or more reflections to steer the light exactly onto
-              the target. This is how periscopes, laser puzzles, and many
-              optical tools work.
+              You steered the light exactly onto the target using{" "}
+              {currentLevel.mirrors.length} mirror
+              {currentLevel.mirrors.length > 1 ? "s" : ""}. This is how
+              periscopes and laser puzzles work in real life.
             </p>
 
             <div className="flex justify-center gap-2 mb-6 sm:mb-8">
@@ -715,7 +813,8 @@ const MirrorBounceLab = () => {
             </button>
 
             <p className="mt-4 text-[11px] text-slate-400">
-              Stars this level: {starsEarned} / 3 · Game total: {totalStars}
+              Stars this level: {starsEarned} / 3 · Total: {totalStars} /{" "}
+              {totalMaxStars}
             </p>
           </div>
         </div>
