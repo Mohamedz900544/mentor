@@ -16,6 +16,7 @@ export default function Home() {
         <Link to="/matrix-garden" className="menu-btn">Matrix Garden</Link>
         <Link to="/Matrix-Candy-Mixer" className="menu-btn">Matrix-Candy-Mixer</Link>
         <Link to="/Farm-Matrix-Animals" className="menu-btn">Farm-Matrix-Animals</Link>
+        <Link to="/MatrixTile-Drop" className="menu-btn">MatrixTileDrop</Link>
 
       </div>
     </div>
