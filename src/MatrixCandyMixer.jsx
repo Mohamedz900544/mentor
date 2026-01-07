@@ -1,4 +1,7 @@
-import React, { useState, useMemo, useEffect } from "react";
+// ✅ Drop-in upgrade: adds a visual guided tour + plays the intro voice line on Start
+// Put this whole file as src/MatrixCandyMixer.jsx (it includes everything)
+
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
   Grid3x3,
   Star,
@@ -9,9 +12,85 @@ import {
   Lightbulb,
   ChevronLeft,
   ChevronRight,
+  Volume2,
+  X,
 } from "lucide-react";
 
 const STORAGE_KEY = "matrix_candy_mixer_progress_v1";
+
+/**
+ * AUDIO FILES in: public/audio/
+ */
+const VOICE_FILES = {
+  intro: "/audio/matrix_intro.mp3",
+  fillAll: "/audio/matrix_fill_all.mp3",
+  wrong: "/audio/matrix_wrong.mp3",
+  correct: "/audio/matrix_correct.mp3",
+  hint: "/audio/matrix_hint.mp3",
+  win: "/audio/matrix_win.mp3",
+  tab_story: "/audio/matrix_tab_story.mp3",
+  tab_how: "/audio/matrix_tab_how.mp3",
+  tab_rule: "/audio/matrix_tab_rule.mp3",
+};
+
+/**
+ * Safe audio: explicit unlock() must be called from user click.
+ */
+const useVoicePlayer = () => {
+  const audioMapRef = useRef({});
+  const unlockedRef = useRef(false);
+
+  const getAudio = useCallback((key) => {
+    const src = VOICE_FILES[key];
+    if (!src) return null;
+
+    if (!audioMapRef.current[key]) {
+      const a = new Audio(src);
+      a.preload = "auto";
+      audioMapRef.current[key] = a;
+    }
+    return audioMapRef.current[key];
+  }, []);
+
+  const unlock = useCallback(async () => {
+    if (unlockedRef.current) return true;
+    const a = getAudio("intro");
+    if (!a) return false;
+
+    try {
+      a.muted = true;
+      await a.play();
+      a.pause();
+      a.currentTime = 0;
+      a.muted = false;
+      unlockedRef.current = true;
+      return true;
+    } catch (e) {
+      console.warn("Audio unlock failed:", e);
+      return false;
+    }
+  }, [getAudio]);
+
+  const play = useCallback(
+    async (key) => {
+      if (!unlockedRef.current) return;
+      const audio = getAudio(key);
+      if (!audio) return;
+
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = 1;
+        await audio.play();
+      } catch (e) {
+        console.warn(`Play failed for "${key}":`, e);
+      }
+    },
+    [getAudio]
+  );
+
+  return { play, unlock };
+};
 
 // ---------- Progress helpers ----------
 const loadProgress = () => {
@@ -32,12 +111,7 @@ const saveProgress = (progress) => {
   }
 };
 
-// ---------- Level data ----------
-/*
-  Each level:
-  - op: "add" | "sub"
-  - A, B: matrices (2D arrays)
-*/
+// ---------- Levels ----------
 const LEVELS = [
   {
     id: 1,
@@ -152,6 +226,11 @@ const computeAnswer = (level) => {
 };
 
 const MatrixCandyMixer = () => {
+  // ✅ Start screen + audio unlock + guided intro
+  const [hasStarted, setHasStarted] = useState(false);
+  const [showTour, setShowTour] = useState(true);
+  const [tourStep, setTourStep] = useState(0);
+
   const [progress, setProgress] = useState(loadProgress);
   const [levelIndex, setLevelIndex] = useState(progress.level || 0);
   const [userMatrix, setUserMatrix] = useState(() => {
@@ -161,30 +240,29 @@ const MatrixCandyMixer = () => {
   const [feedback, setFeedback] = useState(() => {
     const lvl = LEVELS[0];
     return makeEmptyMatrix(lvl.A.length, lvl.A[0].length);
-  }); // "", "correct", "wrong", "empty"
-  const [focusedCell, setFocusedCell] = useState(null); // {row,col}
+  });
+  const [focusedCell, setFocusedCell] = useState(null);
   const [attempts, setAttempts] = useState(0);
-  const [view, setView] = useState("game"); // "game" | "win"
-  const [message, setMessage] = useState(LEVELS[0].intro);
+  const [view, setView] = useState("game");
+  const [message, setMessage] = useState(
+    `Welcome to Matrix Candy Mixer! Every number you see is candies in a box. Matrix A is candy tray A, and Matrix B is candy tray B. Your job is to fill the result grid by combining the candies in the same position. Let’s see how many candies we get in each box!`
+  );
   const [shake, setShake] = useState(false);
+  const [infoTab, setInfoTab] = useState("story");
+  const [guideStage, setGuideStage] = useState(0);
+
+  const { play: playVoice, unlock } = useVoicePlayer();
 
   const currentLevel = LEVELS[levelIndex];
-  const correctMatrix = useMemo(
-    () => computeAnswer(currentLevel),
-    [currentLevel]
-  );
+  const correctMatrix = useMemo(() => computeAnswer(currentLevel), [currentLevel]);
 
   const totalMaxStars = LEVELS.length * 3;
-  const totalStars = Object.values(progress.stars || {}).reduce(
-    (a, b) => a + b,
-    0
-  );
+  const totalStars = Object.values(progress.stars || {}).reduce((a, b) => a + b, 0);
 
   const rows = currentLevel.A.length;
   const cols = currentLevel.A[0].length;
   const opSymbol = currentLevel.op === "add" ? "+" : "−";
 
-  // stars for this level
   const starsThisLevel = useMemo(() => {
     if (view !== "win") return 0;
     if (attempts === 0) return 3;
@@ -192,7 +270,25 @@ const MatrixCandyMixer = () => {
     return 1;
   }, [view, attempts]);
 
-  // save progress when win
+  const handleChangeTab = useCallback(
+    (tab) => {
+      setInfoTab(tab);
+      playVoice(`tab_${tab}`);
+    },
+    [playVoice]
+  );
+
+  // Reset when level changes (only after start)
+  useEffect(() => {
+    if (!hasStarted) return;
+    setGuideStage(0);
+    setInfoTab("story");
+    setMessage(currentLevel.intro);
+    playVoice("intro");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [levelIndex, hasStarted]);
+
+  // Save progress when win
   useEffect(() => {
     if (view !== "win") return;
     setProgress((prev) => {
@@ -215,41 +311,41 @@ const MatrixCandyMixer = () => {
     setAttempts(0);
     setFocusedCell(null);
     setView("game");
+    setGuideStage(0);
+    setInfoTab("story");
     setMessage(lvl.intro);
+    playVoice("intro");
   };
 
   const goNextLevel = () => {
+    playVoice("win");
     const nextIndex = levelIndex + 1;
-    if (nextIndex < LEVELS.length) {
-      const lvl = LEVELS[nextIndex];
-      setLevelIndex(nextIndex);
-      setUserMatrix(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
-      setFeedback(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
-      setAttempts(0);
-      setFocusedCell(null);
-      setView("game");
-      setMessage(lvl.intro);
-    } else {
-      // back to first
-      const lvl = LEVELS[0];
-      setLevelIndex(0);
-      setUserMatrix(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
-      setFeedback(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
-      setAttempts(0);
-      setFocusedCell(null);
-      setView("game");
-      setMessage(lvl.intro);
+    const idx = nextIndex < LEVELS.length ? nextIndex : 0;
+
+    const lvl = LEVELS[idx];
+    setLevelIndex(idx);
+    setUserMatrix(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
+    setFeedback(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
+    setAttempts(0);
+    setFocusedCell(null);
+    setView("game");
+    setGuideStage(0);
+    setInfoTab("story");
+    setMessage(lvl.intro);
+
+    // show tour again only when returning to level 1 (optional)
+    if (idx === 0) {
+      setShowTour(true);
+      setTourStep(0);
     }
   };
 
   const handleCellChange = (row, col, value) => {
-    // allow empty or integer
     if (value === "" || value === "-" || /^-?\d+$/.test(value)) {
       setUserMatrix((prev) =>
-        prev.map((r, i) =>
-          r.map((cell, j) => (i === row && j === col ? value : cell))
-        )
+        prev.map((r, i) => r.map((cell, j) => (i === row && j === col ? value : cell)))
       );
+      setFocusedCell({ row, col });
     }
   };
 
@@ -263,6 +359,7 @@ const MatrixCandyMixer = () => {
         })
       )
     );
+    setFocusedCell({ row, col });
   };
 
   const checkAnswer = () => {
@@ -281,9 +378,8 @@ const MatrixCandyMixer = () => {
         } else {
           const userVal = parseInt(valStr, 10);
           const correctVal = correctMatrix[i][j];
-          if (userVal === correctVal) {
-            fbRow.push("correct");
-          } else {
+          if (userVal === correctVal) fbRow.push("correct");
+          else {
             fbRow.push("wrong");
             allCorrect = false;
           }
@@ -295,9 +391,8 @@ const MatrixCandyMixer = () => {
     setFeedback(newFeedback);
 
     if (!allFilled) {
-      setMessage(
-        "Fill every candy box first. Empty boxes are marked with a light outline."
-      );
+      setMessage("Fill every candy box first. Empty boxes are marked with a light outline.");
+      playVoice("fillAll");
       setShake(true);
       setTimeout(() => setShake(false), 400);
       return;
@@ -305,45 +400,38 @@ const MatrixCandyMixer = () => {
 
     if (allCorrect) {
       setView("win");
+      playVoice("correct");
     } else {
       setAttempts((a) => a + 1);
       setMessage(
-        "Some boxes are wrong. Red boxes need fixing. Try changing those numbers and check again!"
+        "Some boxes are wrong. Red boxes need fixing. Check A and B for those positions and try again!"
       );
+      playVoice("wrong");
       setShake(true);
       setTimeout(() => setShake(false), 400);
     }
   };
 
   const giveHint = () => {
-    // fill first wrong or empty cell
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
         const correctVal = correctMatrix[i][j];
         const userStr = userMatrix[i][j];
         const isEmpty = userStr === "" || userStr === "-";
-        const isWrong =
-          !isEmpty && parseInt(userStr, 10) !== correctVal;
+        const isWrong = !isEmpty && parseInt(userStr, 10) !== correctVal;
 
         if (isEmpty || isWrong) {
           setUserMatrix((prev) =>
-            prev.map((r, ri) =>
-              r.map((c, cj) =>
-                ri === i && cj === j ? String(correctVal) : c
-              )
-            )
+            prev.map((r, ri) => r.map((c, cj) => (ri === i && cj === j ? String(correctVal) : c)))
           );
           setFeedback((prev) =>
-            prev.map((r, ri) =>
-              r.map((c, cj) =>
-                ri === i && cj === j ? "correct" : c
-              )
-            )
+            prev.map((r, ri) => r.map((c, cj) => (ri === i && cj === j ? "correct" : c)))
           );
           setFocusedCell({ row: i, col: j });
           setMessage(
-            `Hint: for this box we did ${currentLevel.A[i][j]} ${opSymbol} ${currentLevel.B[i][j]} = ${correctVal}. Try to do the same pattern in the other boxes.`
+            `Hint: for this box we did ${currentLevel.A[i][j]} ${opSymbol} ${currentLevel.B[i][j]} = ${correctVal}. Use the same idea for the other boxes.`
           );
+          playVoice("hint");
           return;
         }
       }
@@ -360,11 +448,131 @@ const MatrixCandyMixer = () => {
     return { row, col, a, b, result };
   }, [focusedCell, currentLevel, correctMatrix]);
 
+  const handleNextGuide = () => {
+    setGuideStage((prev) => {
+      const next = prev + 1;
+
+      if (next === 1) {
+        handleChangeTab("story");
+        setMessage(
+          "Think of matrix A and B as two candy trays. Each position is a candy box in the same place on both trays."
+        );
+      } else if (next === 2) {
+        handleChangeTab("how");
+        setMessage(
+          "Tap a result box, look at the same box in A and B, then do A box " +
+            opSymbol +
+            " B box. Type the answer or use the arrows."
+        );
+      } else if (next === 3) {
+        handleChangeTab("rule");
+        setMessage(
+          "The math rule is: result[i][j] = A[i][j] " +
+            opSymbol +
+            " B[i][j]. Same row, same column, same friends."
+        );
+      } else if (next === 4) {
+        setMessage("Now you try! Fill all the RESULT boxes and then press Check Candy Grid.");
+      }
+
+      return next > 4 ? 4 : next;
+    });
+  };
+
+  // ✅ Guided Tour steps (visual overlay + highlight)
+  const TOUR_STEPS = [
+    {
+      title: "Welcome!",
+      text:
+        "Welcome to Matrix Candy Mixer! Every number you see is candies in a box.",
+      target: "header",
+      bubblePos: "bottom",
+    },
+    {
+      title: "Matrix A",
+      text: "This is Matrix A (candy tray A). Each number is candies in that box.",
+      target: "matrixA",
+      bubblePos: "bottom",
+    },
+    {
+      title: "Matrix B",
+      text: "This is Matrix B (candy tray B). Same positions match with A.",
+      target: "matrixB",
+      bubblePos: "bottom",
+    },
+    {
+      title: "Result Grid",
+      text:
+        "Fill the RESULT grid by combining candies in the SAME position: top-left with top-left, etc.",
+      target: "result",
+      bubblePos: "top",
+    },
+    {
+      title: "Check Your Answer",
+      text:
+        "When you finish, press “Check Candy Grid”. If you need help, press Hint.",
+      target: "actions",
+      bubblePos: "top",
+    },
+  ];
+
+  const currentTour = TOUR_STEPS[tourStep];
+
+  // START SCREEN
+  if (!hasStarted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 px-4">
+        <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full text-center border-4 border-pink-100">
+          <div className="inline-flex bg-pink-100 p-4 rounded-full mb-4 text-pink-500">
+            <Grid3x3 size={44} />
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-800">
+            Matrix Candy Mixer
+          </h1>
+          <p className="mt-2 text-slate-600 text-sm sm:text-base">
+            Press Start to enable sound and begin the guided intro.
+          </p>
+
+          <button
+            onClick={async () => {
+              const ok = await unlock();
+              setHasStarted(true);
+
+              // Start the guided tour
+              setShowTour(true);
+              setTourStep(0);
+
+              // Play intro voice after unlocking
+              if (ok) playVoice("intro");
+
+              // Put your text intro in the tutor bubble too
+              setMessage(
+                "Welcome to Matrix Candy Mixer! Every number you see is candies in a box. Matrix A is candy tray A, and Matrix B is candy tray B. Your job is to fill the result grid by combining the candies in the same position. Let’s see how many candies we get in each box!"
+              );
+            }}
+            className="mt-6 w-full bg-pink-500 text-white py-3.5 sm:py-4 rounded-2xl font-bold text-lg sm:text-xl shadow-lg hover:bg-pink-600 transition-colors flex items-center justify-center gap-2"
+          >
+            <Volume2 size={22} />
+            Start
+          </button>
+
+          <p className="mt-3 text-[11px] text-slate-400">
+            (Browsers require a tap/click before playing audio.)
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // ---------- RENDER ----------
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800 overflow-x-hidden">
       {/* HEADER */}
-      <header className="bg-white px-4 sm:px-6 py-3 sm:py-4 shadow-sm z-50 flex justify-between items-center sticky top-0">
+      <header
+        data-tour="header"
+        className="bg-white px-4 sm:px-6 py-3 sm:py-4 shadow-sm z-50 flex justify-between items-center sticky top-0"
+      >
         <div className="flex items-center gap-2">
           <div className="bg-pink-500 p-2 rounded-lg">
             <Home size={20} className="text-white" />
@@ -399,12 +607,12 @@ const MatrixCandyMixer = () => {
       {/* GAME VIEW */}
       {view === "game" && (
         <div className="flex-1 flex flex-col md:flex-row max-w-5xl mx-auto w-full">
-          {/* LEFT: tutor + explanation */}
+          {/* LEFT */}
           <div className="w-full md:w-[380px] bg-white border-b md:border-b-0 md:border-r border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:shadow-none flex flex-col">
             <div className="flex-1 px-4 sm:px-6 py-5 sm:py-6 flex flex-col justify-between">
               <div>
                 {/* Tutor bubble */}
-                <div className="flex gap-3 sm:gap-4 mb-5 sm:mb-6">
+                <div className="flex gap-3 sm:gap-4 mb-4 sm:mb-5">
                   <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-pink-500 flex items-center justify-center text-pink-50 font-bold text-xl border-4 border-white shadow-lg shrink-0">
                     🍬
                   </div>
@@ -413,45 +621,36 @@ const MatrixCandyMixer = () => {
                   </div>
                 </div>
 
-                {/* Concept card */}
-                <div className="bg-pink-50 rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6 text-xs sm:text-sm text-pink-900">
-                  <p className="font-semibold mb-1">
-                    How do we add or subtract matrices?
-                  </p>
-                  <p>
-                    We only mix boxes that are in the{" "}
-                    <span className="font-semibold">
-                      same row and same column
-                    </span>
-                    . So top-left with top-left, top-right with top-right, and
-                    so on. Each box is like a candy jar.
-                  </p>
-                  <p className="mt-1.5">
-                    For each position (i, j):{" "}
-                    <span className="font-mono font-semibold">
-                      result[i][j] = A[i][j] {opSymbol} B[i][j]
-                    </span>
-                    .
-                  </p>
-                </div>
+                <InfoTabs
+                  activeTab={infoTab}
+                  onChangeTab={handleChangeTab}
+                  opSymbol={opSymbol}
+                  currentLevel={currentLevel}
+                />
 
-                {/* Focused cell helper */}
+                {guideStage < 4 && (
+                  <div className="mt-2 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={handleNextGuide}
+                      className="inline-flex items-center gap-1.5 bg-pink-500 text-white px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold shadow-md active:scale-95"
+                    >
+                      Next tip
+                      <ArrowRight size={14} />
+                    </button>
+                  </div>
+                )}
+
                 {focusedInfo && (
-                  <div className="bg-slate-900 text-slate-50 rounded-2xl p-3 text-xs sm:text-sm">
+                  <div className="bg-slate-900 text-slate-50 rounded-2xl p-3 text-xs sm:text-sm mt-4">
                     <p className="font-semibold mb-1">
                       You are editing box (row {focusedInfo.row + 1}, column{" "}
                       {focusedInfo.col + 1})
                     </p>
                     <p>
-                      A box has{" "}
-                      <span className="font-mono">
-                        {focusedInfo.a}
-                      </span>{" "}
+                      A box has <span className="font-mono">{focusedInfo.a}</span>{" "}
                       candies, B box has{" "}
-                      <span className="font-mono">
-                        {focusedInfo.b}
-                      </span>
-                      .
+                      <span className="font-mono">{focusedInfo.b}</span>.
                     </p>
                     <p className="mt-1">
                       So we do:{" "}
@@ -461,12 +660,15 @@ const MatrixCandyMixer = () => {
                       </span>
                       .
                     </p>
+                    <p className="mt-1 text-[11px] text-slate-300">
+                      Use the arrows under the box to gently move the number up or down.
+                    </p>
                   </div>
                 )}
               </div>
 
               {/* Actions */}
-              <div className="mt-4 space-y-3 sm:space-y-4">
+              <div data-tour="actions" className="mt-4 space-y-3 sm:space-y-4">
                 <button
                   onClick={checkAnswer}
                   className="w-full bg-pink-500 text-white py-3.5 sm:py-4 rounded-2xl font-bold text-lg sm:text-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
@@ -493,14 +695,13 @@ const MatrixCandyMixer = () => {
                 </div>
 
                 <p className="text-[11px] text-slate-400 text-center">
-                  Attempts this level:{" "}
-                  <span className="font-semibold">{attempts}</span>
+                  Attempts this level: <span className="font-semibold">{attempts}</span>
                 </p>
               </div>
             </div>
           </div>
 
-          {/* RIGHT: matrices board */}
+          {/* RIGHT */}
           <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-8 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
             <div className="mb-4 sm:mb-6 text-center">
               <p className="text-xs sm:text-sm font-semibold text-pink-200 uppercase tracking-wide">
@@ -521,45 +722,46 @@ const MatrixCandyMixer = () => {
               }`}
             >
               <div className="min-w-[260px] flex flex-col gap-3 sm:gap-4 items-center">
-                {/* Equation row: A op B = Result */}
                 <div className="flex items-center justify-center gap-2 sm:gap-4">
-                  {/* Matrix A */}
-                  <MatrixDisplay
-                    label="A"
-                    matrix={currentLevel.A}
-                    color="from-sky-400 to-sky-500"
-                  />
+                  <div data-tour="matrixA">
+                    <MatrixDisplay
+                      label="A"
+                      matrix={currentLevel.A}
+                      color="from-sky-400 to-sky-500"
+                    />
+                  </div>
+
                   <span className="text-white font-bold text-xl sm:text-2xl">
                     {opSymbol}
                   </span>
-                  {/* Matrix B */}
-                  <MatrixDisplay
-                    label="B"
-                    matrix={currentLevel.B}
-                    color="from-emerald-400 to-emerald-500"
-                  />
-                  <span className="text-white font-bold text-xl sm:text-2xl">
-                    =
-                  </span>
-                  {/* Result (editable) */}
-                  <ResultMatrix
-                    matrix={userMatrix}
-                    feedback={feedback}
-                    onCellChange={handleCellChange}
-                    onNudge={nudgeCell}
-                    onFocusCell={(r, c) => setFocusedCell({ row: r, col: c })}
-                  />
+
+                  <div data-tour="matrixB">
+                    <MatrixDisplay
+                      label="B"
+                      matrix={currentLevel.B}
+                      color="from-emerald-400 to-emerald-500"
+                    />
+                  </div>
+
+                  <span className="text-white font-bold text-xl sm:text-2xl">=</span>
+
+                  <div data-tour="result">
+                    <ResultMatrix
+                      matrix={userMatrix}
+                      feedback={feedback}
+                      onCellChange={handleCellChange}
+                      onNudge={nudgeCell}
+                      onFocusCell={(r, c) => setFocusedCell({ row: r, col: c })}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="mt-3 text-[11px] sm:text-xs text-slate-300 text-center max-w-xs space-y-1">
               <p>
-                Remember:{" "}
-                <span className="font-semibold">
-                  same place, same friends
-                </span>
-                . Top-left with top-left, bottom-right with bottom-right.
+                Remember: <span className="font-semibold">same place, same friends</span>. Top-left with top-left,
+                bottom-right with bottom-right.
               </p>
             </div>
           </div>
@@ -581,9 +783,7 @@ const MatrixCandyMixer = () => {
               <span className="font-semibold">
                 A {opSymbol} B
               </span>
-              . You just did matrix{" "}
-              {currentLevel.op === "add" ? "addition" : "subtraction"} like a
-              pro.
+              .
             </p>
 
             <div className="flex justify-center gap-2 mb-6 sm:mb-8">
@@ -607,50 +807,158 @@ const MatrixCandyMixer = () => {
               Next Level
               <ArrowRight size={20} />
             </button>
-            <button
-              onClick={() => {
-                setView("game");
-                setAttempts(0);
-                setMessage(currentLevel.intro);
-              }}
-              className="mt-3 sm:mt-4 text-slate-400 font-bold text-xs sm:text-sm hover:text-slate-600"
-            >
-              Replay Level
-            </button>
-
-            <p className="mt-4 text-[11px] text-slate-400">
-              Stars this level: {starsThisLevel} / 3 · Total: {totalStars} /{" "}
-              {totalMaxStars}
-            </p>
           </div>
         </div>
       )}
 
-      {/* extra CSS for shake animation */}
+      {/* ✅ TOUR OVERLAY */}
+      {showTour && view === "game" && (
+        <TourOverlay
+          step={tourStep}
+          total={TOUR_STEPS.length}
+          title={currentTour.title}
+          text={currentTour.text}
+          targetSelector={`[data-tour="${currentTour.target}"]`}
+          onClose={() => setShowTour(false)}
+          onNext={() => {
+            if (tourStep < TOUR_STEPS.length - 1) setTourStep((s) => s + 1);
+            else setShowTour(false);
+          }}
+          onPrev={() => setTourStep((s) => Math.max(0, s - 1))}
+        />
+      )}
+
+      {/* shake animation */}
       <style>{`
         @keyframes shake-candy {
           0%, 100% { transform: translateX(0); }
           25% { transform: translateX(-6px); }
           75% { transform: translateX(6px); }
         }
-        .animate-shake {
-          animation: shake-candy 0.35s ease-in-out;
-        }
+        .animate-shake { animation: shake-candy 0.35s ease-in-out; }
       `}</style>
     </div>
   );
 };
 
-// ---------- Presentational subcomponents ----------
+// ---------- TOUR OVERLAY COMPONENT ----------
+const TourOverlay = ({
+  step,
+  total,
+  title,
+  text,
+  targetSelector,
+  onClose,
+  onNext,
+  onPrev,
+}) => {
+  const [rect, setRect] = useState(null);
 
+  useEffect(() => {
+    const measure = () => {
+      const el = document.querySelector(targetSelector);
+      if (!el) return setRect(null);
+      const r = el.getBoundingClientRect();
+      setRect({
+        top: r.top,
+        left: r.left,
+        width: r.width,
+        height: r.height,
+      });
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    window.addEventListener("scroll", measure, true);
+    return () => {
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", measure, true);
+    };
+  }, [targetSelector]);
+
+  return (
+    <div className="fixed inset-0 z-[9999]">
+      {/* dark layer */}
+      <div className="absolute inset-0 bg-black/60" />
+
+      {/* spotlight */}
+      {rect && (
+        <div
+          className="absolute rounded-2xl border-4 border-pink-400 shadow-[0_0_0_9999px_rgba(0,0,0,0.6)]"
+          style={{
+            top: Math.max(8, rect.top - 8),
+            left: Math.max(8, rect.left - 8),
+            width: Math.min(window.innerWidth - 16, rect.width + 16),
+            height: rect.height + 16,
+          }}
+        />
+      )}
+
+      {/* bubble */}
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-6 w-[min(560px,calc(100%-24px))]">
+        <div className="bg-white rounded-3xl shadow-2xl border-4 border-pink-100 p-4 sm:p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">
+                Guided Intro {step + 1} / {total}
+              </p>
+              <h3 className="text-lg sm:text-xl font-black text-slate-800">
+                {title}
+              </h3>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95"
+              aria-label="Close"
+              type="button"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          <p className="mt-2 text-slate-700 text-sm sm:text-base">{text}</p>
+
+          <div className="mt-4 flex items-center justify-between">
+            <button
+              onClick={onPrev}
+              disabled={step === 0}
+              className={`px-3 py-2 rounded-xl font-bold text-sm active:scale-95 ${
+                step === 0
+                  ? "bg-slate-100 text-slate-300 cursor-not-allowed"
+                  : "bg-slate-900 text-white"
+              }`}
+              type="button"
+            >
+              Back
+            </button>
+
+            <button
+              onClick={onNext}
+              className="px-4 py-2 rounded-xl font-black text-sm bg-pink-500 text-white shadow-lg hover:bg-pink-600 active:scale-95 flex items-center gap-2"
+              type="button"
+            >
+              {step === total - 1 ? "Start Playing" : "Next"}
+              <ArrowRight size={18} />
+            </button>
+          </div>
+
+          <p className="mt-2 text-[11px] text-slate-400">
+            Tip: You can close this anytime and keep playing.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---------- Presentational subcomponents ----------
 const MatrixDisplay = ({ label, matrix, color }) => {
   return (
     <div className="flex flex-col items-center gap-1">
       <span className="text-[11px] text-slate-300 mb-0.5">Matrix {label}</span>
-      <div
-        className={`inline-flex rounded-xl bg-gradient-to-br ${color} px-1.5 py-1 shadow-lg`}
-      >
-        <div className="border-2 border-white/40 rounded-lg px-2 py-1 text-xs sm:text-sm text-white font-mono grid gap-1"
+      <div className={`inline-flex rounded-xl bg-gradient-to-br ${color} px-1.5 py-1 shadow-lg`}>
+        <div
+          className="border-2 border-white/40 rounded-lg px-2 py-1 text-xs sm:text-sm text-white font-mono grid gap-1"
           style={{
             gridTemplateColumns: `repeat(${matrix[0].length}, minmax(0, 1fr))`,
           }}
@@ -668,19 +976,11 @@ const MatrixDisplay = ({ label, matrix, color }) => {
   );
 };
 
-const ResultMatrix = ({
-  matrix,
-  feedback,
-  onCellChange,
-  onNudge,
-  onFocusCell,
-}) => {
-  const rows = matrix.length;
+const ResultMatrix = ({ matrix, feedback, onCellChange, onNudge, onFocusCell }) => {
   const cols = matrix[0].length;
 
   const cellClass = (fb) => {
-    if (fb === "correct")
-      return "border-emerald-400 bg-emerald-50 text-emerald-700";
+    if (fb === "correct") return "border-emerald-400 bg-emerald-50 text-emerald-700";
     if (fb === "wrong") return "border-rose-400 bg-rose-50 text-rose-700";
     if (fb === "empty") return "border-slate-300 bg-slate-50 text-slate-700";
     return "border-slate-200 bg-slate-50 text-slate-700";
@@ -692,9 +992,7 @@ const ResultMatrix = ({
       <div className="inline-flex rounded-xl bg-slate-900 px-1.5 py-1 shadow-lg">
         <div
           className="border-2 border-slate-600 rounded-lg px-2 py-1 grid gap-1"
-          style={{
-            gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-          }}
+          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
         >
           {matrix.map((row, i) =>
             row.map((val, j) => (
@@ -707,9 +1005,7 @@ const ResultMatrix = ({
                 <input
                   type="text"
                   value={val}
-                  onChange={(e) =>
-                    onCellChange(i, j, e.target.value.trim())
-                  }
+                  onChange={(e) => onCellChange(i, j, e.target.value.trim())}
                   onFocus={() => onFocusCell(i, j)}
                   className="w-10 sm:w-12 bg-transparent text-center text-xs sm:text-sm font-mono outline-none"
                 />
@@ -739,6 +1035,100 @@ const ResultMatrix = ({
             ))
           )}
         </div>
+      </div>
+    </div>
+  );
+};
+
+const InfoTabs = ({ activeTab, onChangeTab, opSymbol, currentLevel }) => {
+  const firstA = currentLevel.A[0][0];
+  const firstB = currentLevel.B[0][0];
+  const example = currentLevel.op === "add" ? firstA + firstB : firstA - firstB;
+
+  const tabLabel = (tab) => {
+    if (tab === "story") return "Story";
+    if (tab === "how") return "How to Play";
+    return "Matrix Rule";
+  };
+
+  return (
+    <div className="bg-pink-50 rounded-2xl p-3 sm:p-4 mb-3 sm:mb-4 text-xs sm:text-sm text-pink-900">
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <div className="inline-flex bg-white/70 rounded-full p-0.5">
+          {["story", "how", "rule"].map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => onChangeTab(tab)}
+              className={`px-2.5 sm:px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold transition-colors ${
+                activeTab === tab ? "bg-pink-500 text-white shadow-sm" : "text-pink-700 hover:bg-pink-100"
+              }`}
+            >
+              {tabLabel(tab)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {activeTab === "story" && (
+        <div className="space-y-1.5">
+          <p className="font-semibold">Imagine each matrix is a candy tray 🍬</p>
+          <p>
+            Matrix A shows how many candies are in each box of tray A. Matrix B shows candies in tray B. The result
+            matrix tells us how many candies are in each box after we{" "}
+            {opSymbol === "+" ? "put them together" : "take some away"}.
+          </p>
+          <p>
+            We never move candies between boxes. We only mix candies that live in the{" "}
+            <span className="font-semibold">same position</span>.
+          </p>
+        </div>
+      )}
+
+      {activeTab === "how" && (
+        <div className="space-y-1.5">
+          <p className="font-semibold">Step-by-step:</p>
+          <ol className="list-decimal list-inside space-y-0.5">
+            <li>Tap a box in the RESULT grid.</li>
+            <li>
+              Look at the matching box in A and in B. Think:{" "}
+              <span className="font-mono">
+                A box {opSymbol} B box = ?
+              </span>
+            </li>
+            <li>Type the answer or use the arrows to nudge the number.</li>
+            <li>Fill all boxes, then press “Check Candy Grid”.</li>
+          </ol>
+          <p className="mt-1">
+            If you are stuck, press <span className="font-semibold">Hint</span> to see one box solved.
+          </p>
+        </div>
+      )}
+
+      {activeTab === "rule" && (
+        <div className="space-y-1.5">
+          <p className="font-semibold">The matrix rule:</p>
+          <p>For each position (i, j) we only look at the numbers that sit in that same position in A and B.</p>
+          <p>
+            We use the rule:{" "}
+            <span className="font-mono font-semibold">
+              result[i][j] = A[i][j] {opSymbol} B[i][j]
+            </span>
+            .
+          </p>
+          <p>
+            This is called <span className="font-semibold">element-wise</span> addition or subtraction, because we work
+            box by box.
+          </p>
+        </div>
+      )}
+
+      <div className="mt-2 border-t border-pink-100 pt-2 bg-pink-100/60 rounded-xl px-2 py-1 font-mono text-[11px] sm:text-xs">
+        Example with the first box:{" "}
+        <span className="font-semibold">
+          {firstA} {opSymbol} {firstB} = {example}
+        </span>{" "}
+        👉 so result[1][1] = {example}
       </div>
     </div>
   );
