@@ -608,7 +608,7 @@ const MatrixCandyMixer = () => {
       {view === "game" && (
         <div className="flex-1 flex flex-col md:flex-row max-w-5xl mx-auto w-full">
           {/* LEFT */}
-          <div className="w-full md:w-[380px] bg-white border-b md:border-b-0 md:border-r border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:shadow-none flex flex-col">
+<div className="order-2 md:order-1 w-full md:w-[380px] bg-white border-t md:border-t-0 md:border-r border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:shadow-none flex flex-col">
             <div className="flex-1 px-4 sm:px-6 py-5 sm:py-6 flex flex-col justify-between">
               <div>
                 {/* Tutor bubble */}
@@ -702,7 +702,7 @@ const MatrixCandyMixer = () => {
           </div>
 
           {/* RIGHT */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-8 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+<div className="order-1 md:order-2 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-8 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
             <div className="mb-4 sm:mb-6 text-center">
               <p className="text-xs sm:text-sm font-semibold text-pink-200 uppercase tracking-wide">
                 Level {currentLevel.id} · {currentLevel.name}
