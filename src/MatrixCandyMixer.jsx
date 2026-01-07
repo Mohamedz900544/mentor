@@ -1,5 +1,5 @@
-// ✅ Drop-in upgrade: adds a visual guided tour + plays the intro voice line on Start
-// Put this whole file as src/MatrixCandyMixer.jsx (it includes everything)
+// src/MatrixCandyMixer.jsx
+// ✅ Drop-in upgrade: bigger computer view + guided tour + smarter guide + intro voice once
 
 import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
@@ -226,7 +226,6 @@ const computeAnswer = (level) => {
 };
 
 const MatrixCandyMixer = () => {
-  // ✅ Start screen + audio unlock + guided intro
   const [hasStarted, setHasStarted] = useState(false);
   const [showTour, setShowTour] = useState(true);
   const [tourStep, setTourStep] = useState(0);
@@ -250,6 +249,16 @@ const MatrixCandyMixer = () => {
   const [shake, setShake] = useState(false);
   const [infoTab, setInfoTab] = useState("story");
   const [guideStage, setGuideStage] = useState(0);
+
+  // remember if intro voice has played (localStorage)
+  const [introPlayed, setIntroPlayed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem("matrix_candy_intro_played") === "1";
+    } catch {
+      return false;
+    }
+  });
 
   const { play: playVoice, unlock } = useVoicePlayer();
 
@@ -278,17 +287,18 @@ const MatrixCandyMixer = () => {
     [playVoice]
   );
 
-  // Reset when level changes (only after start)
+  // when level changes, reset guidance text but DON'T replay intro if it was already played
   useEffect(() => {
     if (!hasStarted) return;
     setGuideStage(0);
     setInfoTab("story");
     setMessage(currentLevel.intro);
-    playVoice("intro");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levelIndex, hasStarted]);
+    if (!introPlayed) {
+      playVoice("intro");
+    }
+  }, [levelIndex, hasStarted, currentLevel.intro, introPlayed, playVoice]);
 
-  // Save progress when win
+  // save stars when win screen appears
   useEffect(() => {
     if (view !== "win") return;
     setProgress((prev) => {
@@ -314,7 +324,7 @@ const MatrixCandyMixer = () => {
     setGuideStage(0);
     setInfoTab("story");
     setMessage(lvl.intro);
-    playVoice("intro");
+    // intro sound is NOT replayed here (only once at the beginning)
   };
 
   const goNextLevel = () => {
@@ -333,7 +343,6 @@ const MatrixCandyMixer = () => {
     setInfoTab("story");
     setMessage(lvl.intro);
 
-    // show tour again only when returning to level 1 (optional)
     if (idx === 0) {
       setShowTour(true);
       setTourStep(0);
@@ -448,6 +457,7 @@ const MatrixCandyMixer = () => {
     return { row, col, a, b, result };
   }, [focusedCell, currentLevel, correctMatrix]);
 
+  // guide becomes more specific: it forces top-left cell and explains that operation concretely
   const handleNextGuide = () => {
     setGuideStage((prev) => {
       const next = prev + 1;
@@ -459,17 +469,20 @@ const MatrixCandyMixer = () => {
         );
       } else if (next === 2) {
         handleChangeTab("how");
+        // focus top-left cell and explain exactly what to do there
+        const a = currentLevel.A[0][0];
+        const b = currentLevel.B[0][0];
+        const res = correctMatrix[0][0];
+        setFocusedCell({ row: 0, col: 0 });
         setMessage(
-          "Tap a result box, look at the same box in A and B, then do A box " +
-            opSymbol +
-            " B box. Type the answer or use the arrows."
+          `Start with the top-left box. In A it has ${a} candies, in B it has ${b}. So we do ${a} ${opSymbol} ${b} = ${res}, and we write ${res} in that RESULT box.`
         );
       } else if (next === 3) {
         handleChangeTab("rule");
         setMessage(
-          "The math rule is: result[i][j] = A[i][j] " +
+          "Now repeat this for every box: always match A and B in the same row and same column, then do A box " +
             opSymbol +
-            " B[i][j]. Same row, same column, same friends."
+            " B box."
         );
       } else if (next === 4) {
         setMessage("Now you try! Fill all the RESULT boxes and then press Check Candy Grid.");
@@ -479,40 +492,32 @@ const MatrixCandyMixer = () => {
     });
   };
 
-  // ✅ Guided Tour steps (visual overlay + highlight)
   const TOUR_STEPS = [
     {
       title: "Welcome!",
-      text:
-        "Welcome to Matrix Candy Mixer! Every number you see is candies in a box.",
+      text: "Welcome to Matrix Candy Mixer! Every number you see is candies in a box.",
       target: "header",
-      bubblePos: "bottom",
     },
     {
       title: "Matrix A",
       text: "This is Matrix A (candy tray A). Each number is candies in that box.",
       target: "matrixA",
-      bubblePos: "bottom",
     },
     {
       title: "Matrix B",
       text: "This is Matrix B (candy tray B). Same positions match with A.",
       target: "matrixB",
-      bubblePos: "bottom",
     },
     {
       title: "Result Grid",
       text:
         "Fill the RESULT grid by combining candies in the SAME position: top-left with top-left, etc.",
       target: "result",
-      bubblePos: "top",
     },
     {
       title: "Check Your Answer",
-      text:
-        "When you finish, press “Check Candy Grid”. If you need help, press Hint.",
+      text: "When you finish, press “Check Candy Grid”. If you need help, press Hint.",
       target: "actions",
-      bubblePos: "top",
     },
   ];
 
@@ -538,15 +543,20 @@ const MatrixCandyMixer = () => {
             onClick={async () => {
               const ok = await unlock();
               setHasStarted(true);
-
-              // Start the guided tour
               setShowTour(true);
               setTourStep(0);
 
-              // Play intro voice after unlocking
-              if (ok) playVoice("intro");
+              // play intro ONLY once over the whole lifetime
+              if (ok && !introPlayed) {
+                playVoice("intro");
+                setIntroPlayed(true);
+                try {
+                  localStorage.setItem("matrix_candy_intro_played", "1");
+                } catch {
+                  // ignore
+                }
+              }
 
-              // Put your text intro in the tutor bubble too
               setMessage(
                 "Welcome to Matrix Candy Mixer! Every number you see is candies in a box. Matrix A is candy tray A, and Matrix B is candy tray B. Your job is to fill the result grid by combining the candies in the same position. Let’s see how many candies we get in each box!"
               );
@@ -606,9 +616,9 @@ const MatrixCandyMixer = () => {
 
       {/* GAME VIEW */}
       {view === "game" && (
-        <div className="flex-1 flex flex-col md:flex-row max-w-5xl mx-auto w-full">
-          {/* LEFT */}
-<div className="order-2 md:order-1 w-full md:w-[380px] bg-white border-t md:border-t-0 md:border-r border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:shadow-none flex flex-col">
+        <div className="flex-1 flex flex-col md:flex-row max-w-6xl mx-auto w-full">
+          {/* LEFT PANEL */}
+          <div className="order-2 md:order-1 w-full md:w-[380px] bg-white border-t md:border-t-0 md:border-r border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:shadow-none flex flex-col">
             <div className="flex-1 px-4 sm:px-6 py-5 sm:py-6 flex flex-col justify-between">
               <div>
                 {/* Tutor bubble */}
@@ -626,6 +636,8 @@ const MatrixCandyMixer = () => {
                   onChangeTab={handleChangeTab}
                   opSymbol={opSymbol}
                   currentLevel={currentLevel}
+                  focusedCell={focusedCell}
+                  correctMatrix={correctMatrix}
                 />
 
                 {guideStage < 4 && (
@@ -661,7 +673,8 @@ const MatrixCandyMixer = () => {
                       .
                     </p>
                     <p className="mt-1 text-[11px] text-slate-300">
-                      Use the arrows under the box to gently move the number up or down.
+                      Use the arrows under the box to gently move the number up or
+                      down.
                     </p>
                   </div>
                 )}
@@ -701,8 +714,8 @@ const MatrixCandyMixer = () => {
             </div>
           </div>
 
-          {/* RIGHT */}
-<div className="order-1 md:order-2 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-8 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+          {/* RIGHT – bigger "computer" view */}
+          <div className="order-1 md:order-2 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-8 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
             <div className="mb-4 sm:mb-6 text-center">
               <p className="text-xs sm:text-sm font-semibold text-pink-200 uppercase tracking-wide">
                 Level {currentLevel.id} · {currentLevel.name}
@@ -717,21 +730,22 @@ const MatrixCandyMixer = () => {
             </div>
 
             <div
-              className={`bg-slate-900/70 rounded-2xl shadow-xl p-3 sm:p-4 w-full max-w-xl overflow-x-auto ${
+              className={`bg-slate-900/70 rounded-3xl shadow-2xl p-4 sm:p-6 w-full max-w-5xl overflow-x-auto ${
                 shake ? "animate-shake" : ""
               }`}
             >
-              <div className="min-w-[260px] flex flex-col gap-3 sm:gap-4 items-center">
-                <div className="flex items-center justify-center gap-2 sm:gap-4">
+              <div className="min-w-[420px] md:min-w-[680px] min-h-[320px] md:min-h-[440px] flex flex-col gap-4 sm:gap-6 items-center justify-center">
+                <div className="flex items-center justify-center gap-4 sm:gap-6">
                   <div data-tour="matrixA">
                     <MatrixDisplay
                       label="A"
                       matrix={currentLevel.A}
                       color="from-sky-400 to-sky-500"
+  highlightCell={currentLevel.id === 1 ? focusedCell : null}
                     />
                   </div>
 
-                  <span className="text-white font-bold text-xl sm:text-2xl">
+                  <span className="text-white font-bold text-2xl sm:text-3xl">
                     {opSymbol}
                   </span>
 
@@ -740,10 +754,11 @@ const MatrixCandyMixer = () => {
                       label="B"
                       matrix={currentLevel.B}
                       color="from-emerald-400 to-emerald-500"
+  highlightCell={currentLevel.id === 1 ? focusedCell : null}
                     />
                   </div>
 
-                  <span className="text-white font-bold text-xl sm:text-2xl">=</span>
+                  <span className="text-white font-bold text-2xl sm:text-3xl">=</span>
 
                   <div data-tour="result">
                     <ResultMatrix
@@ -752,6 +767,7 @@ const MatrixCandyMixer = () => {
                       onCellChange={handleCellChange}
                       onNudge={nudgeCell}
                       onFocusCell={(r, c) => setFocusedCell({ row: r, col: c })}
+  focusedCell={currentLevel.id === 1 ? focusedCell : null}
                     />
                   </div>
                 </div>
@@ -760,8 +776,8 @@ const MatrixCandyMixer = () => {
 
             <div className="mt-3 text-[11px] sm:text-xs text-slate-300 text-center max-w-xs space-y-1">
               <p>
-                Remember: <span className="font-semibold">same place, same friends</span>. Top-left with top-left,
-                bottom-right with bottom-right.
+                Remember: <span className="font-semibold">same place, same friends</span>.
+                Top-left with top-left, bottom-right with bottom-right.
               </p>
             </div>
           </div>
@@ -811,7 +827,7 @@ const MatrixCandyMixer = () => {
         </div>
       )}
 
-      {/* ✅ TOUR OVERLAY */}
+      {/* TOUR OVERLAY */}
       {showTour && view === "game" && (
         <TourOverlay
           step={tourStep}
@@ -878,10 +894,8 @@ const TourOverlay = ({
 
   return (
     <div className="fixed inset-0 z-[9999]">
-      {/* dark layer */}
       <div className="absolute inset-0 bg-black/60" />
 
-      {/* spotlight */}
       {rect && (
         <div
           className="absolute rounded-2xl border-4 border-pink-400 shadow-[0_0_0_9999px_rgba(0,0,0,0.6)]"
@@ -894,7 +908,6 @@ const TourOverlay = ({
         />
       )}
 
-      {/* bubble */}
       <div className="absolute left-1/2 -translate-x-1/2 bottom-6 w-[min(560px,calc(100%-24px))]">
         <div className="bg-white rounded-3xl shadow-2xl border-4 border-pink-100 p-4 sm:p-5">
           <div className="flex items-start justify-between gap-3">
@@ -952,23 +965,36 @@ const TourOverlay = ({
 };
 
 // ---------- Presentational subcomponents ----------
-const MatrixDisplay = ({ label, matrix, color }) => {
+const MatrixDisplay = ({ label, matrix, color, highlightCell }) => {
   return (
     <div className="flex flex-col items-center gap-1">
       <span className="text-[11px] text-slate-300 mb-0.5">Matrix {label}</span>
-      <div className={`inline-flex rounded-xl bg-gradient-to-br ${color} px-1.5 py-1 shadow-lg`}>
+      <div className={`inline-flex rounded-2xl bg-gradient-to-br ${color} px-3 py-2 shadow-xl`}>
         <div
-          className="border-2 border-white/40 rounded-lg px-2 py-1 text-xs sm:text-sm text-white font-mono grid gap-1"
+          className="border-2 border-white/40 rounded-lg px-4 py-3 text-base sm:text-xl text-white font-mono grid gap-3"
           style={{
             gridTemplateColumns: `repeat(${matrix[0].length}, minmax(0, 1fr))`,
           }}
         >
           {matrix.map((row, i) =>
-            row.map((val, j) => (
-              <span key={`${i}-${j}`} className="text-center">
-                {val}
-              </span>
-            ))
+            row.map((val, j) => {
+              const isHighlight =
+                highlightCell &&
+                highlightCell.row === i &&
+                highlightCell.col === j;
+              return (
+                <span
+                  key={`${i}-${j}`}
+                  className={`text-center flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-md ${
+                    isHighlight
+                      ? "bg-white text-slate-800 font-bold shadow-md"
+                      : "bg-white/10"
+                  }`}
+                >
+                  {val}
+                </span>
+              );
+            })
           )}
         </div>
       </div>
@@ -976,7 +1002,14 @@ const MatrixDisplay = ({ label, matrix, color }) => {
   );
 };
 
-const ResultMatrix = ({ matrix, feedback, onCellChange, onNudge, onFocusCell }) => {
+const ResultMatrix = ({
+  matrix,
+  feedback,
+  onCellChange,
+  onNudge,
+  onFocusCell,
+  focusedCell,
+}) => {
   const cols = matrix[0].length;
 
   const cellClass = (fb) => {
@@ -989,50 +1022,60 @@ const ResultMatrix = ({ matrix, feedback, onCellChange, onNudge, onFocusCell }) 
   return (
     <div className="flex flex-col items-center gap-1">
       <span className="text-[11px] text-slate-300 mb-0.5">RESULT</span>
-      <div className="inline-flex rounded-xl bg-slate-900 px-1.5 py-1 shadow-lg">
+      <div className="inline-flex rounded-2xl bg-slate-900 px-2 py-2 shadow-xl">
         <div
-          className="border-2 border-slate-600 rounded-lg px-2 py-1 grid gap-1"
+          className="border-2 border-slate-600 rounded-lg px-3 py-2 grid gap-2"
           style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
         >
           {matrix.map((row, i) =>
-            row.map((val, j) => (
-              <div
-                key={`${i}-${j}`}
-                className={`flex flex-col items-center justify-center rounded-lg border px-1.5 py-1 ${cellClass(
-                  feedback[i][j]
-                )}`}
-              >
-                <input
-                  type="text"
-                  value={val}
-                  onChange={(e) => onCellChange(i, j, e.target.value.trim())}
-                  onFocus={() => onFocusCell(i, j)}
-                  className="w-10 sm:w-12 bg-transparent text-center text-xs sm:text-sm font-mono outline-none"
-                />
-                <div className="flex gap-1 mt-0.5">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onFocusCell(i, j);
-                      onNudge(i, j, -1);
-                    }}
-                    className="w-4 h-4 rounded-full bg-slate-800 text-[10px] text-white flex items-center justify-center active:scale-95"
-                  >
-                    <ChevronLeft size={10} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onFocusCell(i, j);
-                      onNudge(i, j, +1);
-                    }}
-                    className="w-4 h-4 rounded-full bg-slate-800 text-[10px] text-white flex items-center justify-center active:scale-95"
-                  >
-                    <ChevronRight size={10} />
-                  </button>
+            row.map((val, j) => {
+              const isFocused =
+                focusedCell &&
+                focusedCell.row === i &&
+                focusedCell.col === j;
+              return (
+                <div
+                  key={`${i}-${j}`}
+                  className={`flex flex-col items-center justify-center rounded-lg border px-2.5 py-2 ${cellClass(
+                    feedback[i][j]
+                  )} ${
+                    isFocused
+                      ? "ring-2 ring-amber-400 ring-offset-2 ring-offset-slate-900"
+                      : ""
+                  }`}
+                >
+                  <input
+                    type="text"
+                    value={val}
+                    onChange={(e) => onCellChange(i, j, e.target.value.trim())}
+                    onFocus={() => onFocusCell(i, j)}
+                    className="w-16 sm:w-20 bg-transparent text-center text-base sm:text-lg font-mono outline-none"
+                  />
+                  <div className="flex gap-1.5 mt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onFocusCell(i, j);
+                        onNudge(i, j, -1);
+                      }}
+                      className="w-5 h-5 rounded-full bg-slate-800 text-[10px] text-white flex items-center justify-center active:scale-95"
+                    >
+                      <ChevronLeft size={10} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onFocusCell(i, j);
+                        onNudge(i, j, +1);
+                      }}
+                      className="w-5 h-5 rounded-full bg-slate-800 text-[10px] text-white flex items-center justify-center active:scale-95"
+                    >
+                      <ChevronRight size={10} />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
@@ -1040,10 +1083,26 @@ const ResultMatrix = ({ matrix, feedback, onCellChange, onNudge, onFocusCell }) 
   );
 };
 
-const InfoTabs = ({ activeTab, onChangeTab, opSymbol, currentLevel }) => {
-  const firstA = currentLevel.A[0][0];
-  const firstB = currentLevel.B[0][0];
-  const example = currentLevel.op === "add" ? firstA + firstB : firstA - firstB;
+const InfoTabs = ({
+  activeTab,
+  onChangeTab,
+  opSymbol,
+  currentLevel,
+  focusedCell,
+  correctMatrix,
+}) => {
+  // use the currently focused box as the example; fall back to top-left
+  const row = focusedCell ? focusedCell.row : 0;
+  const col = focusedCell ? focusedCell.col : 0;
+
+  const aVal = currentLevel.A[row][col];
+  const bVal = currentLevel.B[row][col];
+  const example =
+    correctMatrix && correctMatrix[row]
+      ? correctMatrix[row][col]
+      : currentLevel.op === "add"
+      ? aVal + bVal
+      : aVal - bVal;
 
   const tabLabel = (tab) => {
     if (tab === "story") return "Story";
@@ -1061,7 +1120,9 @@ const InfoTabs = ({ activeTab, onChangeTab, opSymbol, currentLevel }) => {
               type="button"
               onClick={() => onChangeTab(tab)}
               className={`px-2.5 sm:px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold transition-colors ${
-                activeTab === tab ? "bg-pink-500 text-white shadow-sm" : "text-pink-700 hover:bg-pink-100"
+                activeTab === tab
+                  ? "bg-pink-500 text-white shadow-sm"
+                  : "text-pink-700 hover:bg-pink-100"
               }`}
             >
               {tabLabel(tab)}
@@ -1074,12 +1135,14 @@ const InfoTabs = ({ activeTab, onChangeTab, opSymbol, currentLevel }) => {
         <div className="space-y-1.5">
           <p className="font-semibold">Imagine each matrix is a candy tray 🍬</p>
           <p>
-            Matrix A shows how many candies are in each box of tray A. Matrix B shows candies in tray B. The result
-            matrix tells us how many candies are in each box after we{" "}
+            Matrix A shows how many candies are in each box of tray A. Matrix B
+            shows candies in tray B. The result matrix tells us how many candies
+            are in each box after we{" "}
             {opSymbol === "+" ? "put them together" : "take some away"}.
           </p>
           <p>
-            We never move candies between boxes. We only mix candies that live in the{" "}
+            We never move candies between boxes. We only mix candies that live
+            in the{" "}
             <span className="font-semibold">same position</span>.
           </p>
         </div>
@@ -1100,7 +1163,8 @@ const InfoTabs = ({ activeTab, onChangeTab, opSymbol, currentLevel }) => {
             <li>Fill all boxes, then press “Check Candy Grid”.</li>
           </ol>
           <p className="mt-1">
-            If you are stuck, press <span className="font-semibold">Hint</span> to see one box solved.
+            If you are stuck, press <span className="font-semibold">Hint</span>{" "}
+            to see one box solved.
           </p>
         </div>
       )}
@@ -1108,7 +1172,10 @@ const InfoTabs = ({ activeTab, onChangeTab, opSymbol, currentLevel }) => {
       {activeTab === "rule" && (
         <div className="space-y-1.5">
           <p className="font-semibold">The matrix rule:</p>
-          <p>For each position (i, j) we only look at the numbers that sit in that same position in A and B.</p>
+          <p>
+            For each position (i, j) we only look at the numbers that sit in that
+            same position in A and B.
+          </p>
           <p>
             We use the rule:{" "}
             <span className="font-mono font-semibold">
@@ -1117,18 +1184,18 @@ const InfoTabs = ({ activeTab, onChangeTab, opSymbol, currentLevel }) => {
             .
           </p>
           <p>
-            This is called <span className="font-semibold">element-wise</span> addition or subtraction, because we work
-            box by box.
+            This is called <span className="font-semibold">element-wise</span>{" "}
+            addition or subtraction, because we work box by box.
           </p>
         </div>
       )}
 
       <div className="mt-2 border-t border-pink-100 pt-2 bg-pink-100/60 rounded-xl px-2 py-1 font-mono text-[11px] sm:text-xs">
-        Example with the first box:{" "}
+        Example with this box (row {row + 1}, column {col + 1}):{" "}
         <span className="font-semibold">
-          {firstA} {opSymbol} {firstB} = {example}
+          {aVal} {opSymbol} {bVal} = {example}
         </span>{" "}
-        👉 so result[1][1] = {example}
+        👉 so result[{row + 1}][{col + 1}] = {example}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-.max-w-5xl{
+.max-w-6xl{
 max-width: 100%;
 }
 /* :root {
