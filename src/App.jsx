@@ -12,6 +12,7 @@ import MatrixPortalQuest from "./MatrixPortalQuest";
 import MatrixCandyMixer from "./MatrixCandyMixer";
 import FarmMatrixAnimals from "./FarmMatrixAnimals";
 import MatrixTileDrop from "./MatrixTileDrop";
+import FractionGame from "./FractionGame";
 
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/Matrix-Candy-Mixer" element={<MatrixCandyMixer />} />
         <Route path="/Farm-Matrix-Animals" element={<FarmMatrixAnimals />} />
         <Route path="/MatrixTile-Drop" element={<MatrixTileDrop/>} />
+        <Route path="/new-game" element={<FractionGame/>} />
 
       </Routes>
     </BrowserRouter>

@@ -1,5 +1,7 @@
 // src/MatrixCandyMixer.jsx
-// ✅ Drop-in upgrade: bigger computer view + guided tour + smarter guide + intro voice once
+// ✅ Same logic + guides + sounds
+// ✅ UI simplified to kid-friendly like before (flat, bright, less panels)
+// ✅ Kept: Start screen + Tour overlay + Guide stages + Audio unlock/intro once + Hint/Check/Reset + Focus highlight (Level 1)
 
 import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
@@ -324,7 +326,6 @@ const MatrixCandyMixer = () => {
     setGuideStage(0);
     setInfoTab("story");
     setMessage(lvl.intro);
-    // intro sound is NOT replayed here (only once at the beginning)
   };
 
   const goNextLevel = () => {
@@ -469,7 +470,6 @@ const MatrixCandyMixer = () => {
         );
       } else if (next === 2) {
         handleChangeTab("how");
-        // focus top-left cell and explain exactly what to do there
         const a = currentLevel.A[0][0];
         const b = currentLevel.B[0][0];
         const res = correctMatrix[0][0];
@@ -493,49 +493,26 @@ const MatrixCandyMixer = () => {
   };
 
   const TOUR_STEPS = [
-    {
-      title: "Welcome!",
-      text: "Welcome to Matrix Candy Mixer! Every number you see is candies in a box.",
-      target: "header",
-    },
-    {
-      title: "Matrix A",
-      text: "This is Matrix A (candy tray A). Each number is candies in that box.",
-      target: "matrixA",
-    },
-    {
-      title: "Matrix B",
-      text: "This is Matrix B (candy tray B). Same positions match with A.",
-      target: "matrixB",
-    },
-    {
-      title: "Result Grid",
-      text:
-        "Fill the RESULT grid by combining candies in the SAME position: top-left with top-left, etc.",
-      target: "result",
-    },
-    {
-      title: "Check Your Answer",
-      text: "When you finish, press “Check Candy Grid”. If you need help, press Hint.",
-      target: "actions",
-    },
+    { title: "Welcome!", text: "Every number is candies in a box.", target: "header" },
+    { title: "Matrix A", text: "This is tray A. Same positions matter.", target: "matrixA" },
+    { title: "Matrix B", text: "This is tray B. Match with A cell by cell.", target: "matrixB" },
+    { title: "Result Grid", text: "Fill RESULT using the same position.", target: "result" },
+    { title: "Buttons", text: "Check your work or ask for a Hint.", target: "actions" },
   ];
 
   const currentTour = TOUR_STEPS[tourStep];
 
-  // START SCREEN
+  // START SCREEN (simple)
   if (!hasStarted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 px-4">
-        <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full text-center border-4 border-pink-100">
-          <div className="inline-flex bg-pink-100 p-4 rounded-full mb-4 text-pink-500">
-            <Grid3x3 size={44} />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-100 to-pink-100 px-4">
+        <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full text-center border-2 border-pink-100">
+          <div className="inline-flex bg-pink-100 p-3 rounded-full mb-4 text-pink-600">
+            <Grid3x3 size={36} />
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-800">
-            Matrix Candy Mixer
-          </h1>
-          <p className="mt-2 text-slate-600 text-sm sm:text-base">
+          <h1 className="text-2xl font-extrabold text-slate-800">Matrix Candy Mixer</h1>
+          <p className="mt-2 text-slate-600 text-sm">
             Press Start to enable sound and begin the guided intro.
           </p>
 
@@ -552,18 +529,16 @@ const MatrixCandyMixer = () => {
                 setIntroPlayed(true);
                 try {
                   localStorage.setItem("matrix_candy_intro_played", "1");
-                } catch {
-                  // ignore
-                }
+                } catch {}
               }
 
               setMessage(
-                "Welcome to Matrix Candy Mixer! Every number you see is candies in a box. Matrix A is candy tray A, and Matrix B is candy tray B. Your job is to fill the result grid by combining the candies in the same position. Let’s see how many candies we get in each box!"
+                "Welcome to Matrix Candy Mixer! Every number you see is candies in a box. Matrix A is candy tray A, and Matrix B is candy tray B. Your job is to fill the result grid by combining the candies in the same position."
               );
             }}
-            className="mt-6 w-full bg-pink-500 text-white py-3.5 sm:py-4 rounded-2xl font-bold text-lg sm:text-xl shadow-lg hover:bg-pink-600 transition-colors flex items-center justify-center gap-2"
+            className="mt-6 w-full bg-pink-500 text-white py-3.5 rounded-xl font-bold text-lg shadow hover:bg-pink-600 transition-colors flex items-center justify-center gap-2"
           >
-            <Volume2 size={22} />
+            <Volume2 size={20} />
             Start
           </button>
 
@@ -577,38 +552,38 @@ const MatrixCandyMixer = () => {
 
   // ---------- RENDER ----------
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800 overflow-x-hidden">
-      {/* HEADER */}
+    <div className="min-h-screen bg-blue-50 flex flex-col font-sans text-slate-800 overflow-x-hidden">
+      {/* HEADER (simple) */}
       <header
         data-tour="header"
-        className="bg-white px-4 sm:px-6 py-3 sm:py-4 shadow-sm z-50 flex justify-between items-center sticky top-0"
+        className="bg-white px-4 py-3 shadow-sm flex justify-between items-center sticky top-0 z-50 border-b border-slate-100"
       >
         <div className="flex items-center gap-2">
           <div className="bg-pink-500 p-2 rounded-lg">
-            <Home size={20} className="text-white" />
+            <Home size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
               Sparvi Math Lab
             </p>
-            <h1 className="font-black text-base sm:text-lg tracking-tight flex items-center gap-1">
-              <Grid3x3 size={18} className="text-pink-500" />
+            <h1 className="font-extrabold text-sm sm:text-base flex items-center gap-1">
+              <Grid3x3 size={16} className="text-pink-500" />
               Matrix Candy Mixer
             </h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-xs sm:text-sm text-slate-500">
+        <div className="flex items-center gap-2 text-xs text-slate-600">
           <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
-            <Smile size={16} className="text-pink-400" />
+            <Smile size={14} className="text-pink-400" />
             <span className="font-semibold">
-              Level {currentLevel.id} / {LEVELS.length}
+              Level {currentLevel.id}/{LEVELS.length}
             </span>
           </div>
-          <div className="px-3 py-1 rounded-full bg-slate-900 text-white flex items-center gap-1 text-[11px] sm:text-xs">
+          <div className="px-3 py-1 rounded-full bg-slate-900 text-white flex items-center gap-1 text-[11px]">
             <Star size={14} className="text-amber-400 fill-amber-400" />
             <span className="font-semibold">
-              {totalStars} / {totalMaxStars} stars
+              {totalStars}/{totalMaxStars}
             </span>
           </div>
         </div>
@@ -616,185 +591,152 @@ const MatrixCandyMixer = () => {
 
       {/* GAME VIEW */}
       {view === "game" && (
-        <div className="flex-1 flex flex-col md:flex-row max-w-6xl mx-auto w-full">
-          {/* LEFT PANEL */}
-          <div className="order-2 md:order-1 w-full md:w-[380px] bg-white border-t md:border-t-0 md:border-r border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:shadow-none flex flex-col">
-            <div className="flex-1 px-4 sm:px-6 py-5 sm:py-6 flex flex-col justify-between">
-              <div>
-                {/* Tutor bubble */}
-                <div className="flex gap-3 sm:gap-4 mb-4 sm:mb-5">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-pink-500 flex items-center justify-center text-pink-50 font-bold text-xl border-4 border-white shadow-lg shrink-0">
-                    🍬
-                  </div>
-                  <div className="bg-slate-100 p-3 sm:p-4 rounded-2xl rounded-tl-none text-slate-700 text-sm sm:text-base font-medium w-full">
-                    {message}
-                  </div>
-                </div>
-
-                <InfoTabs
-                  activeTab={infoTab}
-                  onChangeTab={handleChangeTab}
-                  opSymbol={opSymbol}
-                  currentLevel={currentLevel}
-                  focusedCell={focusedCell}
-                  correctMatrix={correctMatrix}
-                />
-
-                {guideStage < 4 && (
-                  <div className="mt-2 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={handleNextGuide}
-                      className="inline-flex items-center gap-1.5 bg-pink-500 text-white px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold shadow-md active:scale-95"
-                    >
-                      Next tip
-                      <ArrowRight size={14} />
-                    </button>
-                  </div>
-                )}
-
-                {focusedInfo && (
-                  <div className="bg-slate-900 text-slate-50 rounded-2xl p-3 text-xs sm:text-sm mt-4">
-                    <p className="font-semibold mb-1">
-                      You are editing box (row {focusedInfo.row + 1}, column{" "}
-                      {focusedInfo.col + 1})
-                    </p>
-                    <p>
-                      A box has <span className="font-mono">{focusedInfo.a}</span>{" "}
-                      candies, B box has{" "}
-                      <span className="font-mono">{focusedInfo.b}</span>.
-                    </p>
-                    <p className="mt-1">
-                      So we do:{" "}
-                      <span className="font-mono font-semibold">
-                        {focusedInfo.a} {opSymbol} {focusedInfo.b} ={" "}
-                        {focusedInfo.result}
-                      </span>
-                      .
-                    </p>
-                    <p className="mt-1 text-[11px] text-slate-300">
-                      Use the arrows under the box to gently move the number up or
-                      down.
-                    </p>
-                  </div>
-                )}
+        <div className="flex-1 max-w-5xl mx-auto w-full p-4 sm:p-6">
+          {/* TOP: message bubble + actions (simple, not a big side panel) */}
+          <div className="bg-white rounded-2xl shadow p-4 sm:p-5 border border-slate-100 mb-4">
+            <div className="flex gap-3">
+              <div className="w-11 h-11 rounded-full bg-pink-500 flex items-center justify-center text-white font-black text-lg shrink-0">
+                🍬
               </div>
+              <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-sm sm:text-base font-medium text-slate-700 w-full">
+                {message}
+              </div>
+            </div>
 
-              {/* Actions */}
-              <div data-tour="actions" className="mt-4 space-y-3 sm:space-y-4">
+            <div className="mt-3">
+              <InfoTabs
+                activeTab={infoTab}
+                onChangeTab={handleChangeTab}
+                opSymbol={opSymbol}
+                currentLevel={currentLevel}
+                focusedCell={focusedCell}
+                correctMatrix={correctMatrix}
+              />
+            </div>
+
+            <div className="mt-3 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+              <div className="flex gap-2" data-tour="actions">
                 <button
                   onClick={checkAnswer}
-                  className="w-full bg-pink-500 text-white py-3.5 sm:py-4 rounded-2xl font-bold text-lg sm:text-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
+                  className="bg-pink-500 text-white px-4 py-2.5 rounded-xl font-bold shadow hover:bg-pink-600 transition-colors flex items-center gap-2"
                 >
-                  Check Candy Grid
-                  <ArrowRight size={20} />
+                  Check
+                  <ArrowRight size={18} />
                 </button>
 
-                <div className="flex gap-2">
-                  <button
-                    onClick={giveHint}
-                    className="flex-1 bg-amber-50 text-amber-700 py-2.5 sm:py-3 rounded-2xl font-semibold text-xs sm:text-sm shadow-sm border border-amber-200 active:scale-95 transition-transform flex items-center justify-center gap-1.5"
-                  >
-                    <Lightbulb size={16} />
-                    Hint (fill one box)
-                  </button>
-                  <button
-                    onClick={resetLevel}
-                    className="flex-1 bg-slate-900 text-white py-2.5 sm:py-3 rounded-2xl font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2"
-                  >
-                    <RotateCcw size={16} />
-                    Reset
-                  </button>
-                </div>
+                <button
+                  onClick={giveHint}
+                  className="bg-amber-100 text-amber-800 px-4 py-2.5 rounded-xl font-bold border border-amber-200 hover:bg-amber-200 transition-colors flex items-center gap-2"
+                >
+                  <Lightbulb size={18} />
+                  Hint
+                </button>
 
-                <p className="text-[11px] text-slate-400 text-center">
-                  Attempts this level: <span className="font-semibold">{attempts}</span>
-                </p>
+                <button
+                  onClick={resetLevel}
+                  className="bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold hover:bg-slate-900 transition-colors flex items-center gap-2"
+                >
+                  <RotateCcw size={18} />
+                  Reset
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between sm:justify-end gap-3 text-xs text-slate-500">
+                <span className="font-semibold">
+                  Attempts: <span className="text-slate-800">{attempts}</span>
+                </span>
+                {guideStage < 4 && (
+                  <button
+                    type="button"
+                    onClick={handleNextGuide}
+                    className="inline-flex items-center gap-1.5 bg-pink-500 text-white px-3 py-2 rounded-full text-xs font-bold shadow active:scale-95"
+                  >
+                    Next tip
+                    <ArrowRight size={14} />
+                  </button>
+                )}
               </div>
             </div>
+
+            {focusedInfo && (
+              <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs sm:text-sm">
+                <span className="font-semibold">Focused box:</span>{" "}
+                row {focusedInfo.row + 1}, col {focusedInfo.col + 1} ·{" "}
+                <span className="font-mono font-semibold">
+                  {focusedInfo.a} {opSymbol} {focusedInfo.b} = {focusedInfo.result}
+                </span>
+              </div>
+            )}
           </div>
 
-          {/* RIGHT – bigger "computer" view */}
-          <div className="order-1 md:order-2 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-8 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-            <div className="mb-4 sm:mb-6 text-center">
-              <p className="text-xs sm:text-sm font-semibold text-pink-200 uppercase tracking-wide">
+          {/* BOTTOM: matrices area (simple, bright) */}
+          <div
+            className={`bg-white rounded-2xl shadow p-4 sm:p-6 border border-slate-100 ${
+              shake ? "animate-shake" : ""
+            }`}
+          >
+            <div className="text-center mb-3">
+              <p className="text-xs font-semibold text-slate-500">
                 Level {currentLevel.id} · {currentLevel.name}
               </p>
-              <p className="mt-1 text-sm sm:text-base text-slate-100 font-medium max-w-md mx-auto">
-                Fill the{" "}
-                <span className="font-semibold">
-                  RESULT = A {opSymbol} B
-                </span>{" "}
-                grid so that each box matches A and B box by box.
+              <p className="text-sm sm:text-base font-semibold text-slate-800">
+                RESULT = A {opSymbol} B (same position)
               </p>
             </div>
 
-            <div
-              className={`bg-slate-900/70 rounded-3xl shadow-2xl p-4 sm:p-6 w-full max-w-5xl overflow-x-auto ${
-                shake ? "animate-shake" : ""
-              }`}
-            >
-              <div className="min-w-[420px] md:min-w-[680px] min-h-[320px] md:min-h-[440px] flex flex-col gap-4 sm:gap-6 items-center justify-center">
-                <div className="flex items-center justify-center gap-4 sm:gap-6">
-                  <div data-tour="matrixA">
-                    <MatrixDisplay
-                      label="A"
-                      matrix={currentLevel.A}
-                      color="from-sky-400 to-sky-500"
-  highlightCell={currentLevel.id === 1 ? focusedCell : null}
-                    />
-                  </div>
+            <div className="overflow-x-auto">
+              <div className="min-w-[520px] flex items-center justify-center gap-4 sm:gap-6 py-2">
+                <div data-tour="matrixA">
+                  <MatrixDisplay
+                    label="A"
+                    matrix={currentLevel.A}
+                    color="bg-sky-500"
+                    highlightCell={currentLevel.id === 1 ? focusedCell : null}
+                  />
+                </div>
 
-                  <span className="text-white font-bold text-2xl sm:text-3xl">
-                    {opSymbol}
-                  </span>
+                <div className="text-2xl font-black text-slate-700">{opSymbol}</div>
 
-                  <div data-tour="matrixB">
-                    <MatrixDisplay
-                      label="B"
-                      matrix={currentLevel.B}
-                      color="from-emerald-400 to-emerald-500"
-  highlightCell={currentLevel.id === 1 ? focusedCell : null}
-                    />
-                  </div>
+                <div data-tour="matrixB">
+                  <MatrixDisplay
+                    label="B"
+                    matrix={currentLevel.B}
+                    color="bg-emerald-500"
+                    highlightCell={currentLevel.id === 1 ? focusedCell : null}
+                  />
+                </div>
 
-                  <span className="text-white font-bold text-2xl sm:text-3xl">=</span>
+                <div className="text-2xl font-black text-slate-700">=</div>
 
-                  <div data-tour="result">
-                    <ResultMatrix
-                      matrix={userMatrix}
-                      feedback={feedback}
-                      onCellChange={handleCellChange}
-                      onNudge={nudgeCell}
-                      onFocusCell={(r, c) => setFocusedCell({ row: r, col: c })}
-  focusedCell={currentLevel.id === 1 ? focusedCell : null}
-                    />
-                  </div>
+                <div data-tour="result">
+                  <ResultMatrix
+                    matrix={userMatrix}
+                    feedback={feedback}
+                    onCellChange={handleCellChange}
+                    onNudge={nudgeCell}
+                    onFocusCell={(r, c) => setFocusedCell({ row: r, col: c })}
+                    focusedCell={currentLevel.id === 1 ? focusedCell : null}
+                  />
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 text-[11px] sm:text-xs text-slate-300 text-center max-w-xs space-y-1">
-              <p>
-                Remember: <span className="font-semibold">same place, same friends</span>.
-                Top-left with top-left, bottom-right with bottom-right.
-              </p>
-            </div>
+            <p className="mt-3 text-center text-[11px] text-slate-500">
+              Same place, same friends. Top-left with top-left, bottom-right with bottom-right.
+            </p>
           </div>
         </div>
       )}
 
-      {/* WIN SCREEN */}
+      {/* WIN SCREEN (simple) */}
       {view === "win" && (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-slate-50">
-          <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-2xl text-center max-w-sm w-full border-4 border-pink-100">
-            <div className="inline-flex bg-pink-100 p-3 sm:p-4 rounded-full mb-4 text-pink-500">
-              <Grid3x3 size={40} />
+        <div className="flex-1 flex items-center justify-center p-6 bg-blue-50">
+          <div className="bg-white p-6 rounded-2xl shadow-xl text-center max-w-sm w-full border-2 border-pink-100">
+            <div className="inline-flex bg-pink-100 p-3 rounded-full mb-4 text-pink-600">
+              <Grid3x3 size={34} />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-800 mb-2">
-              Candy Grid Complete!
-            </h2>
-            <p className="text-sm sm:text-base text-slate-600 mb-5 sm:mb-6">
+            <h2 className="text-2xl font-extrabold text-slate-800 mb-2">Candy Grid Complete!</h2>
+            <p className="text-sm text-slate-600 mb-5">
               Every result box matches{" "}
               <span className="font-semibold">
                 A {opSymbol} B
@@ -802,11 +744,11 @@ const MatrixCandyMixer = () => {
               .
             </p>
 
-            <div className="flex justify-center gap-2 mb-6 sm:mb-8">
+            <div className="flex justify-center gap-2 mb-6">
               {[1, 2, 3].map((s) => (
                 <Star
                   key={s}
-                  size={30}
+                  size={28}
                   className={
                     s <= starsThisLevel
                       ? "text-amber-400 fill-amber-400"
@@ -818,7 +760,7 @@ const MatrixCandyMixer = () => {
 
             <button
               onClick={goNextLevel}
-              className="w-full bg-pink-500 text-white py-3.5 sm:py-4 rounded-2xl font-bold text-lg sm:text-xl shadow-lg hover:bg-pink-600 transition-colors flex justify-center gap-2 items-center"
+              className="w-full bg-pink-500 text-white py-3 rounded-xl font-bold text-lg shadow hover:bg-pink-600 transition-colors flex justify-center gap-2 items-center"
             >
               Next Level
               <ArrowRight size={20} />
@@ -827,7 +769,7 @@ const MatrixCandyMixer = () => {
         </div>
       )}
 
-      {/* TOUR OVERLAY */}
+      {/* TOUR OVERLAY (unchanged) */}
       {showTour && view === "game" && (
         <TourOverlay
           step={tourStep}
@@ -858,16 +800,7 @@ const MatrixCandyMixer = () => {
 };
 
 // ---------- TOUR OVERLAY COMPONENT ----------
-const TourOverlay = ({
-  step,
-  total,
-  title,
-  text,
-  targetSelector,
-  onClose,
-  onNext,
-  onPrev,
-}) => {
+const TourOverlay = ({ step, total, title, text, targetSelector, onClose, onNext, onPrev }) => {
   const [rect, setRect] = useState(null);
 
   useEffect(() => {
@@ -875,12 +808,7 @@ const TourOverlay = ({
       const el = document.querySelector(targetSelector);
       if (!el) return setRect(null);
       const r = el.getBoundingClientRect();
-      setRect({
-        top: r.top,
-        left: r.left,
-        width: r.width,
-        height: r.height,
-      });
+      setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
     };
 
     measure();
@@ -909,15 +837,13 @@ const TourOverlay = ({
       )}
 
       <div className="absolute left-1/2 -translate-x-1/2 bottom-6 w-[min(560px,calc(100%-24px))]">
-        <div className="bg-white rounded-3xl shadow-2xl border-4 border-pink-100 p-4 sm:p-5">
+        <div className="bg-white rounded-2xl shadow-2xl border-2 border-pink-100 p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">
                 Guided Intro {step + 1} / {total}
               </p>
-              <h3 className="text-lg sm:text-xl font-black text-slate-800">
-                {title}
-              </h3>
+              <h3 className="text-lg font-extrabold text-slate-800">{title}</h3>
             </div>
             <button
               onClick={onClose}
@@ -929,7 +855,7 @@ const TourOverlay = ({
             </button>
           </div>
 
-          <p className="mt-2 text-slate-700 text-sm sm:text-base">{text}</p>
+          <p className="mt-2 text-slate-700 text-sm">{text}</p>
 
           <div className="mt-4 flex items-center justify-between">
             <button
@@ -947,7 +873,7 @@ const TourOverlay = ({
 
             <button
               onClick={onNext}
-              className="px-4 py-2 rounded-xl font-black text-sm bg-pink-500 text-white shadow-lg hover:bg-pink-600 active:scale-95 flex items-center gap-2"
+              className="px-4 py-2 rounded-xl font-extrabold text-sm bg-pink-500 text-white shadow hover:bg-pink-600 active:scale-95 flex items-center gap-2"
               type="button"
             >
               {step === total - 1 ? "Start Playing" : "Next"}
@@ -955,44 +881,36 @@ const TourOverlay = ({
             </button>
           </div>
 
-          <p className="mt-2 text-[11px] text-slate-400">
-            Tip: You can close this anytime and keep playing.
-          </p>
+          <p className="mt-2 text-[11px] text-slate-400">Tip: You can close this anytime.</p>
         </div>
       </div>
     </div>
   );
 };
 
-// ---------- Presentational subcomponents ----------
+// ---------- Presentational subcomponents (simplified look) ----------
 const MatrixDisplay = ({ label, matrix, color, highlightCell }) => {
   return (
     <div className="flex flex-col items-center gap-1">
-      <span className="text-[11px] text-slate-300 mb-0.5">Matrix {label}</span>
-      <div className={`inline-flex rounded-2xl bg-gradient-to-br ${color} px-3 py-2 shadow-xl`}>
+      <span className="text-[11px] text-slate-500 font-bold">Matrix {label}</span>
+      <div className={`${color} rounded-xl p-3 shadow`}>
         <div
-          className="border-2 border-white/40 rounded-lg px-4 py-3 text-base sm:text-xl text-white font-mono grid gap-3"
-          style={{
-            gridTemplateColumns: `repeat(${matrix[0].length}, minmax(0, 1fr))`,
-          }}
+          className="grid gap-2"
+          style={{ gridTemplateColumns: `repeat(${matrix[0].length}, 44px)` }}
         >
           {matrix.map((row, i) =>
             row.map((val, j) => {
               const isHighlight =
-                highlightCell &&
-                highlightCell.row === i &&
-                highlightCell.col === j;
+                highlightCell && highlightCell.row === i && highlightCell.col === j;
               return (
-                <span
+                <div
                   key={`${i}-${j}`}
-                  className={`text-center flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-md ${
-                    isHighlight
-                      ? "bg-white text-slate-800 font-bold shadow-md"
-                      : "bg-white/10"
-                  }`}
+                  className={`w-11 h-11 rounded-lg flex items-center justify-center font-mono text-lg
+                    ${isHighlight ? "bg-white text-slate-900 ring-2 ring-yellow-300" : "bg-white/20 text-white"}
+                  `}
                 >
                   {val}
-                </span>
+                </div>
               );
             })
           )}
@@ -1002,46 +920,30 @@ const MatrixDisplay = ({ label, matrix, color, highlightCell }) => {
   );
 };
 
-const ResultMatrix = ({
-  matrix,
-  feedback,
-  onCellChange,
-  onNudge,
-  onFocusCell,
-  focusedCell,
-}) => {
+const ResultMatrix = ({ matrix, feedback, onCellChange, onNudge, onFocusCell, focusedCell }) => {
   const cols = matrix[0].length;
 
   const cellClass = (fb) => {
-    if (fb === "correct") return "border-emerald-400 bg-emerald-50 text-emerald-700";
-    if (fb === "wrong") return "border-rose-400 bg-rose-50 text-rose-700";
-    if (fb === "empty") return "border-slate-300 bg-slate-50 text-slate-700";
-    return "border-slate-200 bg-slate-50 text-slate-700";
+    if (fb === "correct") return "border-emerald-400 bg-emerald-50";
+    if (fb === "wrong") return "border-rose-400 bg-rose-50";
+    if (fb === "empty") return "border-slate-300 bg-slate-50";
+    return "border-slate-200 bg-white";
   };
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <span className="text-[11px] text-slate-300 mb-0.5">RESULT</span>
-      <div className="inline-flex rounded-2xl bg-slate-900 px-2 py-2 shadow-xl">
-        <div
-          className="border-2 border-slate-600 rounded-lg px-3 py-2 grid gap-2"
-          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
-        >
+      <span className="text-[11px] text-slate-500 font-bold">RESULT</span>
+      <div className="bg-slate-100 rounded-xl p-3 border border-slate-200">
+        <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${cols}, 64px)` }}>
           {matrix.map((row, i) =>
             row.map((val, j) => {
-              const isFocused =
-                focusedCell &&
-                focusedCell.row === i &&
-                focusedCell.col === j;
+              const isFocused = focusedCell && focusedCell.row === i && focusedCell.col === j;
+
               return (
                 <div
                   key={`${i}-${j}`}
-                  className={`flex flex-col items-center justify-center rounded-lg border px-2.5 py-2 ${cellClass(
-                    feedback[i][j]
-                  )} ${
-                    isFocused
-                      ? "ring-2 ring-amber-400 ring-offset-2 ring-offset-slate-900"
-                      : ""
+                  className={`rounded-xl border p-2 ${cellClass(feedback[i][j])} ${
+                    isFocused ? "ring-2 ring-yellow-400" : ""
                   }`}
                 >
                   <input
@@ -1049,18 +951,18 @@ const ResultMatrix = ({
                     value={val}
                     onChange={(e) => onCellChange(i, j, e.target.value.trim())}
                     onFocus={() => onFocusCell(i, j)}
-                    className="w-16 sm:w-20 bg-transparent text-center text-base sm:text-lg font-mono outline-none"
+                    className="w-full bg-transparent text-center text-lg font-mono outline-none text-slate-800"
                   />
-                  <div className="flex gap-1.5 mt-1">
+                  <div className="mt-1 flex justify-center gap-1">
                     <button
                       type="button"
                       onClick={() => {
                         onFocusCell(i, j);
                         onNudge(i, j, -1);
                       }}
-                      className="w-5 h-5 rounded-full bg-slate-800 text-[10px] text-white flex items-center justify-center active:scale-95"
+                      className="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 flex items-center justify-center"
                     >
-                      <ChevronLeft size={10} />
+                      <ChevronLeft size={14} />
                     </button>
                     <button
                       type="button"
@@ -1068,9 +970,9 @@ const ResultMatrix = ({
                         onFocusCell(i, j);
                         onNudge(i, j, +1);
                       }}
-                      className="w-5 h-5 rounded-full bg-slate-800 text-[10px] text-white flex items-center justify-center active:scale-95"
+                      className="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 flex items-center justify-center"
                     >
-                      <ChevronRight size={10} />
+                      <ChevronRight size={14} />
                     </button>
                   </div>
                 </div>
@@ -1083,15 +985,7 @@ const ResultMatrix = ({
   );
 };
 
-const InfoTabs = ({
-  activeTab,
-  onChangeTab,
-  opSymbol,
-  currentLevel,
-  focusedCell,
-  correctMatrix,
-}) => {
-  // use the currently focused box as the example; fall back to top-left
+const InfoTabs = ({ activeTab, onChangeTab, opSymbol, currentLevel, focusedCell, correctMatrix }) => {
   const row = focusedCell ? focusedCell.row : 0;
   const col = focusedCell ? focusedCell.col : 0;
 
@@ -1106,96 +1000,63 @@ const InfoTabs = ({
 
   const tabLabel = (tab) => {
     if (tab === "story") return "Story";
-    if (tab === "how") return "How to Play";
-    return "Matrix Rule";
+    if (tab === "how") return "How";
+    return "Rule";
   };
 
   return (
-    <div className="bg-pink-50 rounded-2xl p-3 sm:p-4 mb-3 sm:mb-4 text-xs sm:text-sm text-pink-900">
-      <div className="flex items-center justify-between mb-2 sm:mb-3">
-        <div className="inline-flex bg-white/70 rounded-full p-0.5">
-          {["story", "how", "rule"].map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => onChangeTab(tab)}
-              className={`px-2.5 sm:px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold transition-colors ${
-                activeTab === tab
-                  ? "bg-pink-500 text-white shadow-sm"
-                  : "text-pink-700 hover:bg-pink-100"
-              }`}
-            >
-              {tabLabel(tab)}
-            </button>
-          ))}
-        </div>
+    <div className="bg-pink-50 rounded-xl p-3 text-xs sm:text-sm text-pink-900 border border-pink-100">
+      <div className="flex gap-2 mb-2">
+        {["story", "how", "rule"].map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => onChangeTab(tab)}
+            className={`px-3 py-1 rounded-full text-xs font-bold ${
+              activeTab === tab ? "bg-pink-500 text-white" : "bg-white text-pink-700 border border-pink-100"
+            }`}
+          >
+            {tabLabel(tab)}
+          </button>
+        ))}
       </div>
 
       {activeTab === "story" && (
-        <div className="space-y-1.5">
-          <p className="font-semibold">Imagine each matrix is a candy tray 🍬</p>
-          <p>
-            Matrix A shows how many candies are in each box of tray A. Matrix B
-            shows candies in tray B. The result matrix tells us how many candies
-            are in each box after we{" "}
-            {opSymbol === "+" ? "put them together" : "take some away"}.
-          </p>
-          <p>
-            We never move candies between boxes. We only mix candies that live
-            in the{" "}
-            <span className="font-semibold">same position</span>.
-          </p>
-        </div>
+        <p>
+          Two candy trays: A and B. We only mix candies that are in the{" "}
+          <span className="font-bold">same position</span>.
+        </p>
       )}
 
       {activeTab === "how" && (
-        <div className="space-y-1.5">
-          <p className="font-semibold">Step-by-step:</p>
-          <ol className="list-decimal list-inside space-y-0.5">
-            <li>Tap a box in the RESULT grid.</li>
-            <li>
-              Look at the matching box in A and in B. Think:{" "}
-              <span className="font-mono">
-                A box {opSymbol} B box = ?
-              </span>
-            </li>
-            <li>Type the answer or use the arrows to nudge the number.</li>
-            <li>Fill all boxes, then press “Check Candy Grid”.</li>
-          </ol>
-          <p className="mt-1">
-            If you are stuck, press <span className="font-semibold">Hint</span>{" "}
-            to see one box solved.
-          </p>
-        </div>
+        <ol className="list-decimal list-inside space-y-1">
+          <li>Tap a RESULT box.</li>
+          <li>
+            Look at A and B in the same spot, then do{" "}
+            <span className="font-mono font-bold">
+              A {opSymbol} B
+            </span>
+            .
+          </li>
+          <li>Type the answer (or use arrows).</li>
+          <li>Press Check.</li>
+        </ol>
       )}
 
       {activeTab === "rule" && (
-        <div className="space-y-1.5">
-          <p className="font-semibold">The matrix rule:</p>
-          <p>
-            For each position (i, j) we only look at the numbers that sit in that
-            same position in A and B.
-          </p>
-          <p>
-            We use the rule:{" "}
-            <span className="font-mono font-semibold">
-              result[i][j] = A[i][j] {opSymbol} B[i][j]
-            </span>
-            .
-          </p>
-          <p>
-            This is called <span className="font-semibold">element-wise</span>{" "}
-            addition or subtraction, because we work box by box.
-          </p>
-        </div>
+        <p>
+          Rule:{" "}
+          <span className="font-mono font-bold">
+            result[i][j] = A[i][j] {opSymbol} B[i][j]
+          </span>
+        </p>
       )}
 
-      <div className="mt-2 border-t border-pink-100 pt-2 bg-pink-100/60 rounded-xl px-2 py-1 font-mono text-[11px] sm:text-xs">
-        Example with this box (row {row + 1}, column {col + 1}):{" "}
-        <span className="font-semibold">
+      <div className="mt-2 bg-white rounded-lg p-2 border border-pink-100 font-mono text-[11px]">
+        Example (row {row + 1}, col {col + 1}):{" "}
+        <span className="font-bold">
           {aVal} {opSymbol} {bVal} = {example}
-        </span>{" "}
-        👉 so result[{row + 1}][{col + 1}] = {example}
+        </span>
       </div>
     </div>
   );
