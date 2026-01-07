@@ -592,7 +592,67 @@ const MatrixCandyMixer = () => {
       {/* GAME VIEW */}
       {view === "game" && (
         <div className="flex-1 max-w-5xl mx-auto w-full p-4 sm:p-6">
-          {/* TOP: message bubble + actions (simple, not a big side panel) */}
+      
+
+          {/* BOTTOM: matrices area (simple, bright) */}
+          <div
+            className={`bg-white rounded-2xl shadow p-4 sm:p-6 border border-slate-100 ${
+              shake ? "animate-shake" : ""
+            }`}
+          >
+            <div className="text-center mb-3">
+              <p className="text-xs font-semibold text-slate-500">
+                Level {currentLevel.id} · {currentLevel.name}
+              </p>
+              <p className="text-sm sm:text-base font-semibold text-slate-800">
+                RESULT = A {opSymbol} B (same position)
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <div className="min-w-[520px] flex items-center justify-center gap-4 sm:gap-6 py-2">
+                <div data-tour="matrixA">
+                  <MatrixDisplay
+                    label="A"
+                    matrix={currentLevel.A}
+                    color="bg-sky-500"
+                    highlightCell={currentLevel.id === 1 ? focusedCell : null}
+                  />
+                </div>
+
+                <div className="text-2xl font-black text-slate-700">{opSymbol}</div>
+
+                <div data-tour="matrixB">
+                  <MatrixDisplay
+                    label="B"
+                    matrix={currentLevel.B}
+                    color="bg-emerald-500"
+                    highlightCell={currentLevel.id === 1 ? focusedCell : null}
+                  />
+                </div>
+
+                <div className="text-2xl font-black text-slate-700">=</div>
+
+                <div data-tour="result">
+                  <ResultMatrix
+                    matrix={userMatrix}
+                    feedback={feedback}
+                    onCellChange={handleCellChange}
+                    onNudge={nudgeCell}
+                    onFocusCell={(r, c) => setFocusedCell({ row: r, col: c })}
+                    focusedCell={currentLevel.id === 1 ? focusedCell : null}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <p className="mt-3 text-center text-[11px] text-slate-500">
+              Same place, same friends. Top-left with top-left, bottom-right with bottom-right.
+            </p>
+          </div>
+
+          
+              {/* TOP: message bubble + actions (simple, not a big side panel) */}
           <div className="bg-white rounded-2xl shadow p-4 sm:p-5 border border-slate-100 mb-4">
             <div className="flex gap-3">
               <div className="w-11 h-11 rounded-full bg-pink-500 flex items-center justify-center text-white font-black text-lg shrink-0">
@@ -667,63 +727,6 @@ const MatrixCandyMixer = () => {
                 </span>
               </div>
             )}
-          </div>
-
-          {/* BOTTOM: matrices area (simple, bright) */}
-          <div
-            className={`bg-white rounded-2xl shadow p-4 sm:p-6 border border-slate-100 ${
-              shake ? "animate-shake" : ""
-            }`}
-          >
-            <div className="text-center mb-3">
-              <p className="text-xs font-semibold text-slate-500">
-                Level {currentLevel.id} · {currentLevel.name}
-              </p>
-              <p className="text-sm sm:text-base font-semibold text-slate-800">
-                RESULT = A {opSymbol} B (same position)
-              </p>
-            </div>
-
-            <div className="overflow-x-auto">
-              <div className="min-w-[520px] flex items-center justify-center gap-4 sm:gap-6 py-2">
-                <div data-tour="matrixA">
-                  <MatrixDisplay
-                    label="A"
-                    matrix={currentLevel.A}
-                    color="bg-sky-500"
-                    highlightCell={currentLevel.id === 1 ? focusedCell : null}
-                  />
-                </div>
-
-                <div className="text-2xl font-black text-slate-700">{opSymbol}</div>
-
-                <div data-tour="matrixB">
-                  <MatrixDisplay
-                    label="B"
-                    matrix={currentLevel.B}
-                    color="bg-emerald-500"
-                    highlightCell={currentLevel.id === 1 ? focusedCell : null}
-                  />
-                </div>
-
-                <div className="text-2xl font-black text-slate-700">=</div>
-
-                <div data-tour="result">
-                  <ResultMatrix
-                    matrix={userMatrix}
-                    feedback={feedback}
-                    onCellChange={handleCellChange}
-                    onNudge={nudgeCell}
-                    onFocusCell={(r, c) => setFocusedCell({ row: r, col: c })}
-                    focusedCell={currentLevel.id === 1 ? focusedCell : null}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <p className="mt-3 text-center text-[11px] text-slate-500">
-              Same place, same friends. Top-left with top-left, bottom-right with bottom-right.
-            </p>
           </div>
         </div>
       )}
