@@ -20,6 +20,8 @@ import XAndYCoordinatesLesson from "./XAndYCoordinatesLesson";
 import PlottingPointsLesson from "./PlottingPointsLesson";
 import IdentifyingPointsLesson from "./IdentifyingPointsLesson";
 import AppliedCoordinatesLesson from "./AppliedCoordinatesLesson";
+import CoordinateRevesion from "./CoordinateRevesion";
+import CoordinatePlaneLevel from "./CoordinatePlaneLevel";
 
 
 export default function App() {
@@ -48,6 +50,8 @@ export default function App() {
         <Route path="/ploting-Lesson" element={<PlottingPointsLesson/>} />
         <Route path="/Identifying-Lesson" element={<IdentifyingPointsLesson/>} />
         <Route path="/Applied-Lesson" element={<AppliedCoordinatesLesson/>} />
+        <Route path="/Applied-revesion" element={<CoordinateRevesion/>} />
+        <Route path="/panelco" element={<CoordinatePlaneLevel/>} />
 
       </Routes>
     </BrowserRouter>
