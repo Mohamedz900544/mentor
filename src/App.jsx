@@ -16,6 +16,7 @@ import FractionGame from "./FractionGame";
 import CoordinatesLesson from "./CoordinatesGame";
 import CoordinatePairsLesson from "./CoordinatePairsLesson";
 import AxesLesson from "./AxesLesson";
+import XAndYCoordinatesLesson from "./XAndYCoordinatesLesson";
 
 
 export default function App() {
@@ -34,10 +35,13 @@ export default function App() {
         <Route path="/Matrix-Candy-Mixer" element={<MatrixCandyMixer />} />
         <Route path="/Farm-Matrix-Animals" element={<FarmMatrixAnimals />} />
         <Route path="/MatrixTile-Drop" element={<MatrixTileDrop/>} />
+
         <Route path="/new-game" element={<FractionGame/>} />
+
         <Route path="/Coordinates-Lesson" element={<CoordinatesLesson/>} />
         <Route path="/pair-Lesson" element={<CoordinatePairsLesson/>} />
         <Route path="/axes-Lesson" element={<AxesLesson/>} />
+        <Route path="/xys-Lesson" element={<XAndYCoordinatesLesson/>} />
 
       </Routes>
     </BrowserRouter>
