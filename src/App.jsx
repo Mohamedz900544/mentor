@@ -18,6 +18,8 @@ import CoordinatePairsLesson from "./CoordinatePairsLesson";
 import AxesLesson from "./AxesLesson";
 import XAndYCoordinatesLesson from "./XAndYCoordinatesLesson";
 import PlottingPointsLesson from "./PlottingPointsLesson";
+import IdentifyingPointsLesson from "./IdentifyingPointsLesson";
+import AppliedCoordinatesLesson from "./AppliedCoordinatesLesson";
 
 
 export default function App() {
@@ -44,6 +46,8 @@ export default function App() {
         <Route path="/axes-Lesson" element={<AxesLesson/>} />
         <Route path="/xys-Lesson" element={<XAndYCoordinatesLesson/>} />
         <Route path="/ploting-Lesson" element={<PlottingPointsLesson/>} />
+        <Route path="/Identifying-Lesson" element={<IdentifyingPointsLesson/>} />
+        <Route path="/Applied-Lesson" element={<AppliedCoordinatesLesson/>} />
 
       </Routes>
     </BrowserRouter>
