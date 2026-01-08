@@ -7,6 +7,7 @@ export default function Home() {
       <h1 className="home-title">Sparvi Lab Games</h1>
 
       <div className="menu">
+        <Link to="/panelco" className="menu-btn">8 Games</Link>
         <Link to="/balance-beam" className="menu-btn">Balance Beam Lab</Link>
         <Link to="/mirror-bounce" className="menu-btn">Mirror Bounce Lab</Link>
         <Link to="/circuit-loop" className="menu-btn">Circuit Loop Game</Link>
