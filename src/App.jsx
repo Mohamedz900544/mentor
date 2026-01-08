@@ -14,6 +14,8 @@ import FarmMatrixAnimals from "./FarmMatrixAnimals";
 import MatrixTileDrop from "./MatrixTileDrop";
 import FractionGame from "./FractionGame";
 import CoordinatesLesson from "./CoordinatesGame";
+import CoordinatePairsLesson from "./CoordinatePairsLesson";
+import AxesLesson from "./AxesLesson";
 
 
 export default function App() {
@@ -34,6 +36,8 @@ export default function App() {
         <Route path="/MatrixTile-Drop" element={<MatrixTileDrop/>} />
         <Route path="/new-game" element={<FractionGame/>} />
         <Route path="/Coordinates-Lesson" element={<CoordinatesLesson/>} />
+        <Route path="/pair-Lesson" element={<CoordinatePairsLesson/>} />
+        <Route path="/axes-Lesson" element={<AxesLesson/>} />
 
       </Routes>
     </BrowserRouter>
