@@ -13,6 +13,7 @@ import MatrixCandyMixer from "./MatrixCandyMixer";
 import FarmMatrixAnimals from "./FarmMatrixAnimals";
 import MatrixTileDrop from "./MatrixTileDrop";
 import FractionGame from "./FractionGame";
+import CoordinatesLesson from "./CoordinatesGame";
 
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/Farm-Matrix-Animals" element={<FarmMatrixAnimals />} />
         <Route path="/MatrixTile-Drop" element={<MatrixTileDrop/>} />
         <Route path="/new-game" element={<FractionGame/>} />
+        <Route path="/Coordinates-Lesson" element={<CoordinatesLesson/>} />
 
       </Routes>
     </BrowserRouter>

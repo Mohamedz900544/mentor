@@ -152,6 +152,19 @@ const computeAnswer = (level) => {
   return result;
 };
 
+// Small helper visuals
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+const animalBar = (val, max = 6) => {
+  const v = clamp(Math.abs(val), 0, max);
+  const blocks = Array.from({ length: max }, (_, i) => (i < v ? "█" : "░")).join("");
+  return blocks;
+};
+const renderAnimals = (n, emoji) => {
+  if (n <= 0) return "";
+  if (n <= 4) return Array.from({ length: n }, () => emoji).join("");
+  return `${emoji}×${n}`;
+};
+
 const FarmMatrixAnimals = () => {
   const [progress, setProgress] = useState(loadProgress);
   const [levelIndex, setLevelIndex] = useState(progress.level || 0);
@@ -170,16 +183,10 @@ const FarmMatrixAnimals = () => {
   const [shake, setShake] = useState(false);
 
   const currentLevel = LEVELS[levelIndex];
-  const correctMatrix = useMemo(
-    () => computeAnswer(currentLevel),
-    [currentLevel]
-  );
+  const correctMatrix = useMemo(() => computeAnswer(currentLevel), [currentLevel]);
 
   const totalMaxStars = LEVELS.length * 3;
-  const totalStars = Object.values(progress.stars || {}).reduce(
-    (a, b) => a + b,
-    0
-  );
+  const totalStars = Object.values(progress.stars || {}).reduce((a, b) => a + b, 0);
 
   const rows = currentLevel.A.length;
   const cols = currentLevel.A[0].length;
@@ -200,10 +207,7 @@ const FarmMatrixAnimals = () => {
       const stars = { ...(prev.stars || {}) };
       const existing = stars[currentLevel.id] || 0;
       stars[currentLevel.id] = Math.max(existing, starsThisLevel);
-      const next = {
-        level: Math.max(prev.level || 0, levelIndex),
-        stars,
-      };
+      const next = { level: Math.max(prev.level || 0, levelIndex), stars };
       saveProgress(next);
       return next;
     });
@@ -221,12 +225,9 @@ const FarmMatrixAnimals = () => {
   }, [currentLevel]);
 
   const handleCellChange = (row, col, value) => {
-    // allow empty or integer
     if (value === "" || value === "-" || /^-?\d+$/.test(value)) {
       setUserMatrix((prev) =>
-        prev.map((r, i) =>
-          r.map((cell, j) => (i === row && j === col ? value : cell))
-        )
+        prev.map((r, i) => r.map((cell, j) => (i === row && j === col ? value : cell)))
       );
     }
   };
@@ -259,9 +260,8 @@ const FarmMatrixAnimals = () => {
         } else {
           const userVal = parseInt(valStr, 10);
           const correctVal = correctMatrix[i][j];
-          if (userVal === correctVal) {
-            fbRow.push("correct");
-          } else {
+          if (userVal === correctVal) fbRow.push("correct");
+          else {
             fbRow.push("wrong");
             allCorrect = false;
           }
@@ -273,9 +273,7 @@ const FarmMatrixAnimals = () => {
     setFeedback(newFeedback);
 
     if (!allFilled) {
-      setMessage(
-        "Fill every pen first. Light-outline pens are still empty."
-      );
+      setMessage("Fill every pen first. Light-outline pens are still empty.");
       setShake(true);
       setTimeout(() => setShake(false), 350);
       return;
@@ -285,38 +283,26 @@ const FarmMatrixAnimals = () => {
       setView("win");
     } else {
       setAttempts((a) => a + 1);
-      setMessage(
-        "Some pens are wrong. Red pens need fixing. Change those numbers and try again!"
-      );
+      setMessage("Some pens are wrong. Red pens need fixing. Change those numbers and try again!");
       setShake(true);
       setTimeout(() => setShake(false), 350);
     }
   };
 
   const giveHint = () => {
-    // fill first wrong or empty cell
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
         const correctVal = correctMatrix[i][j];
         const userStr = userMatrix[i][j];
         const isEmpty = userStr === "" || userStr === "-";
-        const isWrong =
-          !isEmpty && parseInt(userStr, 10) !== correctVal;
+        const isWrong = !isEmpty && parseInt(userStr, 10) !== correctVal;
 
         if (isEmpty || isWrong) {
           setUserMatrix((prev) =>
-            prev.map((r, ri) =>
-              r.map((c, cj) =>
-                ri === i && cj === j ? String(correctVal) : c
-              )
-            )
+            prev.map((r, ri) => r.map((c, cj) => (ri === i && cj === j ? String(correctVal) : c)))
           );
           setFeedback((prev) =>
-            prev.map((r, ri) =>
-              r.map((c, cj) =>
-                ri === i && cj === j ? "correct" : c
-              )
-            )
+            prev.map((r, ri) => r.map((c, cj) => (ri === i && cj === j ? "correct" : c)))
           );
           setFocusedCell({ row: i, col: j });
 
@@ -340,49 +326,67 @@ const FarmMatrixAnimals = () => {
     const ducks = currentLevel.A[row][col];
     const sheep = currentLevel.B[row][col];
     const result = correctMatrix[row][col];
-    return { row, col, ducks, sheep, result };
-  }, [focusedCell, currentLevel, correctMatrix]);
+    const typed = userMatrix[row][col];
+    return { row, col, ducks, sheep, result, typed };
+  }, [focusedCell, currentLevel, correctMatrix, userMatrix]);
 
   const goNextLevel = () => {
     const nextIndex = levelIndex + 1;
-    if (nextIndex < LEVELS.length) {
-      setLevelIndex(nextIndex);
-    } else {
-      setLevelIndex(0);
-    }
+    if (nextIndex < LEVELS.length) setLevelIndex(nextIndex);
+    else setLevelIndex(0);
   };
+
+  // Progress mini stats (visualization)
+  const progressStats = useMemo(() => {
+    let filled = 0;
+    let correct = 0;
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        const v = userMatrix[i][j];
+        const fb = feedback[i][j];
+        if (v !== "" && v !== "-") filled++;
+        if (fb === "correct") correct++;
+      }
+    }
+    const total = rows * cols;
+    return { filled, correct, total };
+  }, [rows, cols, userMatrix, feedback]);
+
+  const opTitle = currentLevel.op === "add" ? "Total animals" : "Duck lead";
+  const opChip =
+    currentLevel.op === "add" ? "🦆 + 🐑" : "🦆 − 🐑";
 
   // ---------- RENDER ----------
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800 overflow-x-hidden">
+    <div className="min-h-screen bg-blue-50 flex flex-col font-sans text-slate-800 overflow-x-hidden">
       {/* HEADER */}
-      <header className="bg-white px-4 sm:px-6 py-3 sm:py-4 shadow-sm z-50 flex justify-between items-center sticky top-0">
+      <header className="bg-white px-4 sm:px-6 py-3 sm:py-4 shadow-sm z-50 flex justify-between items-center sticky top-0 border-b border-slate-100">
         <div className="flex items-center gap-2">
           <div className="bg-emerald-500 p-2 rounded-lg">
-            <Home size={20} className="text-white" />
+            <Home size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
               Sparvi Math Farm
             </p>
-            <h1 className="font-black text-base sm:text-lg tracking-tight flex items-center gap-1">
-              <Grid3x3 size={18} className="text-emerald-500" />
+            <h1 className="font-extrabold text-sm sm:text-base tracking-tight flex items-center gap-1">
+              <Grid3x3 size={16} className="text-emerald-500" />
               Duck & Sheep Matrix Pens
             </h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-xs sm:text-sm text-slate-500">
+        <div className="flex items-center gap-2 text-xs text-slate-600">
           <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
-            <Smile size={16} className="text-emerald-400" />
+            <Smile size={14} className="text-emerald-400" />
             <span className="font-semibold">
-              Level {currentLevel.id} / {LEVELS.length}
+              Level {currentLevel.id}/{LEVELS.length}
             </span>
           </div>
-          <div className="px-3 py-1 rounded-full bg-slate-900 text-white flex items-center gap-1 text-[11px] sm:text-xs">
+          <div className="px-3 py-1 rounded-full bg-slate-900 text-white flex items-center gap-1 text-[11px]">
             <Star size={14} className="text-amber-400 fill-amber-400" />
             <span className="font-semibold">
-              {totalStars} / {totalMaxStars} stars
+              {totalStars}/{totalMaxStars}
             </span>
           </div>
         </div>
@@ -390,184 +394,190 @@ const FarmMatrixAnimals = () => {
 
       {/* GAME VIEW */}
       {view === "game" && (
-        <div className="flex-1 flex flex-col md:flex-row max-w-5xl mx-auto w-full">
-          {/* LEFT: tutor + explanation */}
-          <div className="w-full md:w-[380px] bg-white border-b md:border-b-0 md:border-r border-slate-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] md:shadow-none flex flex-col">
-            <div className="flex-1 px-4 sm:px-6 py-5 sm:py-6 flex flex-col justify-between">
-              <div>
-                {/* Tutor bubble */}
-                <div className="flex gap-3 sm:gap-4 mb-5 sm:mb-6">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-emerald-500 flex items-center justify-center text-emerald-50 font-bold text-xl border-4 border-white shadow-lg shrink-0">
-                    🐑
-                  </div>
-                  <div className="bg-slate-100 p-3 sm:p-4 rounded-2xl rounded-tl-none text-slate-700 text-sm sm:text-base font-medium w-full">
-                    {message}
-                  </div>
-                </div>
-
-                {/* Concept card */}
-                <div className="bg-emerald-50 rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6 text-xs sm:text-sm text-emerald-900">
-                  <p className="font-semibold mb-1">
-                    Rule for each little pen
-                  </p>
-                  <p>
-                    We only mix animals that stand in the{" "}
-                    <span className="font-semibold">
-                      same row and same column
-                    </span>
-                    . So top-left ducks and sheep talk only to top-left, and so
-                    on.
-                  </p>
-                  <p className="mt-1.5">
-                    For each pen (i, j):{" "}
-                    <span className="font-mono font-semibold">
-                      RESULT[i][j] = ducks[i][j] {opSymbol} sheep[i][j]
-                    </span>
-                    .
-                  </p>
-                  {currentLevel.op === "sub" && (
-                    <p className="mt-1">
-                      Positive result → more ducks 🦆. Negative result → more
-                      sheep 🐑.
-                    </p>
-                  )}
-                </div>
-
-                {/* Focused pen helper */}
-                {focusedInfo && (
-                  <div className="bg-slate-900 text-slate-50 rounded-2xl p-3 text-xs sm:text-sm">
-                    <p className="font-semibold mb-1">
-                      You are editing pen (row {focusedInfo.row + 1}, column{" "}
-                      {focusedInfo.col + 1})
-                    </p>
-                    <p>
-                      Ducks:{" "}
-                      <span className="font-mono">
-                        {focusedInfo.ducks}
-                      </span>{" "}
-                      🦆 · Sheep:{" "}
-                      <span className="font-mono">
-                        {focusedInfo.sheep}
-                      </span>{" "}
-                      🐑
-                    </p>
-                    <p className="mt-1">
-                      So we do:{" "}
-                      <span className="font-mono font-semibold">
-                        {focusedInfo.ducks} {opSymbol} {focusedInfo.sheep} ={" "}
-                        {focusedInfo.result}
-                      </span>
-                      .
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="mt-4 space-y-3 sm:space-y-4">
-                <button
-                  onClick={checkAnswer}
-                  className="w-full bg-emerald-500 text-white py-3.5 sm:py-4 rounded-2xl font-bold text-lg sm:text-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2"
-                >
-                  Check Pens
-                  <ArrowRight size={20} />
-                </button>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={giveHint}
-                    className="flex-1 bg-amber-50 text-amber-700 py-2.5 sm:py-3 rounded-2xl font-semibold text-xs sm:text-sm shadow-sm border border-amber-200 active:scale-95 transition-transform flex items-center justify-center gap-1.5"
-                  >
-                    <Lightbulb size={16} />
-                    Hint (fix one pen)
-                  </button>
-                  <button
-                    onClick={() => {
-                      const lvl = currentLevel;
-                      setUserMatrix(
-                        makeEmptyMatrix(lvl.A.length, lvl.A[0].length)
-                      );
-                      setFeedback(
-                        makeEmptyMatrix(lvl.A.length, lvl.A[0].length)
-                      );
-                      setAttempts(0);
-                      setFocusedCell(null);
-                      setView("game");
-                      setMessage(lvl.intro);
-                    }}
-                    className="flex-1 bg-slate-900 text-white py-2.5 sm:py-3 rounded-2xl font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2"
-                  >
-                    <RotateCcw size={16} />
-                    Reset
-                  </button>
-                </div>
-
-                <p className="text-[11px] text-slate-400 text-center">
-                  Attempts this level:{" "}
-                  <span className="font-semibold">{attempts}</span>
+        <div className="flex-1 max-w-5xl mx-auto w-full p-4 sm:p-6">
+          {/* TOP: MATRICES BOARD (simple UI + extra visuals) */}
+          <div
+            className={`bg-white rounded-2xl shadow p-4 sm:p-6 border border-slate-100 mb-4 ${
+              shake ? "animate-shake" : ""
+            }`}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+              <div className="text-center sm:text-left">
+                <p className="text-xs font-semibold text-slate-500">
+                  Level {currentLevel.id} · {currentLevel.name}
+                </p>
+                <p className="text-sm sm:text-base font-extrabold text-slate-800">
+                  {opTitle}: RESULT = {opChip}
                 </p>
               </div>
-            </div>
-          </div>
 
-          {/* RIGHT: matrices board */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 sm:py-8 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-            <div className="mb-4 sm:mb-6 text-center">
-              <p className="text-xs sm:text-sm font-semibold text-emerald-200 uppercase tracking-wide">
-                Level {currentLevel.id} · {currentLevel.name}
-              </p>
-              <p className="mt-1 text-sm sm:text-base text-slate-100 font-medium max-w-md mx-auto">
-                Fill the{" "}
-                <span className="font-semibold">
-                  RESULT = ducks {opSymbol} sheep
-                </span>{" "}
-                grid for every pen.
-              </p>
-            </div>
-
-            <div
-              className={`bg-slate-900/70 rounded-2xl shadow-xl p-3 sm:p-4 w-full max-w-xl overflow-x-auto ${
-                shake ? "animate-shake" : ""
-              }`}
-            >
-              <div className="min-w-[260px] flex flex-col gap-3 sm:gap-4 items-center">
-                {/* Equation row: A op B = Result */}
-                <div className="flex items-center justify-center gap-2 sm:gap-4">
-                  {/* Ducks matrix A */}
-                  <AnimalMatrixDisplay
-                    label="Ducks A"
-                    matrix={currentLevel.A}
-                    animal="duck"
-                  />
-                  <span className="text-white font-bold text-xl sm:text-2xl">
-                    {opSymbol}
-                  </span>
-                  {/* Sheep matrix B */}
-                  <AnimalMatrixDisplay
-                    label="Sheep B"
-                    matrix={currentLevel.B}
-                    animal="sheep"
-                  />
-                  <span className="text-white font-bold text-xl sm:text-2xl">
-                    =
-                  </span>
-                  {/* Result (editable) */}
-                  <ResultMatrix
-                    matrix={userMatrix}
-                    feedback={feedback}
-                    onCellChange={handleCellChange}
-                    onNudge={nudgeCell}
-                    onFocusCell={(r, c) => setFocusedCell({ row: r, col: c })}
-                  />
+              {/* mini progress bars */}
+              <div className="flex items-center justify-center sm:justify-end gap-2">
+                <div className="px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-[11px] font-bold text-blue-700">
+                  Filled: {progressStats.filled}/{progressStats.total}
+                </div>
+                <div className="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-[11px] font-bold text-emerald-700">
+                  Correct: {progressStats.correct}/{progressStats.total}
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 text-[11px] sm:text-xs text-slate-300 text-center max-w-xs space-y-1">
-              <p>
-                Ducks matrix shows 🦆. Sheep matrix shows 🐑. RESULT tells you
-                the story of each pen using {opSymbol}.
-              </p>
+            {/* equation row */}
+            <div className="overflow-x-auto">
+              <div className="min-w-[520px] flex items-center justify-center gap-4 sm:gap-6 py-2">
+                <AnimalMatrixDisplay
+                  label="Ducks A"
+                  matrix={currentLevel.A}
+                  animal="duck"
+                  highlightCell={focusedCell}
+                />
+
+                <div className="text-2xl font-black text-slate-700">{opSymbol}</div>
+
+                <AnimalMatrixDisplay
+                  label="Sheep B"
+                  matrix={currentLevel.B}
+                  animal="sheep"
+                  highlightCell={focusedCell}
+                />
+
+                <div className="text-2xl font-black text-slate-700">=</div>
+
+                <ResultMatrix
+                  matrix={userMatrix}
+                  feedback={feedback}
+                  onCellChange={handleCellChange}
+                  onNudge={nudgeCell}
+                  onFocusCell={(r, c) => setFocusedCell({ row: r, col: c })}
+                  focusedCell={focusedCell}
+                />
+              </div>
+            </div>
+
+            {/* focused pen "visualization strip" */}
+            {focusedInfo && (
+              <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="text-xs sm:text-sm">
+                    <div className="font-extrabold text-slate-800">
+                      Pen (row {focusedInfo.row + 1}, col {focusedInfo.col + 1})
+                    </div>
+                    <div className="text-slate-600">
+                      A: {focusedInfo.ducks} ducks 🦆 · B: {focusedInfo.sheep} sheep 🐑
+                    </div>
+                    <div className="mt-1 font-mono font-bold text-slate-800">
+                      {focusedInfo.ducks} {opSymbol} {focusedInfo.sheep} = {focusedInfo.result}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {/* tiny bars */}
+                    <div className="text-[11px] font-bold text-slate-600">
+                      Ducks
+                      <div className="font-mono text-slate-800">
+                        {animalBar(focusedInfo.ducks, 6)}
+                      </div>
+                    </div>
+                    <div className="text-[11px] font-bold text-slate-600">
+                      Sheep
+                      <div className="font-mono text-slate-800">
+                        {animalBar(focusedInfo.sheep, 6)}
+                      </div>
+                    </div>
+
+                    {/* typed vs correct chip */}
+                    <div
+                      className={`px-3 py-2 rounded-xl border text-[11px] font-extrabold ${
+                        focusedInfo.typed === "" || focusedInfo.typed === "-"
+                          ? "bg-white border-slate-200 text-slate-500"
+                          : parseInt(focusedInfo.typed, 10) === focusedInfo.result
+                          ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                          : "bg-rose-50 border-rose-200 text-rose-700"
+                      }`}
+                    >
+                      You typed:{" "}
+                      <span className="font-mono">
+                        {focusedInfo.typed === "" ? "…" : focusedInfo.typed}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <p className="mt-3 text-center text-[11px] text-slate-500">
+              Same place, same pen. Only mix animals in the same row and column.
+            </p>
+          </div>
+
+          {/* BOTTOM: MESSAGE + RULE + ACTIONS (simple UI like before) */}
+          <div className="bg-white rounded-2xl shadow p-4 sm:p-5 border border-slate-100">
+            <div className="flex gap-3">
+              <div className="w-11 h-11 rounded-full bg-emerald-500 flex items-center justify-center text-white font-black text-lg shrink-0">
+                🐑
+              </div>
+              <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-sm sm:text-base font-medium text-slate-700 w-full">
+                {message}
+              </div>
+            </div>
+
+            {/* simple rule card */}
+            <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs sm:text-sm">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="font-bold text-slate-700">
+                  Rule: RESULT[i][j] = ducks[i][j] {opSymbol} sheep[i][j]
+                </div>
+                <span className="px-3 py-1 rounded-full bg-white border border-slate-200 text-[11px] font-bold text-slate-600">
+                  {currentLevel.op === "add" ? "Add totals" : "Compare who is more"}
+                </span>
+              </div>
+              {currentLevel.op === "sub" && (
+                <div className="mt-2 text-[11px] text-slate-600">
+                  Positive → more ducks 🦆 · Negative → more sheep 🐑
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+              <div className="flex gap-2">
+                <button
+                  onClick={checkAnswer}
+                  className="bg-emerald-500 text-white px-4 py-2.5 rounded-xl font-extrabold shadow hover:bg-emerald-600 transition-colors flex items-center gap-2"
+                >
+                  Check
+                  <ArrowRight size={18} />
+                </button>
+
+                <button
+                  onClick={giveHint}
+                  className="bg-amber-100 text-amber-800 px-4 py-2.5 rounded-xl font-extrabold border border-amber-200 hover:bg-amber-200 transition-colors flex items-center gap-2"
+                >
+                  <Lightbulb size={18} />
+                  Hint
+                </button>
+
+                <button
+                  onClick={() => {
+                    const lvl = currentLevel;
+                    setUserMatrix(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
+                    setFeedback(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
+                    setAttempts(0);
+                    setFocusedCell(null);
+                    setView("game");
+                    setMessage(lvl.intro);
+                  }}
+                  className="bg-slate-800 text-white px-4 py-2.5 rounded-xl font-extrabold hover:bg-slate-900 transition-colors flex items-center gap-2"
+                >
+                  <RotateCcw size={18} />
+                  Reset
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between sm:justify-end gap-3 text-xs text-slate-500">
+                <span className="font-semibold">
+                  Attempts: <span className="text-slate-800">{attempts}</span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -575,29 +585,25 @@ const FarmMatrixAnimals = () => {
 
       {/* WIN SCREEN */}
       {view === "win" && (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-slate-50">
-          <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-2xl text-center max-w-sm w-full border-4 border-emerald-100">
-            <div className="inline-flex bg-emerald-100 p-3 sm:p-4 rounded-full mb-4 text-emerald-500">
-              <Grid3x3 size={40} />
+        <div className="flex-1 flex items-center justify-center p-6 bg-blue-50">
+          <div className="bg-white p-6 rounded-2xl shadow-xl text-center max-w-sm w-full border-2 border-emerald-100">
+            <div className="inline-flex bg-emerald-100 p-3 rounded-full mb-4 text-emerald-600">
+              <Grid3x3 size={34} />
             </div>
-            <h2 className="text-2xl sm:3xl font-black text-slate-800 mb-2">
-              Farm Pens Perfect!
-            </h2>
-            <p className="text-sm sm:text-base text-slate-600 mb-5 sm:mb-6">
-              Every pen follows{" "}
+            <h2 className="text-2xl font-extrabold text-slate-800 mb-2">Farm Pens Perfect!</h2>
+            <p className="text-sm text-slate-600 mb-5">
+              You finished{" "}
               <span className="font-semibold">
                 ducks {opSymbol} sheep
-              </span>
-              . You just did matrix{" "}
-              {currentLevel.op === "add" ? "addition" : "subtraction"} on a
-              duck–sheep farm.
+              </span>{" "}
+              for every pen.
             </p>
 
-            <div className="flex justify-center gap-2 mb-6 sm:mb-8">
+            <div className="flex justify-center gap-2 mb-6">
               {[1, 2, 3].map((s) => (
                 <Star
                   key={s}
-                  size={30}
+                  size={28}
                   className={
                     s <= starsThisLevel
                       ? "text-amber-400 fill-amber-400"
@@ -609,25 +615,25 @@ const FarmMatrixAnimals = () => {
 
             <button
               onClick={goNextLevel}
-              className="w-full bg-emerald-500 text-white py-3.5 sm:py-4 rounded-2xl font-bold text-lg sm:text-xl shadow-lg hover:bg-emerald-600 transition-colors flex justify-center gap-2 items-center"
+              className="w-full bg-emerald-500 text-white py-3 rounded-xl font-extrabold text-lg shadow hover:bg-emerald-600 transition-colors flex justify-center gap-2 items-center"
             >
               Next Field
               <ArrowRight size={20} />
             </button>
+
             <button
               onClick={() => {
                 setView("game");
                 setAttempts(0);
                 setMessage(currentLevel.intro);
               }}
-              className="mt-3 sm:mt-4 text-slate-400 font-bold text-xs sm:text-sm hover:text-slate-600"
+              className="mt-3 text-slate-400 font-bold text-xs hover:text-slate-600"
             >
               Replay Level
             </button>
 
             <p className="mt-4 text-[11px] text-slate-400">
-              Stars this level: {starsThisLevel} / 3 · Total: {totalStars} /{" "}
-              {totalMaxStars}
+              Stars this level: {starsThisLevel} / 3 · Total: {totalStars} / {totalMaxStars}
             </p>
           </div>
         </div>
@@ -640,9 +646,7 @@ const FarmMatrixAnimals = () => {
           25% { transform: translateX(-6px); }
           75% { transform: translateX(6px); }
         }
-        .animate-shake {
-          animation: shake-farm 0.35s ease-in-out;
-        }
+        .animate-shake { animation: shake-farm 0.35s ease-in-out; }
       `}</style>
     </div>
   );
@@ -650,31 +654,36 @@ const FarmMatrixAnimals = () => {
 
 // ---------- Presentational subcomponents ----------
 
-const AnimalMatrixDisplay = ({ label, matrix, animal }) => {
+const AnimalMatrixDisplay = ({ label, matrix, animal, highlightCell }) => {
   const emoji = animal === "duck" ? "🦆" : "🐑";
+  const color = animal === "duck" ? "bg-sky-500" : "bg-violet-500";
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <span className="text-[11px] text-slate-300 mb-0.5">{label}</span>
-      <div className="inline-flex rounded-xl bg-slate-900 px-1.5 py-1 shadow-lg">
+      <span className="text-[11px] text-slate-500 font-bold">{label}</span>
+
+      <div className={`${color} rounded-xl p-3 shadow`}>
         <div
-          className="border-2 border-slate-600 rounded-lg px-2 py-1 grid gap-1 text-xs sm:text-sm text-white font-mono"
-          style={{
-            gridTemplateColumns: `repeat(${matrix[0].length}, minmax(0, 1fr))`,
-          }}
+          className="grid gap-2"
+          style={{ gridTemplateColumns: `repeat(${matrix[0].length}, 44px)` }}
         >
           {matrix.map((row, i) =>
-            row.map((val, j) => (
-              <div
-                key={`${i}-${j}`}
-                className="flex flex-col items-center justify-center px-1 py-0.5 rounded-md bg-slate-800/60"
-              >
-                <span>{val}</span>
-                <span className="text-[11px]">
-                  {renderAnimals(val, emoji)}
-                </span>
-              </div>
-            ))
+            row.map((val, j) => {
+              const isFocused =
+                highlightCell && highlightCell.row === i && highlightCell.col === j;
+
+              return (
+                <div
+                  key={`${i}-${j}`}
+                  className={`w-11 h-11 rounded-lg flex flex-col items-center justify-center font-mono text-sm
+                    ${isFocused ? "bg-white text-slate-900 ring-2 ring-yellow-300" : "bg-white/20 text-white"}
+                  `}
+                >
+                  <div className="leading-none font-bold">{val}</div>
+                  <div className="text-[11px] leading-none">{renderAnimals(val, emoji)}</div>
+                </div>
+              );
+            })
           )}
         </div>
       </div>
@@ -682,87 +691,71 @@ const AnimalMatrixDisplay = ({ label, matrix, animal }) => {
   );
 };
 
-const ResultMatrix = ({
-  matrix,
-  feedback,
-  onCellChange,
-  onNudge,
-  onFocusCell,
-}) => {
-  const rows = matrix.length;
+const ResultMatrix = ({ matrix, feedback, onCellChange, onNudge, onFocusCell, focusedCell }) => {
   const cols = matrix[0].length;
 
   const cellClass = (fb) => {
-    if (fb === "correct")
-      return "border-emerald-400 bg-emerald-50 text-emerald-700";
+    if (fb === "correct") return "border-emerald-400 bg-emerald-50 text-emerald-700";
     if (fb === "wrong") return "border-rose-400 bg-rose-50 text-rose-700";
     if (fb === "empty") return "border-slate-300 bg-slate-50 text-slate-700";
-    return "border-slate-200 bg-slate-50 text-slate-700";
+    return "border-slate-200 bg-white text-slate-700";
   };
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <span className="text-[11px] text-slate-300 mb-0.5">RESULT</span>
-      <div className="inline-flex rounded-xl bg-slate-900 px-1.5 py-1 shadow-lg">
-        <div
-          className="border-2 border-slate-600 rounded-lg px-2 py-1 grid gap-1"
-          style={{
-            gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-          }}
-        >
+      <span className="text-[11px] text-slate-500 font-bold">RESULT</span>
+
+      <div className="bg-slate-100 rounded-xl p-3 border border-slate-200">
+        <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${cols}, 64px)` }}>
           {matrix.map((row, i) =>
-            row.map((val, j) => (
-              <div
-                key={`${i}-${j}`}
-                className={`flex flex-col items-center justify-center rounded-lg border px-1.5 py-1 ${cellClass(
-                  feedback[i][j]
-                )}`}
-              >
-                <input
-                  type="text"
-                  value={val}
-                  onChange={(e) =>
-                    onCellChange(i, j, e.target.value.trim())
-                  }
-                  onFocus={() => onFocusCell(i, j)}
-                  className="w-10 sm:w-12 bg-transparent text-center text-xs sm:text-sm font-mono outline-none"
-                />
-                <div className="flex gap-1 mt-0.5">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onFocusCell(i, j);
-                      onNudge(i, j, -1);
-                    }}
-                    className="w-4 h-4 rounded-full bg-slate-800 text-[10px] text-white flex items-center justify-center active:scale-95"
-                  >
-                    <ChevronLeft size={10} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onFocusCell(i, j);
-                      onNudge(i, j, +1);
-                    }}
-                    className="w-4 h-4 rounded-full bg-slate-800 text-[10px] text-white flex items-center justify-center active:scale-95"
-                  >
-                    <ChevronRight size={10} />
-                  </button>
+            row.map((val, j) => {
+              const isFocused = focusedCell && focusedCell.row === i && focusedCell.col === j;
+
+              return (
+                <div
+                  key={`${i}-${j}`}
+                  className={`rounded-xl border p-2 ${cellClass(feedback[i][j])} ${
+                    isFocused ? "ring-2 ring-yellow-400" : ""
+                  }`}
+                >
+                  <input
+                    type="text"
+                    value={val}
+                    onChange={(e) => onCellChange(i, j, e.target.value.trim())}
+                    onFocus={() => onFocusCell(i, j)}
+                    className="w-full bg-transparent text-center text-lg font-mono outline-none"
+                  />
+
+                  <div className="mt-1 flex justify-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onFocusCell(i, j);
+                        onNudge(i, j, -1);
+                      }}
+                      className="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 flex items-center justify-center"
+                    >
+                      <ChevronLeft size={14} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onFocusCell(i, j);
+                        onNudge(i, j, +1);
+                      }}
+                      className="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 flex items-center justify-center"
+                    >
+                      <ChevronRight size={14} />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
     </div>
   );
-};
-
-// helper to show up to 4 animals nicely
-const renderAnimals = (n, emoji) => {
-  if (n <= 0) return "";
-  if (n <= 4) return Array.from({ length: n }, () => emoji).join("");
-  return `${emoji}×${n}`;
 };
 
 export default FarmMatrixAnimals;
