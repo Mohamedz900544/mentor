@@ -17,6 +17,7 @@ import CoordinatesLesson from "./CoordinatesGame";
 import CoordinatePairsLesson from "./CoordinatePairsLesson";
 import AxesLesson from "./AxesLesson";
 import XAndYCoordinatesLesson from "./XAndYCoordinatesLesson";
+import PlottingPointsLesson from "./PlottingPointsLesson";
 
 
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
         <Route path="/pair-Lesson" element={<CoordinatePairsLesson/>} />
         <Route path="/axes-Lesson" element={<AxesLesson/>} />
         <Route path="/xys-Lesson" element={<XAndYCoordinatesLesson/>} />
+        <Route path="/ploting-Lesson" element={<PlottingPointsLesson/>} />
 
       </Routes>
     </BrowserRouter>
