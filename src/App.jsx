@@ -22,6 +22,9 @@ import IdentifyingPointsLesson from "./IdentifyingPointsLesson";
 import AppliedCoordinatesLesson from "./AppliedCoordinatesLesson";
 import CoordinateRevesion from "./CoordinateRevesion";
 import CoordinatePlaneLevel from "./CoordinatePlaneLevel";
+import CurrentLoopsLesson from "./CurrentLoopsLesson";
+import ShortCircuitsLesson from "./ShortCircuitsLesson";
+import ChoosingBulbsLesson from "./ChoosingBulbsLesson";
 
 
 export default function App() {
@@ -52,6 +55,10 @@ export default function App() {
         <Route path="/Applied-Lesson" element={<AppliedCoordinatesLesson/>} />
         <Route path="/Applied-revesion" element={<CoordinateRevesion/>} />
         <Route path="/panelco" element={<CoordinatePlaneLevel/>} />
+
+        <Route path="/cyrrebr" element={<CurrentLoopsLesson/>} />
+        <Route path="/ShortCircuits-Lesson" element={<ShortCircuitsLesson/>} />
+        <Route path="/ChoosingBulbs-Lesson" element={<ChoosingBulbsLesson/>} />
 
       </Routes>
     </BrowserRouter>
