@@ -26,6 +26,8 @@ import CurrentLoopsLesson from "./CurrentLoopsLesson";
 import ShortCircuitsLesson from "./ShortCircuitsLesson";
 import ChoosingBulbsLesson from "./ChoosingBulbsLesson";
 import SplittingCurrentLesson from "./SplittingCurrentLesson";
+import CircuitUnitMap from "./CircuitUnitMap";
+import LearningPathsMain from "./LearningPathsMain";
 
 
 export default function App() {
@@ -61,6 +63,13 @@ export default function App() {
         <Route path="/ShortCircuits-Lesson" element={<ShortCircuitsLesson/>} />
         <Route path="/ChoosingBulbs-Lesson" element={<ChoosingBulbsLesson/>} />
         <Route path="/ss-Lesson" element={<SplittingCurrentLesson/>} />
+
+        <Route path="/CircuitUnit-Map" element={<CircuitUnitMap/>} />
+
+        <Route path="/LearningPaths-Main" element={<LearningPathsMain/>} />
+
+
+        
 
       </Routes>
     </BrowserRouter>
