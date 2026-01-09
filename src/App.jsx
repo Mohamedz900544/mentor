@@ -2,31 +2,35 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Home from "./app/Home";
 
-import BalanceBeamLab from "./BalanceBeamLab";
-import MirrorBounceLab from "./MirrorBounceLab";
-import CircuitLoopGame from "./CircuitLoopGame";
-import FractionSmashProduct from "./FractionSmashProduct";
-import FractionSnakeGame from "./FractionSnakeGame";
-import FractionGardenGame from "./FractionGardenGame";
-import MatrixPortalQuest from "./MatrixPortalQuest";
-import MatrixCandyMixer from "./MatrixCandyMixer";
-import FarmMatrixAnimals from "./FarmMatrixAnimals";
-import MatrixTileDrop from "./MatrixTileDrop";
-import FractionGame from "./FractionGame";
-import CoordinatesLesson from "./CoordinatesGame";
-import CoordinatePairsLesson from "./CoordinatePairsLesson";
-import AxesLesson from "./AxesLesson";
-import XAndYCoordinatesLesson from "./XAndYCoordinatesLesson";
-import PlottingPointsLesson from "./PlottingPointsLesson";
-import IdentifyingPointsLesson from "./IdentifyingPointsLesson";
-import AppliedCoordinatesLesson from "./AppliedCoordinatesLesson";
-import CoordinateRevesion from "./CoordinateRevesion";
-import CoordinatePlaneLevel from "./CoordinatePlaneLevel";
-import CurrentLoopsLesson from "./CurrentLoopsLesson";
-import ShortCircuitsLesson from "./ShortCircuitsLesson";
-import ChoosingBulbsLesson from "./ChoosingBulbsLesson";
-import SplittingCurrentLesson from "./SplittingCurrentLesson";
-import CircuitUnitMap from "./CircuitUnitMap";
+import BalanceBeamLab from "./RandomGames/BalanceBeamLab";
+import MirrorBounceLab from "./RandomGames/MirrorBounceLab";
+import CircuitLoopGame from "./RandomGames/CircuitLoopGame";
+import FractionSmashProduct from "./RandomGames/FractionSmashProduct";
+import FractionSnakeGame from "./RandomGames/FractionSnakeGame";
+import FractionGardenGame from "./RandomGames/FractionGardenGame";
+import MatrixPortalQuest from "./RandomGames/MatrixPortalQuest";
+import MatrixCandyMixer from "./RandomGames/MatrixCandyMixer";
+import FarmMatrixAnimals from "./RandomGames/FarmMatrixAnimals";
+import MatrixTileDrop from "./RandomGames/MatrixTileDrop";
+import FractionGame from "./RandomGames/FractionGame";
+
+import CoordinatesLesson from "./Mathematics/Coordinate Plane/Level 1 Points & Pairs/CoordinatesGame";
+import CoordinatePairsLesson from "./Mathematics/Coordinate Plane/Level 1 Points & Pairs/CoordinatePairsLesson";
+import AxesLesson from "./Mathematics/Coordinate Plane/Level 1 Points & Pairs/AxesLesson";
+import XAndYCoordinatesLesson from "./Mathematics/Coordinate Plane/Level 1 Points & Pairs/XAndYCoordinatesLesson";
+import PlottingPointsLesson from "./Mathematics/Coordinate Plane/Level 1 Points & Pairs/PlottingPointsLesson";
+import IdentifyingPointsLesson from "./Mathematics/Coordinate Plane/Level 1 Points & Pairs/IdentifyingPointsLesson";
+import AppliedCoordinatesLesson from "./Mathematics/Coordinate Plane/Level 1 Points & Pairs/AppliedCoordinatesLesson";
+import CoordinateRevesion from "./Mathematics/Coordinate Plane/Level 1 Points & Pairs/CoordinateRevesion";
+
+import CoordinatePlaneLevel from "./Mathematics/Coordinate Plane/CoordinatePlaneLevel";
+
+import CurrentLoopsLesson from "./Physics & Engineering/Electrical Circuits/Level 1 Current & Circuits/CurrentLoopsLesson";
+import ShortCircuitsLesson from "./Physics & Engineering/Electrical Circuits/Level 1 Current & Circuits/ShortCircuitsLesson";
+import ChoosingBulbsLesson from "./Physics & Engineering/Electrical Circuits/Level 1 Current & Circuits/ChoosingBulbsLesson";
+import SplittingCurrentLesson from "./Physics & Engineering/Electrical Circuits/Level 1 Current & Circuits/SplittingCurrentLesson";
+import CircuitUnitMap from "./Physics & Engineering/Electrical Circuits/CircuitUnitMap";
+
 import LearningPathsMain from "./LearningPathsMain";
 
 
@@ -57,6 +61,7 @@ export default function App() {
         <Route path="/Identifying-Lesson" element={<IdentifyingPointsLesson/>} />
         <Route path="/Applied-Lesson" element={<AppliedCoordinatesLesson/>} />
         <Route path="/Applied-revesion" element={<CoordinateRevesion/>} />
+        
         <Route path="/panelco" element={<CoordinatePlaneLevel/>} />
 
         <Route path="/cyrrebr" element={<CurrentLoopsLesson/>} />
