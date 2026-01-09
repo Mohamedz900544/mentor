@@ -25,6 +25,7 @@ import CoordinatePlaneLevel from "./CoordinatePlaneLevel";
 import CurrentLoopsLesson from "./CurrentLoopsLesson";
 import ShortCircuitsLesson from "./ShortCircuitsLesson";
 import ChoosingBulbsLesson from "./ChoosingBulbsLesson";
+import SplittingCurrentLesson from "./SplittingCurrentLesson";
 
 
 export default function App() {
@@ -59,6 +60,7 @@ export default function App() {
         <Route path="/cyrrebr" element={<CurrentLoopsLesson/>} />
         <Route path="/ShortCircuits-Lesson" element={<ShortCircuitsLesson/>} />
         <Route path="/ChoosingBulbs-Lesson" element={<ChoosingBulbsLesson/>} />
+        <Route path="/ss-Lesson" element={<SplittingCurrentLesson/>} />
 
       </Routes>
     </BrowserRouter>
