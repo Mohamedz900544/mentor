@@ -24,7 +24,7 @@ const STORAGE_KEY = "matrix_candy_mixer_progress_v1";
  * AUDIO FILES in: public/audio/
  */
 const VOICE_FILES = {
-  intro: "/audio/matrix_intro.mp3",
+  intro: "/audio/matrix_introo.mp3",
   fillAll: "/audio/matrix_fill_all.mp3",
   wrong: "/audio/matrix_wrong.mp3",
   correct: "/audio/matrix_correct.mp3",

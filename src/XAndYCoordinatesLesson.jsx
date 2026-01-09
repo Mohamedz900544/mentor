@@ -19,10 +19,10 @@ import {
 
 // --- SOUNDS ---
 const SOUNDS = {
-  pop: "https://assets.mixkit.co/active_storage/sfx/2578/2578-preview.m4a",
-  win: "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.m4a",
-  error: "https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.m4a",
-  snap: "https://assets.mixkit.co/active_storage/sfx/2578/2578-preview.m4a",
+  pop: "/audio/pop.mp3",
+  win: "/audio/win.mp3",
+  error: "/audio/matrix_intro.mp3",
+  snap: "/audio/matrix_intro.mp3",
 };
 
 // --- LESSON DATA: X & Y COORDS ---
