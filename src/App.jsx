@@ -40,6 +40,9 @@ import SplittingAndCombiningLesson from "./Mathematics/Arithmetic Thinking/Level
 import EqualPartsGame from "./Mathematics/Arithmetic Thinking/Level 1  Visualize Fractions/EqualPartsGame";
 import MoreFractionColoringLesson from "./Mathematics/Arithmetic Thinking/Level 1  Visualize Fractions/MoreFractionColoringLesson";
 import Panelfraction from "./Mathematics/Arithmetic Thinking/panelfraction";
+import SixthsAndTwelfthsLesson from "./Mathematics/Arithmetic Thinking/Level 2  Equivalent Fractions/SixthsAndTwelfthsLesson";
+import EighthsAndSixteenthsLesson from "./Mathematics/Arithmetic Thinking/Level 2  Equivalent Fractions/EighthsAndSixteenthsLesson";
+import MakingEquivalentFractionsLesson from "./MakingEquivalentFractionsLesson";
 
 
 export default function App() {
@@ -90,6 +93,10 @@ export default function App() {
         <Route path="/MoreFractionColoringLesson-1" element={<MoreFractionColoringLesson/>} />
 
         <Route path="/panelfraction-1" element={<Panelfraction/>} />
+
+        <Route path="/SixthsAndTwelfthsLesson-1" element={<SixthsAndTwelfthsLesson/>} />
+        <Route path="/EighthsAndSixteenthsLesson-1" element={<EighthsAndSixteenthsLesson/>} />
+        <Route path="/MakingEquivalentFractionsLesson-1" element={<MakingEquivalentFractionsLesson/>} />
 
 
 
