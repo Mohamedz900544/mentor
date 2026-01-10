@@ -42,7 +42,7 @@ import MoreFractionColoringLesson from "./Mathematics/Arithmetic Thinking/Level 
 import Panelfraction from "./Mathematics/Arithmetic Thinking/panelfraction";
 import SixthsAndTwelfthsLesson from "./Mathematics/Arithmetic Thinking/Level 2  Equivalent Fractions/SixthsAndTwelfthsLesson";
 import EighthsAndSixteenthsLesson from "./Mathematics/Arithmetic Thinking/Level 2  Equivalent Fractions/EighthsAndSixteenthsLesson";
-import MakingEquivalentFractionsLesson from "./MakingEquivalentFractionsLesson";
+import MakingEquivalentFractionsLesson from "./Mathematics/Arithmetic Thinking/Level 2  Equivalent Fractions/MakingEquivalentFractionsLesson";
 
 
 export default function App() {
