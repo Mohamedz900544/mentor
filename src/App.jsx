@@ -33,6 +33,14 @@ import CircuitUnitMap from "./Physics & Engineering/Electrical Circuits/CircuitU
 
 import LearningPathsMain from "./LearningPathsMain";
 
+import FindingHalfLesson1 from "./Mathematics/Arithmetic Thinking/Level 1  Visualize Fractions/FindingHalfLessons1";
+import CombiningPartsLesson from "./Mathematics/Arithmetic Thinking/Level 1  Visualize Fractions/CombiningPartsLesson";
+import SplittingPartsLesson from "./Mathematics/Arithmetic Thinking/Level 1  Visualize Fractions/SplittingPartsLesson";
+import SplittingAndCombiningLesson from "./Mathematics/Arithmetic Thinking/Level 1  Visualize Fractions/SplittingAndCombiningLesson";
+import EqualPartsGame from "./Mathematics/Arithmetic Thinking/Level 1  Visualize Fractions/EqualPartsGame";
+import MoreFractionColoringLesson from "./Mathematics/Arithmetic Thinking/Level 1  Visualize Fractions/MoreFractionColoringLesson";
+import Panelfraction from "./Mathematics/Arithmetic Thinking/panelfraction";
+
 
 export default function App() {
   return (
@@ -72,6 +80,18 @@ export default function App() {
         <Route path="/CircuitUnit-Map" element={<CircuitUnitMap/>} />
 
         <Route path="/LearningPaths-Main" element={<LearningPathsMain/>} />
+
+
+        <Route path="/FindingHalfLesson-1" element={<FindingHalfLesson1/>} />
+        <Route path="/CombiningPartsLesson-1" element={<CombiningPartsLesson/>} />
+        <Route path="/SplittingPartsLesson-1" element={<SplittingPartsLesson/>} />
+        <Route path="/SplittingAndCombiningLesson-1" element={<SplittingAndCombiningLesson/>} />
+        <Route path="/EqualPartsGame-1" element={<EqualPartsGame/>} />
+        <Route path="/MoreFractionColoringLesson-1" element={<MoreFractionColoringLesson/>} />
+
+        <Route path="/panelfraction-1" element={<Panelfraction/>} />
+
+
 
 
         

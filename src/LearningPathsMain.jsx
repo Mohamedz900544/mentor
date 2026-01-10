@@ -8,6 +8,7 @@ import { BookOpen, MapPin, Zap, ChevronRight, Star, Atom, GraduationCap } from "
 const ROUTES = {
   coordinatePlane: "/panelco",
   circuits: "/CircuitUnit-Map",
+    fractionsLevel1: "/panelfraction-1",
 };
 
 const CourseCard = ({ title, subtitle, Icon, badge, onClick, theme = "blue" }) => {
@@ -181,6 +182,16 @@ export default function LearningPathsMain() {
                   theme="blue"
                   onClick={() => navigate(ROUTES.coordinatePlane)}
                 />
+                <CourseCard
+  title="Fractions"
+  subtitle="Learn halves, equal parts, splitting, and combining fractions through interactive games."
+  Icon={Star}
+  badge="New"
+  theme="blue"
+  onClick={() => navigate(ROUTES.fractionsLevel1)}
+/>
+
+                
                 
                 {/* Placeholder */}
                 <div className="opacity-40 grayscale pointer-events-none select-none">
