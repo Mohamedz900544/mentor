@@ -1,1068 +1,735 @@
-// src/MatrixCandyMixer.jsx
-// ✅ Same logic + guides + sounds
-// ✅ UI simplified to kid-friendly like before (flat, bright, less panels)
-// ✅ Kept: Start screen + Tour overlay + Guide stages + Audio unlock/intro once + Hint/Check/Reset + Focus highlight (Level 1)
+import React, { useState, useEffect } from 'react';
+import { Book, ChevronRight, ChevronLeft, Battery, Zap, Lightbulb, Settings, Volume2, ShieldCheck, PenTool, Award, Star, Info, List, ClipboardList, CheckSquare } from 'lucide-react';
 
-import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import {
-  Grid3x3,
-  Star,
-  Home,
-  Smile,
-  ArrowRight,
-  RotateCcw,
-  Lightbulb,
-  ChevronLeft,
-  ChevronRight,
-  Volume2,
-  X,
-} from "lucide-react";
+const BilingualBook = () => {
+  const [currentPage, setCurrentPage] = useState(0);
+  const [printMode, setPrintMode] = useState(false);
 
-const STORAGE_KEY = "matrix_candy_mixer_progress_v1";
-
-/**
- * AUDIO FILES in: public/audio/
- */
-const VOICE_FILES = {
-  intro: "/audio/matrix_introo.mp3",
-  fillAll: "/audio/matrix_fill_all.mp3",
-  wrong: "/audio/matrix_wrong.mp3",
-  correct: "/audio/matrix_correct.mp3",
-  hint: "/audio/matrix_hint.mp3",
-  win: "/audio/matrix_win.mp3",
-  tab_story: "/audio/matrix_tab_story.mp3",
-  tab_how: "/audio/matrix_tab_how.mp3",
-  tab_rule: "/audio/matrix_tab_rule.mp3",
-};
-
-/**
- * Safe audio: explicit unlock() must be called from user click.
- */
-const useVoicePlayer = () => {
-  const audioMapRef = useRef({});
-  const unlockedRef = useRef(false);
-
-  const getAudio = useCallback((key) => {
-    const src = VOICE_FILES[key];
-    if (!src) return null;
-
-    if (!audioMapRef.current[key]) {
-      const a = new Audio(src);
-      a.preload = "auto";
-      audioMapRef.current[key] = a;
-    }
-    return audioMapRef.current[key];
-  }, []);
-
-  const unlock = useCallback(async () => {
-    if (unlockedRef.current) return true;
-    const a = getAudio("intro");
-    if (!a) return false;
-
-    try {
-      a.muted = true;
-      await a.play();
-      a.pause();
-      a.currentTime = 0;
-      a.muted = false;
-      unlockedRef.current = true;
-      return true;
-    } catch (e) {
-      console.warn("Audio unlock failed:", e);
-      return false;
-    }
-  }, [getAudio]);
-
-  const play = useCallback(
-    async (key) => {
-      if (!unlockedRef.current) return;
-      const audio = getAudio(key);
-      if (!audio) return;
-
-      try {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.volume = 1;
-        await audio.play();
-      } catch (e) {
-        console.warn(`Play failed for "${key}":`, e);
-      }
+  // 1. Enhanced Data with "Theme" for colors
+  const lessonsData = [
+    {
+      num: 1,
+      icon: <Battery size={40} />,
+      titleEn: "The Secret of Energy",
+      titleAr: "سر الطاقة",
+      // Page 1 Content
+      objectivesEn: ["Understand what electricity is.", "Identify the role of batteries.", "Learn about Positive (+) and Negative (-) sides."],
+      objectivesAr: ["فهم ماهي الكهرباء.", "التعرف على وظيفة البطارية.", "التمييز بين القطب الموجب (+) والسالب (-)."],
+      storyEn: "Meet WalkyBot, our robot friend! He is currently sleeping deeply and won't wake up. Just like you need breakfast to run and play, WalkyBot needs his own special food. It's not apples or sandwiches... it's Electricity! We keep this electricity inside magical cans called 'Batteries'. But be careful! Batteries have two sides, a bump (+) and a flat side (-). They must face the right way to work.",
+      storyAr: "تعرفوا على صديقنا الروبوت 'واكي بوت'! إنه نائم في سبات عميق ولا يريد الاستيقاظ. تماماً كما تحتاج أنت إلى وجبة الإفطار لتجري وتلعب، يحتاج 'واكي بوت' إلى طعامه الخاص. طعامه ليس التفاح أو الشطائر... بل هو 'الكهرباء'! نحن نحفظ هذه الكهرباء داخل علب سحرية نسميها 'البطاريات'. لكن انتبه! البطارية لها وجهان، وجه بارز (+) ووجه مسطح (-). يجب أن نضعها في الاتجاه الصحيح لتعمل.",
+      toolsEn: ["WalkyBot Robot", "2x AA Batteries", "Battery Holder"],
+      toolsAr: ["روبوت 'واكي بوت'", "2 بطارية قلم (AA)", "بيت البطارية"],
+      // Page 2 Content
+      stepsEn: [
+        "Find the battery holder on WalkyBot's back.",
+        "Look for the (+) and (-) signs inside the holder.",
+        "Match the bump on the battery to the (+) sign.",
+        "Push the batteries in firmly.",
+        "Switch the button to ON."
+      ],
+      stepsAr: [
+        "ابحث عن مكان البطارية في ظهر 'واكي بوت'.",
+        "فتش عن علامة الموجب (+) والسالب (-) داخل العلبة.",
+        "اجعل الطرف البارز للبطارية يلامس علامة (+).",
+        "اضغط البطاريات للداخل بإحكام.",
+        "حرك زر التشغيل لوضع (ON)."
+      ],
+      observationEn: "Did WalkyBot move fast or slow? Did he make any sound?",
+      observationAr: "هل تحرك 'واكي بوت' بسرعة أم ببطء؟ وهل أصدر أي صوت؟",
+      funFactEn: "The first battery was invented by Alessandro Volta in 1800 using zinc and copper discs!",
+      funFactAr: "أول بطارية في العالم اخترعها أليساندرو فولتا عام 1800 باستخدام أقراص من الزنك والنحاس!",
+      challengeEn: "Try putting one battery backward. Does the robot still work? Why?",
+      challengeAr: "جرب وضع بطارية واحدة بشكل معكوس. هل لا يزال الروبوت يعمل؟ لماذا؟",
+      color: "bg-yellow-500",
+      theme: "yellow"
     },
-    [getAudio]
-  );
-
-  return { play, unlock };
-};
-
-// ---------- Progress helpers ----------
-const loadProgress = () => {
-  if (typeof window === "undefined") return { level: 0, stars: {} };
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : { level: 0, stars: {} };
-  } catch {
-    return { level: 0, stars: {} };
-  }
-};
-
-const saveProgress = (progress) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-  } catch {
-    // ignore
-  }
-};
-
-// ---------- Levels ----------
-const LEVELS = [
-  {
-    id: 1,
-    name: "Tiny Candy Sum",
-    op: "add",
-    intro:
-      "Each number is candies in a box. Add the candies from tray A and tray B to fill the result grid.",
-    A: [
-      [1, 2],
-      [0, 3],
-    ],
-    B: [
-      [2, 1],
-      [4, 0],
-    ],
-  },
-  {
-    id: 2,
-    name: "Zero Boxes",
-    op: "add",
-    intro:
-      "Zero means an empty box. Add box by box: result = A + B (top-left with top-left, and so on).",
-    A: [
-      [3, 0],
-      [1, 2],
-    ],
-    B: [
-      [1, 1],
-      [0, 4],
-    ],
-  },
-  {
-    id: 3,
-    name: "Take Some Away",
-    op: "sub",
-    intro:
-      "Now we are TAKING candies away: result = A − B. Subtract the matching boxes.",
-    A: [
-      [5, 3],
-      [4, 2],
-    ],
-    B: [
-      [2, 1],
-      [1, 0],
-    ],
-  },
-  {
-    id: 4,
-    name: "Going Negative",
-    op: "sub",
-    intro:
-      "Sometimes we owe candies! If A has less than B in a box, the result can be negative.",
-    A: [
-      [2, 0],
-      [1, -1],
-    ],
-    B: [
-      [3, 1],
-      [0, 2],
-    ],
-  },
-  {
-    id: 5,
-    name: "Wide Candy Trays",
-    op: "add",
-    intro:
-      "Bigger trays! Add A and B cell by cell. Same position, same friends, then write the total.",
-    A: [
-      [1, 2, 0],
-      [0, 1, 3],
-    ],
-    B: [
-      [2, 0, 1],
-      [1, 1, 0],
-    ],
-  },
-  {
-    id: 6,
-    name: "Mixed Candy Change",
-    op: "sub",
-    intro:
-      "Last challenge: subtract B from A in a 2×3 grid. Some boxes will give negative answers.",
-    A: [
-      [4, 1, 2],
-      [0, 3, 1],
-    ],
-    B: [
-      [1, 2, 0],
-      [2, 1, 1],
-    ],
-  },
-];
-
-// ---------- Helpers ----------
-const makeEmptyMatrix = (rows, cols) =>
-  Array.from({ length: rows }, () => Array.from({ length: cols }, () => ""));
-
-const computeAnswer = (level) => {
-  const rows = level.A.length;
-  const cols = level.A[0].length;
-  const result = [];
-  for (let i = 0; i < rows; i++) {
-    const row = [];
-    for (let j = 0; j < cols; j++) {
-      const a = level.A[i][j];
-      const b = level.B[i][j];
-      row.push(level.op === "add" ? a + b : a - b);
-    }
-    result.push(row);
-  }
-  return result;
-};
-
-const MatrixCandyMixer = () => {
-  const [hasStarted, setHasStarted] = useState(false);
-  const [showTour, setShowTour] = useState(true);
-  const [tourStep, setTourStep] = useState(0);
-
-  const [progress, setProgress] = useState(loadProgress);
-  const [levelIndex, setLevelIndex] = useState(progress.level || 0);
-  const [userMatrix, setUserMatrix] = useState(() => {
-    const lvl = LEVELS[0];
-    return makeEmptyMatrix(lvl.A.length, lvl.A[0].length);
-  });
-  const [feedback, setFeedback] = useState(() => {
-    const lvl = LEVELS[0];
-    return makeEmptyMatrix(lvl.A.length, lvl.A[0].length);
-  });
-  const [focusedCell, setFocusedCell] = useState(null);
-  const [attempts, setAttempts] = useState(0);
-  const [view, setView] = useState("game");
-  const [message, setMessage] = useState(
-    `Welcome to Matrix Candy Mixer! Every number you see is candies in a box. Matrix A is candy tray A, and Matrix B is candy tray B. Your job is to fill the result grid by combining the candies in the same position. Let’s see how many candies we get in each box!`
-  );
-  const [shake, setShake] = useState(false);
-  const [infoTab, setInfoTab] = useState("story");
-  const [guideStage, setGuideStage] = useState(0);
-
-  // remember if intro voice has played (localStorage)
-  const [introPlayed, setIntroPlayed] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return localStorage.getItem("matrix_candy_intro_played") === "1";
-    } catch {
-      return false;
-    }
-  });
-
-  const { play: playVoice, unlock } = useVoicePlayer();
-
-  const currentLevel = LEVELS[levelIndex];
-  const correctMatrix = useMemo(() => computeAnswer(currentLevel), [currentLevel]);
-
-  const totalMaxStars = LEVELS.length * 3;
-  const totalStars = Object.values(progress.stars || {}).reduce((a, b) => a + b, 0);
-
-  const rows = currentLevel.A.length;
-  const cols = currentLevel.A[0].length;
-  const opSymbol = currentLevel.op === "add" ? "+" : "−";
-
-  const starsThisLevel = useMemo(() => {
-    if (view !== "win") return 0;
-    if (attempts === 0) return 3;
-    if (attempts === 1) return 2;
-    return 1;
-  }, [view, attempts]);
-
-  const handleChangeTab = useCallback(
-    (tab) => {
-      setInfoTab(tab);
-      playVoice(`tab_${tab}`);
+    {
+      num: 2,
+      icon: <Zap size={40} />,
+      titleEn: "The Closed Loop",
+      titleAr: "الدائرة المغلقة",
+      // Page 1
+      objectivesEn: ["Understand the concept of a Circuit.", "Learn why connections must be tight.", "Make an LED light up."],
+      objectivesAr: ["فهم مفهوم الدائرة الكهربائية.", "تعلم أهمية التوصيلات المحكمة.", "جعل لمبة LED تضيء."],
+      storyEn: "Electricity is very shy; it only travels on a safe road called a 'Circuit'. Think of it like a race track for cars. If the track has a gap or is broken, the cars must stop immediately. We need to build a complete circle of wires so the electricity can run from the battery, through the light, and back home to the battery.",
+      storyAr: "الكهرباء خجولة جداً؛ فهي تمشي فقط في طريق آمن نسميه 'الدائرة الكهربائية'. تخيلها مثل حلبة سباق السيارات. إذا كان الطريق مقطوعاً أو فيه حفرة، تتوقف السيارات فوراً. نحتاج لبناء دائرة كاملة متصلة من الأسلاك لكي تجري الكهرباء من البطارية، وتعبر خلال اللمبة، ثم تعود لبيتها في البطارية مرة أخرى.",
+      toolsEn: ["Battery Holder", "Red LED", "Red & Black Wires"],
+      toolsAr: ["حامل بطارية", "لمبة حمراء (LED)", "أسلاك حمراء وسوداء"],
+      // Page 2
+      stepsEn: [
+        "Take the red wire coming from the battery.",
+        "Wrap it around the Long Leg of the LED.",
+        "Take the black wire and wrap it around the Short Leg.",
+        "Check if the light turns on.",
+        "Try letting go of one wire."
+      ],
+      stepsAr: [
+        "أمسك السلك الأحمر القادم من البطارية.",
+        "لفه حول الرجل الطويلة للمبة (LED).",
+        "أمسك السلك الأسود ولفه حول الرجل القصيرة.",
+        "تأكد هل أضاءت اللمبة؟",
+        "جرب إفلات سلك واحد ولاحظ ماذا يحدث."
+      ],
+      observationEn: "Draw the shape of your circuit. Mark where the energy starts.",
+      observationAr: "ارسم شكل الدائرة التي صنعتها. ضع علامة X عند مكان خروج الطاقة.",
+      funFactEn: "Electricity travels at the speed of light! It can go around the world 7 times in one second.",
+      funFactAr: "الكهرباء تسافر بسرعة الضوء! يمكنها أن تدور حول كوكب الأرض 7 مرات في ثانية واحدة.",
+      challengeEn: "Make the light blink by touching the wires together like a drum beat.",
+      challengeAr: "اجعل الضوء يرمش (يفتح ويقفل) عن طريق لمس الأسلاك ببعضها كأنك تطبل.",
+      color: "bg-green-500",
+      theme: "green"
     },
-    [playVoice]
-  );
-
-  // when level changes, reset guidance text but DON'T replay intro if it was already played
-  useEffect(() => {
-    if (!hasStarted) return;
-    setGuideStage(0);
-    setInfoTab("story");
-    setMessage(currentLevel.intro);
-    if (!introPlayed) {
-      playVoice("intro");
+    {
+      num: 3,
+      icon: <Settings size={40} spin />,
+      titleEn: "Magic of Motion",
+      titleAr: "سحر الحركة",
+      // Page 1
+      objectivesEn: ["Distinguish between Light energy and Kinetic energy.", "Understand how a Motor works.", "Explore spinning directions."],
+      objectivesAr: ["التمييز بين الطاقة الضوئية والطاقة الحركية.", "فهم كيف يعمل الماتور.", "استكشاف اتجاهات الدوران."],
+      storyEn: "How do WalkyBot's wheels turn? Inside him, there is a strong muscle called a 'Motor'. Unlike the LED which glows, the motor spins! When electricity enters the motor, it creates invisible magnetic hands that push and spin the axle round and round. This is how we turn electric energy into Kinetic (movement) energy!",
+      storyAr: "كيف تدور عجلات 'واكي بوت'؟ يوجد بداخله عضلة قوية نسميها 'الماتور'. عكس اللمبة التي تضيء، الماتور يدور! عندما تدخل الكهرباء إلى الماتور، تخلق أيادٍ مغناطيسية خفية تدفع المحور ليدور ويدور. هكذا نحول الطاقة الكهربائية إلى طاقة حركية وننطلق!",
+      toolsEn: ["DC Motor with Fan", "Battery Pack", "Wires"],
+      toolsAr: ["ماتور صغير بمروحة", "علبة البطارية", "أسلاك"],
+      // Page 2
+      stepsEn: [
+        "Connect the motor wires to the battery wires.",
+        "Hold the motor tight, it will try to jump!",
+        "Feel the air from the fan.",
+        "Now, switch the red and black wires.",
+        "Did the wind direction change?"
+      ],
+      stepsAr: [
+        "وصل أسلاك الماتور بأسلاك البطارية.",
+        "أمسك الماتور جيداً، سيحاول القفز من يدك!",
+        "اشعر بهواء المروحة على وجهك.",
+        "الآن، اعكس توصيل الأسلاك (الأحمر مكان الأسود).",
+        "هل تغير اتجاه الهواء؟"
+      ],
+      observationEn: "When you swapped the wires, did the fan push air or pull air?",
+      observationAr: "عندما عكست الأسلاك، هل قامت المروحة بدفع الهواء نحوك أم سحبه بعيداً؟",
+      funFactEn: "Electric cars use huge motors just like this one to move without gasoline.",
+      funFactAr: "السيارات الكهربائية تستخدم مواتير ضخمة تشبه هذا الماتور تماماً لتتحرك بدون بنزين.",
+      challengeEn: "Can you make the fan spin slowly? Try using only one battery instead of two.",
+      challengeAr: "هل يمكنك جعل المروحة تدور ببطء؟ جرب استخدام بطارية واحدة فقط بدلاً من اثنتين.",
+      color: "bg-orange-500",
+      theme: "orange"
+    },
+    {
+      num: 4,
+      icon: <Zap size={40} />,
+      titleEn: "Power from My Hands",
+      titleAr: "طاقة من يدي",
+      // Page 1
+      objectivesEn: ["Learn about Generators.", "Convert muscle power to electricity.", "Understand reversible energy."],
+      objectivesAr: ["التعرف على المولدات.", "تحويل طاقة العضلات لكهرباء.", "فهم الطاقة العكسية."],
+      storyEn: "Did you know you can make electricity without buying batteries? With a device called a 'Generator', you can use your own muscles to make power! Inside the generator, coils of wire spin near magnets to create a flow of electricity. It's the opposite of a motor. Motor: Electricity -> Motion. Generator: Motion -> Electricity.",
+      storyAr: "هل تعلم أنك تستطيع صنع الكهرباء دون شراء بطاريات؟ باستخدام جهاز يسمى 'المولد'، يمكنك استخدام عضلاتك القوية لإنتاج الطاقة! داخل المولد، تدور ملفات من الأسلاك قرب مغناطيسات لتخلق تياراً كهربائياً. إنه عكس الماتور تماماً. الماتور يحول الكهرباء لحركة، والمولد يحول الحركة لكهرباء.",
+      toolsEn: ["Hand Crank Generator", "LED Light", "Motor"],
+      toolsAr: ["المولد اليدوي", "لمبة LED", "ماتور"],
+      // Page 2
+      stepsEn: [
+        "Connect the Hand Generator wires to the LED.",
+        "Turn the crank handle slowly.",
+        "Now turn it very fast!",
+        "Disconnect the LED and connect the Motor instead.",
+        "Can you make the fan spin with your hand power?"
+      ],
+      stepsAr: [
+        "وصل أسلاك المولد اليدوي باللمبة (LED).",
+        "لف ذراع المولد ببطء.",
+        "الآن لف الذراع بسرعة كبيرة!",
+        "افصل اللمبة ووصل الماتور بدلاً منها.",
+        "هل يمكنك جعل المروحة تدور بقوة يدك؟"
+      ],
+      observationEn: "Which was harder to turn: lighting the LED or spinning the fan?",
+      observationAr: "أيهما كان أصعب في التدوير: إضاءة اللمبة أم تدوير المروحة؟",
+      funFactEn: "Wind turbines are just giant hand generators that are pushed by the wind instead of hands.",
+      funFactAr: "توربينات الرياح العملاقة هي مجرد مولدات كبيرة، لكن الهواء هو من يحركها بدلاً من يدك.",
+      challengeEn: "How slowly can you turn the handle and still keep the light ON?",
+      challengeAr: "ما هو أبطأ دوران يمكنك فعله مع الحفاظ على اللمبة مضاءة؟",
+      color: "bg-purple-500",
+      theme: "purple"
+    },
+    {
+      num: 5,
+      icon: <PenTool size={40} />,
+      titleEn: "City of Dots (Breadboard)",
+      titleAr: "مدينة النقاط (لوحة التجارب)",
+      // Page 1
+      objectivesEn: ["Learn to use a Breadboard.", "Connect components without twisting wires.", "Understand columns and rows."],
+      objectivesAr: ["تعلم استخدام لوحة التجارب (Breadboard).", "توصيل المكونات بدون ربط الأسلاك.", "فهم الصفوف والأعمدة."],
+      storyEn: "Twisting wires together is messy and they can break. Engineers use a 'Breadboard' to build neat circuits. Imagine it as a Lego base for electronics! It has hidden metal strips underneath the holes that connect components together. All the holes in one vertical column are connected. It keeps everything organized.",
+      storyAr: "ربط الأسلاك ببعضها قد يكون فوضوياً وقد تنقطع. المهندسون يستخدمون 'لوحة التجارب' (Breadboard) لبناء دوائر مرتبة. تخيلها مثل قاعدة الليجو للإلكترونيات! توجد شرائط معدنية مخفية تحت الثقوب توصل القطع ببعضها. كل الثقوب في عمود رأسي واحد متصلة ببعضها. إنها تبقي كل شيء منظماً.",
+      toolsEn: ["Breadboard", "LED", "Jumper Wires", "Battery"],
+      toolsAr: ["لوحة تجارب", "لمبة LED", "أسلاك توصيل (Jumpers)", "بطارية"],
+      // Page 2
+      stepsEn: [
+        "Insert the LED legs into two different columns (e.g., Col 10 and Col 15).",
+        "Insert a red wire into the SAME column as the Long Leg.",
+        "Insert a black wire into the SAME column as the Short Leg.",
+        "Connect the other ends of wires to the battery.",
+        "It glows without touching components!"
+      ],
+      stepsAr: [
+        "أدخل أرجل اللمبة في عمودين مختلفين (مثلاً عمود 10 وعمود 15).",
+        "أدخل سلكاً أحمر في نفس العمود الموجود به الرجل الطويلة.",
+        "أدخل سلكاً أسود في نفس العمود الموجود به الرجل القصيرة.",
+        "وصل أطراف الأسلاك الأخرى بالبطارية.",
+        "إنها تضيء دون أن تمسك المكونات بيدك!"
+      ],
+      observationEn: "Draw a line showing how the electricity moved through the board.",
+      observationAr: "ارسم خطاً يوضح كيف انتقلت الكهرباء عبر الثقوب داخل اللوحة.",
+      funFactEn: "It's called a 'Breadboard' because long ago, inventors used actual wooden boards for cutting bread to hammer nails into!",
+      funFactAr: "سميت بهذا الاسم لأن المخترعين قديماً كانوا يستخدمون ألواح تقطيع الخبز الخشبية ويدقون فيها المسامير لبناء الدوائر!",
+      challengeEn: "Build a circuit where the LED is far away from the battery using the board tracks.",
+      challengeAr: "ابنِ دائرة تكون فيها اللمبة بعيدة عن البطارية مستخدماً مسارات اللوحة.",
+      color: "bg-blue-500",
+      theme: "blue"
+    },
+    {
+      num: 6,
+      icon: <Volume2 size={40} />,
+      titleEn: "Lights & Sounds",
+      titleAr: "أضواء وأصوات",
+      // Page 1
+      objectivesEn: ["Differentiate output devices.", "Learn how a Buzzer works.", "Build a noise-making circuit."],
+      objectivesAr: ["التمييز بين وحدات الإخراج.", "معرفة كيف يعمل الجرس.", "بناء دائرة تصدر صوتاً."],
+      storyEn: "Electricity speaks many languages. If we send it to an LED, it says 'Light'. If we send it to a Buzzer, it says 'BEEP!'. The Buzzer has a special plate inside called a piezo disc that vibrates very fast when electricity hits it, creating sound waves that tickle your ears. It is like an electronic drum.",
+      storyAr: "الكهرباء تتحدث لغات كثيرة. إذا أرسلناها للمبة تقول 'نور'. وإذا أرسلناها للجرس تقول 'بيييب!'. الجرس يحتوي على صفيحة خاصة بداخلة تسمى (بيزو) تهتز بسرعة جداً عندما تلمسها الكهرباء، فتصنع موجات صوتية تدغدغ أذنيك. إنه مثل طبلة إلكترونية صغيرة.",
+      toolsEn: ["Active Buzzer", "Breadboard", "Battery", "Wires"],
+      toolsAr: ["جرس (Buzzer)", "لوحة تجارب", "بطارية", "أسلاك"],
+      // Page 2
+      stepsEn: [
+        "Remove the LED from your breadboard.",
+        "Look at the Buzzer, find the Long Leg (+).",
+        "Insert the buzzer into the board.",
+        "Connect the Red wire to the Long Leg column.",
+        "Connect Black wire to Short leg. BEEP!"
+      ],
+      stepsAr: [
+        "انزع اللمبة من لوحة التجارب.",
+        "انظر للجرس، ابحث عن الرجل الطويلة (+).",
+        "ركب الجرس في اللوحة.",
+        "وصل السلك الأحمر بعمود الرجل الطويلة.",
+        "وصل السلك الأسود بعمود الرجل القصيرة. بييييب!"
+      ],
+      observationEn: "Touch the buzzer while it's beeping. Do you feel a tickle?",
+      observationAr: "المس سطح الجرس بإصبعك وهو يصدر صوتاً. هل تشعر بدغدغة الاهتزاز؟",
+      funFactEn: "The vibration in the buzzer moves thousands of times per second, similar to a bee's wings.",
+      funFactAr: "الاهتزاز داخل الجرس يتحرك آلاف المرات في الثانية الواحدة، تماماً مثل أجنحة النحلة.",
+      challengeEn: "Try to tap out a secret code rhythm. Beep-Beep-Long Beep!",
+      challengeAr: "حاول عمل شفرة سرية بصوت الجرس. تيت-تيت-تيييييت!",
+      color: "bg-pink-500",
+      theme: "pink"
+    },
+    {
+      num: 7,
+      icon: <Settings size={40} />,
+      titleEn: "The Traffic Officer (Switch)",
+      titleAr: "شرطي المرور (المفتاح)",
+      // Page 1
+      objectivesEn: ["Control the flow of electricity.", "Understand Open vs Closed circuits.", "Install a Push Button."],
+      objectivesAr: ["التحكم في تدفق الكهرباء.", "فهم الدائرة المفتوحة والمغلقة.", "تركيب مفتاح ضغط (زر)."],
+      storyEn: "We don't want to disconnect wires every time to stop the machine. We use a 'Switch'! It acts like a drawbridge. When the bridge is down (ON), cars pass. When the bridge is up (OFF), cars stop. You are now the master of the circuit, controlling when it works with a single click.",
+      storyAr: "لا نريد فصل الأسلاك بأيدينا كل مرة لإيقاف الآلة. نستخدم 'المفتاح'! إنه يعمل مثل الجسر المتحرك. عندما ينزل الجسر (ON)، تمر السيارات. وعندما يرتفع (OFF)، تتوقف. أنت الآن سيد الدائرة، تتحكم متى تعمل ومتى تتوقف بضغطة واحدة.",
+      toolsEn: ["Push Button Switch", "Buzzer/LED", "Breadboard"],
+      toolsAr: ["مفتاح ضغط (Push Button)", "جرس أو لمبة", "لوحة تجارب"],
+      // Page 2
+      stepsEn: [
+        "Place the Switch on the breadboard (across the middle gap).",
+        "Connect the Battery (+) to one leg of the switch.",
+        "Connect the other leg of the switch to the LED (+).",
+        "Connect the LED (-) back to Battery (-).",
+        "Press the button to fire the laser!"
+      ],
+      stepsAr: [
+        "ضع المفتاح على اللوحة (بحيث يعبر الفاصل في المنتصف).",
+        "وصل موجب البطارية (+) برجل واحدة للمفتاح.",
+        "وصل الرجل الأخرى للمفتاح بموجب اللمبة (+).",
+        "وصل سالب اللمبة (-) بسالب البطارية.",
+        "اضغط الزر لتطلق شعاع الليزر!"
+      ],
+      observationEn: "What happens when you let go of the button? Why?",
+      observationAr: "ماذا يحدث عندما ترفع إصبعك عن الزر؟ ولماذا؟",
+      funFactEn: "The light switch on your wall works exactly the same way, but it stays ON until you flip it back.",
+      funFactAr: "مفتاح النور في غرفتك يعمل بنفس الطريقة، لكنه يبقى شغالاً (ON) حتى تقلبه مرة أخرى.",
+      challengeEn: "Can you send Morse Code messages using your switch?",
+      challengeAr: "هل يمكنك إرسال رسائل بشفرة مورس باستخدام مفتاحك؟",
+      color: "bg-teal-500",
+      theme: "teal"
+    },
+    {
+      num: 8,
+      icon: <Lightbulb size={40} />,
+      titleEn: "My Big Invention",
+      titleAr: "مشروعي الكبير",
+      // Page 1
+      objectivesEn: ["Apply all learned concepts.", "Design a mixed circuit.", "Present an invention."],
+      objectivesAr: ["تطبيق كل المفاهيم السابقة.", "تصميم دائرة مختلطة.", "تقديم اختراع للنور."],
+      storyEn: "Congratulations! You have learned the alphabet of electronics. Now write your own story. Use the motor, the buzzer, the lights, and the switches to build something new. Maybe a fan that lights up? Or a robot alarm? The sky is the limit! Today you are the Chief Engineer.",
+      storyAr: "مبروك! لقد تعلمت حروف أبجدية الإلكترونيات. الآن اكتب قصتك الخاصة. استخدم الماتور، والجرس، والأضواء، والمفاتيح لتبني شيئاً جديداً. ربما مروحة تضيء؟ أو منبه للروبوت؟ خيالك هو حدودك! اليوم أنت كبير المهندسين.",
+      toolsEn: ["All Components", "Imagination", "Paper for planning"],
+      toolsAr: ["كل المكونات السابقة", "الخيال", "ورقة للتخطيط"],
+      // Page 2
+      stepsEn: [
+        "Think: What do I want to build?",
+        "Draw: Sketch your circuit on paper first.",
+        "Build: Put components on the breadboard.",
+        "Test: Does it work? If not, debug it!",
+        "Show: Explain your invention to the class."
+      ],
+      stepsAr: [
+        "فكر: ماذا أريد أن أصنع؟",
+        "ارسم: خطط لدائرتك على الورق أولاً.",
+        "ابنِ: ركب المكونات على اللوحة.",
+        "جرب: هل تعمل؟ إذا لا، حاول إصلاحها!",
+        "اعرض: اشرح اختراعك لأصدقائك."
+      ],
+      observationEn: "What was the hardest part of your invention?",
+      observationAr: "ما هو أصعب جزء واجهك أثناء بناء اختراعك؟",
+      funFactEn: "Thomas Edison failed 1,000 times before inventing the lightbulb. Keep trying!",
+      funFactAr: "توماس إديسون فشل 1000 مرة قبل اختراع المصباح. المحاولة هي سر النجاح!",
+      challengeEn: "Give your invention a cool name and explain how it works to a friend.",
+      challengeAr: "أطلق اسماً رائعاً على اختراعك واشرح كيف يعمل لصديقك.",
+      color: "bg-indigo-600",
+      theme: "indigo"
     }
-  }, [levelIndex, hasStarted, currentLevel.intro, introPlayed, playVoice]);
-
-  // save stars when win screen appears
-  useEffect(() => {
-    if (view !== "win") return;
-    setProgress((prev) => {
-      const stars = { ...(prev.stars || {}) };
-      const existing = stars[currentLevel.id] || 0;
-      stars[currentLevel.id] = Math.max(existing, starsThisLevel);
-      const next = {
-        level: Math.max(prev.level || 0, levelIndex),
-        stars,
-      };
-      saveProgress(next);
-      return next;
-    });
-  }, [view, currentLevel.id, levelIndex, starsThisLevel]);
-
-  const resetLevel = () => {
-    const lvl = currentLevel;
-    setUserMatrix(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
-    setFeedback(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
-    setAttempts(0);
-    setFocusedCell(null);
-    setView("game");
-    setGuideStage(0);
-    setInfoTab("story");
-    setMessage(lvl.intro);
-  };
-
-  const goNextLevel = () => {
-    playVoice("win");
-    const nextIndex = levelIndex + 1;
-    const idx = nextIndex < LEVELS.length ? nextIndex : 0;
-
-    const lvl = LEVELS[idx];
-    setLevelIndex(idx);
-    setUserMatrix(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
-    setFeedback(makeEmptyMatrix(lvl.A.length, lvl.A[0].length));
-    setAttempts(0);
-    setFocusedCell(null);
-    setView("game");
-    setGuideStage(0);
-    setInfoTab("story");
-    setMessage(lvl.intro);
-
-    if (idx === 0) {
-      setShowTour(true);
-      setTourStep(0);
-    }
-  };
-
-  const handleCellChange = (row, col, value) => {
-    if (value === "" || value === "-" || /^-?\d+$/.test(value)) {
-      setUserMatrix((prev) =>
-        prev.map((r, i) => r.map((cell, j) => (i === row && j === col ? value : cell)))
-      );
-      setFocusedCell({ row, col });
-    }
-  };
-
-  const nudgeCell = (row, col, delta) => {
-    setUserMatrix((prev) =>
-      prev.map((r, i) =>
-        r.map((cell, j) => {
-          if (i !== row || j !== col) return cell;
-          const num = parseInt(cell || "0", 10);
-          return String(num + delta);
-        })
-      )
-    );
-    setFocusedCell({ row, col });
-  };
-
-  const checkAnswer = () => {
-    let allFilled = true;
-    let allCorrect = true;
-    const newFeedback = [];
-
-    for (let i = 0; i < rows; i++) {
-      const fbRow = [];
-      for (let j = 0; j < cols; j++) {
-        const valStr = userMatrix[i][j];
-        if (valStr === "" || valStr === "-") {
-          fbRow.push("empty");
-          allFilled = false;
-          allCorrect = false;
-        } else {
-          const userVal = parseInt(valStr, 10);
-          const correctVal = correctMatrix[i][j];
-          if (userVal === correctVal) fbRow.push("correct");
-          else {
-            fbRow.push("wrong");
-            allCorrect = false;
-          }
-        }
-      }
-      newFeedback.push(fbRow);
-    }
-
-    setFeedback(newFeedback);
-
-    if (!allFilled) {
-      setMessage("Fill every candy box first. Empty boxes are marked with a light outline.");
-      playVoice("fillAll");
-      setShake(true);
-      setTimeout(() => setShake(false), 400);
-      return;
-    }
-
-    if (allCorrect) {
-      setView("win");
-      playVoice("correct");
-    } else {
-      setAttempts((a) => a + 1);
-      setMessage(
-        "Some boxes are wrong. Red boxes need fixing. Check A and B for those positions and try again!"
-      );
-      playVoice("wrong");
-      setShake(true);
-      setTimeout(() => setShake(false), 400);
-    }
-  };
-
-  const giveHint = () => {
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < cols; j++) {
-        const correctVal = correctMatrix[i][j];
-        const userStr = userMatrix[i][j];
-        const isEmpty = userStr === "" || userStr === "-";
-        const isWrong = !isEmpty && parseInt(userStr, 10) !== correctVal;
-
-        if (isEmpty || isWrong) {
-          setUserMatrix((prev) =>
-            prev.map((r, ri) => r.map((c, cj) => (ri === i && cj === j ? String(correctVal) : c)))
-          );
-          setFeedback((prev) =>
-            prev.map((r, ri) => r.map((c, cj) => (ri === i && cj === j ? "correct" : c)))
-          );
-          setFocusedCell({ row: i, col: j });
-          setMessage(
-            `Hint: for this box we did ${currentLevel.A[i][j]} ${opSymbol} ${currentLevel.B[i][j]} = ${correctVal}. Use the same idea for the other boxes.`
-          );
-          playVoice("hint");
-          return;
-        }
-      }
-    }
-    setMessage("All boxes are already correct. Great job!");
-  };
-
-  const focusedInfo = useMemo(() => {
-    if (!focusedCell) return null;
-    const { row, col } = focusedCell;
-    const a = currentLevel.A[row][col];
-    const b = currentLevel.B[row][col];
-    const result = correctMatrix[row][col];
-    return { row, col, a, b, result };
-  }, [focusedCell, currentLevel, correctMatrix]);
-
-  // guide becomes more specific: it forces top-left cell and explains that operation concretely
-  const handleNextGuide = () => {
-    setGuideStage((prev) => {
-      const next = prev + 1;
-
-      if (next === 1) {
-        handleChangeTab("story");
-        setMessage(
-          "Think of matrix A and B as two candy trays. Each position is a candy box in the same place on both trays."
-        );
-      } else if (next === 2) {
-        handleChangeTab("how");
-        const a = currentLevel.A[0][0];
-        const b = currentLevel.B[0][0];
-        const res = correctMatrix[0][0];
-        setFocusedCell({ row: 0, col: 0 });
-        setMessage(
-          `Start with the top-left box. In A it has ${a} candies, in B it has ${b}. So we do ${a} ${opSymbol} ${b} = ${res}, and we write ${res} in that RESULT box.`
-        );
-      } else if (next === 3) {
-        handleChangeTab("rule");
-        setMessage(
-          "Now repeat this for every box: always match A and B in the same row and same column, then do A box " +
-            opSymbol +
-            " B box."
-        );
-      } else if (next === 4) {
-        setMessage("Now you try! Fill all the RESULT boxes and then press Check Candy Grid.");
-      }
-
-      return next > 4 ? 4 : next;
-    });
-  };
-
-  const TOUR_STEPS = [
-    { title: "Welcome!", text: "Every number is candies in a box.", target: "header" },
-    { title: "Matrix A", text: "This is tray A. Same positions matter.", target: "matrixA" },
-    { title: "Matrix B", text: "This is tray B. Match with A cell by cell.", target: "matrixB" },
-    { title: "Result Grid", text: "Fill RESULT using the same position.", target: "result" },
-    { title: "Buttons", text: "Check your work or ask for a Hint.", target: "actions" },
   ];
 
-  const currentTour = TOUR_STEPS[tourStep];
+  // 2. Build Pages Data Structure (Now 2 Pages Per Lesson)
+  const buildPages = (lang) => {
+    const isAr = lang === 'ar';
+    const base = [
+      {
+        type: "cover",
+        lang: lang,
+        title: isAr ? "المكتشف الصغير للإلكترونيات" : "Little Electronics Explorer",
+        subtitle: isAr ? "دليلك لتصبح مخترعاً عبقرياً" : "Your Guide to Becoming a Genius Inventor",
+        color: "bg-blue-600"
+      },
+      {
+        type: "safety",
+        lang: lang,
+        title: isAr ? "قواعد السلامة أولاً!" : "Safety First!",
+        content: isAr ? [
+          "لا تضع البطاريات في فمك أبداً.",
+          "إذا شعرت بحرارة البطارية، اتركها وأخبر المدرب.",
+          "حافظ على نظافة مكان عملك.",
+          "ساعد أصدقاءك وتعاون معهم."
+        ] : [
+          "Do not put batteries in your mouth.",
+          "If a battery feels hot, drop it and tell the teacher.",
+          "Keep your workspace clean.",
+          "Help your friends."
+        ],
+        color: "bg-red-500"
+      }
+    ];
 
-  // START SCREEN (simple)
-  if (!hasStarted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-100 to-pink-100 px-4">
-        <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full text-center border-2 border-pink-100">
-          <div className="inline-flex bg-pink-100 p-3 rounded-full mb-4 text-pink-600">
-            <Grid3x3 size={36} />
-          </div>
-
-          <h1 className="text-2xl font-extrabold text-slate-800">Matrix Candy Mixer</h1>
-          <p className="mt-2 text-slate-600 text-sm">
-            Press Start to enable sound and begin the guided intro.
-          </p>
-
-          <button
-            onClick={async () => {
-              const ok = await unlock();
-              setHasStarted(true);
-              setShowTour(true);
-              setTourStep(0);
-
-              // play intro ONLY once over the whole lifetime
-              if (ok && !introPlayed) {
-                playVoice("intro");
-                setIntroPlayed(true);
-                try {
-                  localStorage.setItem("matrix_candy_intro_played", "1");
-                } catch {}
-              }
-
-              setMessage(
-                "Welcome to Matrix Candy Mixer! Every number you see is candies in a box. Matrix A is candy tray A, and Matrix B is candy tray B. Your job is to fill the result grid by combining the candies in the same position."
-              );
-            }}
-            className="mt-6 w-full bg-pink-500 text-white py-3.5 rounded-xl font-bold text-lg shadow hover:bg-pink-600 transition-colors flex items-center justify-center gap-2"
-          >
-            <Volume2 size={20} />
-            Start
-          </button>
-
-          <p className="mt-3 text-[11px] text-slate-400">
-            (Browsers require a tap/click before playing audio.)
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // ---------- RENDER ----------
-  return (
-    <div className="min-h-screen bg-blue-50 flex flex-col font-sans text-slate-800 overflow-x-hidden">
-      {/* HEADER (simple) */}
-      <header
-        data-tour="header"
-        className="bg-white px-4 py-3 shadow-sm flex justify-between items-center sticky top-0 z-50 border-b border-slate-100"
-      >
-        <div className="flex items-center gap-2">
-          <div className="bg-pink-500 p-2 rounded-lg">
-            <Home size={18} className="text-white" />
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-              Sparvi Math Lab
-            </p>
-            <h1 className="font-extrabold text-sm sm:text-base flex items-center gap-1">
-              <Grid3x3 size={16} className="text-pink-500" />
-              Matrix Candy Mixer
-            </h1>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 text-xs text-slate-600">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
-            <Smile size={14} className="text-pink-400" />
-            <span className="font-semibold">
-              Level {currentLevel.id}/{LEVELS.length}
-            </span>
-          </div>
-          <div className="px-3 py-1 rounded-full bg-slate-900 text-white flex items-center gap-1 text-[11px]">
-            <Star size={14} className="text-amber-400 fill-amber-400" />
-            <span className="font-semibold">
-              {totalStars}/{totalMaxStars}
-            </span>
-          </div>
-        </div>
-      </header>
-
-      {/* GAME VIEW */}
-      {view === "game" && (
-        <div className="flex-1 max-w-5xl mx-auto w-full p-4 sm:p-6">
+    const lessonsPages = [];
+    lessonsData.forEach(l => {
+      // Page 1: Theory & Story
+      lessonsPages.push({
+        type: "lesson-p1",
+        lang: lang,
+        lessonNum: l.num,
+        icon: l.icon,
+        title: isAr ? l.titleAr : l.titleEn,
+        story: isAr ? l.storyAr : l.storyEn,
+        tools: isAr ? l.toolsAr : l.toolsEn,
+        objectives: isAr ? l.objectivesAr : l.objectivesEn,
+        color: l.color,
+        theme: l.theme
+      });
       
+      // Page 2: Practice & Fun
+      lessonsPages.push({
+        type: "lesson-p2",
+        lang: lang,
+        lessonNum: l.num,
+        icon: l.icon,
+        title: isAr ? l.titleAr : l.titleEn,
+        steps: isAr ? l.stepsAr : l.stepsEn,
+        observation: isAr ? l.observationAr : l.observationEn,
+        funFact: isAr ? l.funFactAr : l.funFactEn,
+        challenge: isAr ? l.challengeAr : l.challengeEn,
+        color: l.color,
+        theme: l.theme
+      });
+    });
 
-          {/* BOTTOM: matrices area (simple, bright) */}
-          <div
-            className={`bg-white rounded-2xl shadow p-4 sm:p-6 border border-slate-100 ${
-              shake ? "animate-shake" : ""
-            }`}
-          >
-            <div className="text-center mb-3">
-              <p className="text-xs font-semibold text-slate-500">
-                Level {currentLevel.id} · {currentLevel.name}
-              </p>
-              <p className="text-sm sm:text-base font-semibold text-slate-800">
-                RESULT = A {opSymbol} B (same position)
-              </p>
-            </div>
+    const cert = {
+      type: "certificate",
+      lang: lang,
+      title: isAr ? "شهادة إتمام" : "Certificate of Completion",
+      content: isAr ? "تشهد الأكاديمية بأن المهندس العبقري قد أتم بنجاح كورس الإلكترونيات." : "This certifies that the Genius Engineer has successfully completed the Electronics Course.",
+      color: "bg-yellow-600"
+    };
 
-            <div className="overflow-x-auto">
-              <div className="min-w-[520px] flex items-center justify-center gap-4 sm:gap-6 py-2">
-                <div data-tour="matrixA">
-                  <MatrixDisplay
-                    label="A"
-                    matrix={currentLevel.A}
-                    color="bg-sky-500"
-                    highlightCell={currentLevel.id === 1 ? focusedCell : null}
-                  />
-                </div>
+    return [...base, ...lessonsPages, cert];
+  };
 
-                <div className="text-2xl font-black text-slate-700">{opSymbol}</div>
+  const pages = [...buildPages('en'), ...buildPages('ar')];
 
-                <div data-tour="matrixB">
-                  <MatrixDisplay
-                    label="B"
-                    matrix={currentLevel.B}
-                    color="bg-emerald-500"
-                    highlightCell={currentLevel.id === 1 ? focusedCell : null}
-                  />
-                </div>
+  const nextPage = () => {
+    if (currentPage < pages.length - 1) setCurrentPage(currentPage + 1);
+  };
 
-                <div className="text-2xl font-black text-slate-700">=</div>
+  const prevPage = () => {
+    if (currentPage > 0) setCurrentPage(currentPage - 1);
+  };
 
-                <div data-tour="result">
-                  <ResultMatrix
-                    matrix={userMatrix}
-                    feedback={feedback}
-                    onCellChange={handleCellChange}
-                    onNudge={nudgeCell}
-                    onFocusCell={(r, c) => setFocusedCell({ row: r, col: c })}
-                    focusedCell={currentLevel.id === 1 ? focusedCell : null}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <p className="mt-3 text-center text-[11px] text-slate-500">
-              Same place, same friends. Top-left with top-left, bottom-right with bottom-right.
-            </p>
-          </div>
-
-          
-              {/* TOP: message bubble + actions (simple, not a big side panel) */}
-          <div className="bg-white rounded-2xl shadow p-4 sm:p-5 border border-slate-100 mb-4">
-            <div className="flex gap-3">
-              <div className="w-11 h-11 rounded-full bg-pink-500 flex items-center justify-center text-white font-black text-lg shrink-0">
-                🍬
-              </div>
-              <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-sm sm:text-base font-medium text-slate-700 w-full">
-                {message}
-              </div>
-            </div>
-
-            <div className="mt-3">
-              <InfoTabs
-                activeTab={infoTab}
-                onChangeTab={handleChangeTab}
-                opSymbol={opSymbol}
-                currentLevel={currentLevel}
-                focusedCell={focusedCell}
-                correctMatrix={correctMatrix}
-              />
-            </div>
-
-            <div className="mt-3 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
-              <div className="flex gap-2" data-tour="actions">
-                <button
-                  onClick={checkAnswer}
-                  className="bg-pink-500 text-white px-4 py-2.5 rounded-xl font-bold shadow hover:bg-pink-600 transition-colors flex items-center gap-2"
-                >
-                  Check
-                  <ArrowRight size={18} />
-                </button>
-
-                <button
-                  onClick={giveHint}
-                  className="bg-amber-100 text-amber-800 px-4 py-2.5 rounded-xl font-bold border border-amber-200 hover:bg-amber-200 transition-colors flex items-center gap-2"
-                >
-                  <Lightbulb size={18} />
-                  Hint
-                </button>
-
-                <button
-                  onClick={resetLevel}
-                  className="bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold hover:bg-slate-900 transition-colors flex items-center gap-2"
-                >
-                  <RotateCcw size={18} />
-                  Reset
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between sm:justify-end gap-3 text-xs text-slate-500">
-                <span className="font-semibold">
-                  Attempts: <span className="text-slate-800">{attempts}</span>
-                </span>
-                {guideStage < 4 && (
-                  <button
-                    type="button"
-                    onClick={handleNextGuide}
-                    className="inline-flex items-center gap-1.5 bg-pink-500 text-white px-3 py-2 rounded-full text-xs font-bold shadow active:scale-95"
-                  >
-                    Next tip
-                    <ArrowRight size={14} />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {focusedInfo && (
-              <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs sm:text-sm">
-                <span className="font-semibold">Focused box:</span>{" "}
-                row {focusedInfo.row + 1}, col {focusedInfo.col + 1} ·{" "}
-                <span className="font-mono font-semibold">
-                  {focusedInfo.a} {opSymbol} {focusedInfo.b} = {focusedInfo.result}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* WIN SCREEN (simple) */}
-      {view === "win" && (
-        <div className="flex-1 flex items-center justify-center p-6 bg-blue-50">
-          <div className="bg-white p-6 rounded-2xl shadow-xl text-center max-w-sm w-full border-2 border-pink-100">
-            <div className="inline-flex bg-pink-100 p-3 rounded-full mb-4 text-pink-600">
-              <Grid3x3 size={34} />
-            </div>
-            <h2 className="text-2xl font-extrabold text-slate-800 mb-2">Candy Grid Complete!</h2>
-            <p className="text-sm text-slate-600 mb-5">
-              Every result box matches{" "}
-              <span className="font-semibold">
-                A {opSymbol} B
-              </span>
-              .
-            </p>
-
-            <div className="flex justify-center gap-2 mb-6">
-              {[1, 2, 3].map((s) => (
-                <Star
-                  key={s}
-                  size={28}
-                  className={
-                    s <= starsThisLevel
-                      ? "text-amber-400 fill-amber-400"
-                      : "text-slate-200 fill-slate-200"
-                  }
-                />
-              ))}
-            </div>
-
-            <button
-              onClick={goNextLevel}
-              className="w-full bg-pink-500 text-white py-3 rounded-xl font-bold text-lg shadow hover:bg-pink-600 transition-colors flex justify-center gap-2 items-center"
-            >
-              Next Level
-              <ArrowRight size={20} />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* TOUR OVERLAY (unchanged) */}
-      {showTour && view === "game" && (
-        <TourOverlay
-          step={tourStep}
-          total={TOUR_STEPS.length}
-          title={currentTour.title}
-          text={currentTour.text}
-          targetSelector={`[data-tour="${currentTour.target}"]`}
-          onClose={() => setShowTour(false)}
-          onNext={() => {
-            if (tourStep < TOUR_STEPS.length - 1) setTourStep((s) => s + 1);
-            else setShowTour(false);
-          }}
-          onPrev={() => setTourStep((s) => Math.max(0, s - 1))}
-        />
-      )}
-
-      {/* shake animation */}
-      <style>{`
-        @keyframes shake-candy {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-6px); }
-          75% { transform: translateX(6px); }
-        }
-        .animate-shake { animation: shake-candy 0.35s ease-in-out; }
-      `}</style>
-    </div>
-  );
-};
-
-// ---------- TOUR OVERLAY COMPONENT ----------
-const TourOverlay = ({ step, total, title, text, targetSelector, onClose, onNext, onPrev }) => {
-  const [rect, setRect] = useState(null);
-
+  // When printMode = true, render all pages then trigger print
   useEffect(() => {
-    const measure = () => {
-      const el = document.querySelector(targetSelector);
-      if (!el) return setRect(null);
-      const r = el.getBoundingClientRect();
-      setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
-    };
+    if (printMode) {
+      const timeout = setTimeout(() => {
+        window.print();
+        setPrintMode(false);
+      }, 300); // small delay to ensure DOM is ready
+      return () => clearTimeout(timeout);
+    }
+  }, [printMode]);
 
-    measure();
-    window.addEventListener("resize", measure);
-    window.addEventListener("scroll", measure, true);
-    return () => {
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("scroll", measure, true);
-    };
-  }, [targetSelector]);
+  const PageContent = ({ page }) => {
+    const isAr = page.lang === 'ar';
+    const dir = isAr ? 'rtl' : 'ltr';
+    const font = isAr ? 'font-serif' : 'font-sans';
 
-  return (
-    <div className="fixed inset-0 z-[9999]">
-      <div className="absolute inset-0 bg-black/60" />
+    const getBgTint = (theme) => `bg-${theme}-50`;
+    const getBorderColor = (theme) => `border-${theme}-200`;
+    const getTextColor = (theme) => `text-${theme}-800`;
 
-      {rect && (
-        <div
-          className="absolute rounded-2xl border-4 border-pink-400 shadow-[0_0_0_9999px_rgba(0,0,0,0.6)]"
-          style={{
-            top: Math.max(8, rect.top - 8),
-            left: Math.max(8, rect.left - 8),
-            width: Math.min(window.innerWidth - 16, rect.width + 16),
-            height: rect.height + 16,
-          }}
-        />
-      )}
+    // COVER
+    if (page.type === "cover") {
+      return (
+        <div className={`h-full flex flex-col items-center justify-center text-white p-8 text-center ${page.color} rounded-lg shadow-2xl relative overflow-hidden`} dir={dir}>
+          {/* Decorative circles */}
+          <div className="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/10 rounded-full translate-x-1/2 translate-y-1/2"></div>
+          <div className="absolute top-1/2 left-10 w-20 h-20 bg-white/5 rounded-full"></div>
+          
+          <div className="mb-8 p-6 bg-white/20 rounded-full backdrop-blur-sm shadow-xl"><Book size={100} /></div>
+          <h1 className={`text-5xl font-extrabold mb-6 leading-tight ${font}`}>{page.title}</h1>
+          <div className="w-32 h-3 bg-yellow-400 rounded-full my-6 shadow-md"></div>
+          <p className={`text-3xl font-medium mb-2 ${font}`}>{page.subtitle}</p>
+          
+          <div className="mt-16 p-8 border-4 border-white rounded-xl w-3/4 bg-white/10 backdrop-blur-sm shadow-inner">
+             <p className={`text-xl opacity-90 mb-4 font-bold ${font}`}>{isAr ? "اسم الطالب المخترع" : "Inventor Student Name"}</p>
+             <div className="h-12 bg-white/20 rounded-lg border-b-2 border-white"></div>
+          </div>
+          <div className="absolute bottom-8 text-sm opacity-60 bg-black/20 px-6 py-2 rounded-full font-bold uppercase tracking-widest border border-white/20">
+            {isAr ? "النسخة العربية" : "English Version"}
+          </div>
+        </div>
+      );
+    }
 
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-6 w-[min(560px,calc(100%-24px))]">
-        <div className="bg-white rounded-2xl shadow-2xl border-2 border-pink-100 p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wide">
-                Guided Intro {step + 1} / {total}
-              </p>
-              <h3 className="text-lg font-extrabold text-slate-800">{title}</h3>
+    // SAFETY
+    if (page.type === "safety") {
+      return (
+        <div className={`h-full flex flex-col p-8 ${page.color} text-white rounded-lg shadow-2xl relative`} dir={dir}>
+           {/* Background Pattern */}
+           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+           
+          <div className="flex items-center justify-center mb-6 bg-white/20 p-4 rounded-full w-fit mx-auto shadow-lg z-10">
+            <ShieldCheck size={70} />
+          </div>
+          <h2 className={`text-5xl font-black text-center mb-8 ${font} z-10 drop-shadow-md`}>{page.title}</h2>
+          
+          <div className="flex-1 bg-white rounded-2xl p-8 space-y-6 shadow-2xl text-gray-800 z-10 flex flex-col justify-center">
+            {page.content.map((rule, idx) => (
+              <div key={idx} className="flex items-center p-5 bg-red-50 rounded-xl border-l-8 border-red-500 shadow-sm hover:shadow-md transition-shadow">
+                <span className="text-4xl font-black text-red-500 mx-4 leading-none">{idx + 1}</span>
+                <p className={`text-2xl font-bold text-gray-800 ${font}`}>{rule}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // CERTIFICATE
+    if (page.type === "certificate") {
+      return (
+        <div className={`h-full flex flex-col p-10 bg-white border-[20px] ${page.color === 'bg-yellow-600' ? 'border-yellow-500' : 'border-blue-500'} rounded-lg shadow-2xl relative overflow-hidden`} dir={dir}>
+          <div className="absolute inset-0 bg-yellow-50 opacity-50"></div>
+          <div className={`absolute top-0 ${isAr ? 'left-0' : 'right-0'} p-6 z-20`}><Award size={100} className="text-yellow-500 drop-shadow-lg" /></div>
+          
+          <div className="absolute inset-6 border-4 border-gray-800 border-double rounded-lg pointer-events-none z-10"></div>
+
+          <div className="flex-1 flex flex-col items-center justify-center text-center z-20 pt-10">
+            <h2 className={`text-6xl font-black text-gray-900 mb-12 uppercase tracking-widest ${font} drop-shadow-sm`}>{page.title}</h2>
+            
+            <p className={`text-gray-700 text-4xl mb-16 max-w-3xl leading-relaxed ${font} italic font-bold`}>{page.content}</p>
+            
+            <div className="w-full max-w-2xl border-b-4 border-gray-900 mb-4"></div>
+            <p className={`text-gray-500 text-xl mb-16 font-black uppercase tracking-wider ${font}`}>{isAr ? "اسم الطالب" : "Student Name"}</p>
+
+            <div className="flex w-full justify-between px-20 mt-8 gap-16">
+              <div className="text-center flex-1">
+                <div className="border-b-4 border-gray-400 mb-2"></div>
+                <p className={`text-gray-500 text-lg font-bold ${font}`}>{isAr ? "التاريخ" : "Date"}</p>
+              </div>
+              <div className="text-center flex-1">
+                <div className="border-b-4 border-gray-400 mb-2"></div>
+                <p className={`text-gray-500 text-lg font-bold ${font}`}>{isAr ? "المدرب" : "Instructor"}</p>
+              </div>
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95"
-              aria-label="Close"
-              type="button"
-            >
-              <X size={18} />
-            </button>
+            
+            <div className="mt-8 transform rotate-12">
+               <div className="w-32 h-32 bg-yellow-500 rounded-full flex items-center justify-center text-white font-black text-lg shadow-2xl border-4 border-yellow-300 ring-4 ring-yellow-500 ring-opacity-50">
+                  {isAr ? "معتمد" : "CERTIFIED"}
+               </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // === LESSON PAGE 1: Theory ===
+    if (page.type === "lesson-p1") {
+      const bgTint = getBgTint(page.theme);
+      const borderColor = getBorderColor(page.theme);
+      const textColor = getTextColor(page.theme);
+
+      return (
+        <div className={`h-full flex flex-col ${bgTint} rounded-lg shadow-2xl overflow-hidden`} dir={dir}>
+          {/* Header */}
+          <div className={`${page.color} p-6 text-white flex justify-between items-center shadow-lg relative z-10`}>
+            <div>
+              <span className="bg-black/20 px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-widest backdrop-blur-sm border border-white/20">
+                {isAr ? `حصة ${page.lessonNum} - الجزء ١` : `Lesson ${page.lessonNum} - Part 1`}
+              </span>
+              <h3 className={`text-4xl font-black mt-2 drop-shadow-md ${font}`}>{page.title}</h3>
+            </div>
+            <div className="bg-white text-gray-800 p-4 rounded-2xl shadow-xl transform rotate-3">
+              {page.icon}
+            </div>
           </div>
 
-          <p className="mt-2 text-slate-700 text-sm">{text}</p>
+          <div className="flex-1 p-6 space-y-6 overflow-hidden flex flex-col">
+            {/* 1. Learning Objectives - Card */}
+            <div className={`bg-white p-5 rounded-2xl border-l-8 ${page.color.replace('bg-', 'border-')} shadow-md`}>
+              <h4 className={`flex items-center gap-2 text-lg uppercase ${textColor} font-black mb-3 ${font}`}>
+                <CheckSquare size={24} />
+                {isAr ? "ماذا سنتعلم اليوم؟" : "What will we learn?"}
+              </h4>
+              <ul className="grid grid-cols-1 gap-2">
+                {page.objectives.map((obj, i) => (
+                  <li key={i} className={`flex items-center gap-3 text-gray-700 font-bold text-lg ${font} bg-gray-50 p-2 rounded-lg`}>
+                    <div className={`w-3 h-3 ${page.color} rounded-full shrink-0 shadow-sm`}></div>
+                    {obj}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <div className="mt-4 flex items-center justify-between">
-            <button
-              onClick={onPrev}
-              disabled={step === 0}
-              className={`px-3 py-2 rounded-xl font-bold text-sm active:scale-95 ${
-                step === 0
-                  ? "bg-slate-100 text-slate-300 cursor-not-allowed"
-                  : "bg-slate-900 text-white"
-              }`}
-              type="button"
-            >
-              Back
-            </button>
+            {/* 2. The Story (Hero Section) - Card */}
+            <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex-1">
+              <h4 className={`flex items-center gap-2 text-xl uppercase text-gray-600 font-black mb-4 ${font}`}>
+                <Book size={28} className={textColor.replace('text-', 'text-opacity-70 ')} />
+                {isAr ? "القصة" : "The Story"}
+              </h4>
+              <p className={`text-gray-800 text-2xl leading-10 ${font} text-justify font-medium`}>{page.story}</p>
+            </div>
 
-            <button
-              onClick={onNext}
-              className="px-4 py-2 rounded-xl font-extrabold text-sm bg-pink-500 text-white shadow hover:bg-pink-600 active:scale-95 flex items-center gap-2"
-              type="button"
-            >
-              {step === total - 1 ? "Start Playing" : "Next"}
-              <ArrowRight size={18} />
-            </button>
-          </div>
-
-          <p className="mt-2 text-[11px] text-slate-400">Tip: You can close this anytime.</p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ---------- Presentational subcomponents (simplified look) ----------
-const MatrixDisplay = ({ label, matrix, color, highlightCell }) => {
-  return (
-    <div className="flex flex-col items-center gap-1">
-      <span className="text-[11px] text-slate-500 font-bold">Matrix {label}</span>
-      <div className={`${color} rounded-xl p-3 shadow`}>
-        <div
-          className="grid gap-2"
-          style={{ gridTemplateColumns: `repeat(${matrix[0].length}, 44px)` }}
-        >
-          {matrix.map((row, i) =>
-            row.map((val, j) => {
-              const isHighlight =
-                highlightCell && highlightCell.row === i && highlightCell.col === j;
-              return (
-                <div
-                  key={`${i}-${j}`}
-                  className={`w-11 h-11 rounded-lg flex items-center justify-center font-mono text-lg
-                    ${isHighlight ? "bg-white text-slate-900 ring-2 ring-yellow-300" : "bg-white/20 text-white"}
-                  `}
-                >
-                  {val}
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ResultMatrix = ({ matrix, feedback, onCellChange, onNudge, onFocusCell, focusedCell }) => {
-  const cols = matrix[0].length;
-
-  const cellClass = (fb) => {
-    if (fb === "correct") return "border-emerald-400 bg-emerald-50";
-    if (fb === "wrong") return "border-rose-400 bg-rose-50";
-    if (fb === "empty") return "border-slate-300 bg-slate-50";
-    return "border-slate-200 bg-white";
-  };
-
-  return (
-    <div className="flex flex-col items-center gap-1">
-      <span className="text-[11px] text-slate-500 font-bold">RESULT</span>
-      <div className="bg-slate-100 rounded-xl p-3 border border-slate-200">
-        <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${cols}, 64px)` }}>
-          {matrix.map((row, i) =>
-            row.map((val, j) => {
-              const isFocused = focusedCell && focusedCell.row === i && focusedCell.col === j;
-
-              return (
-                <div
-                  key={`${i}-${j}`}
-                  className={`rounded-xl border p-2 ${cellClass(feedback[i][j])} ${
-                    isFocused ? "ring-2 ring-yellow-400" : ""
-                  }`}
-                >
-                  <input
-                    type="text"
-                    value={val}
-                    onChange={(e) => onCellChange(i, j, e.target.value.trim())}
-                    onFocus={() => onFocusCell(i, j)}
-                    className="w-full bg-transparent text-center text-lg font-mono outline-none text-slate-800"
-                  />
-                  <div className="mt-1 flex justify-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onFocusCell(i, j);
-                        onNudge(i, j, -1);
-                      }}
-                      className="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 flex items-center justify-center"
-                    >
-                      <ChevronLeft size={14} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onFocusCell(i, j);
-                        onNudge(i, j, +1);
-                      }}
-                      className="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 flex items-center justify-center"
-                    >
-                      <ChevronRight size={14} />
-                    </button>
+            {/* 3. Tools - Colorful Badges */}
+            <div className="bg-white p-5 rounded-2xl border-t-4 border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+              <h4 className={`flex items-center gap-2 text-lg uppercase text-gray-400 font-bold mb-4 ${font}`}>
+                <Settings size={20} />
+                {isAr ? "صندوق الأدوات" : "Toolbox"}
+              </h4>
+              <div className="flex flex-wrap gap-3">
+                {page.tools.map((tool, i) => (
+                  <div key={i} className={`flex items-center gap-3 ${bgTint} px-4 py-3 rounded-xl border ${borderColor} shadow-sm`}>
+                    <div className={`w-8 h-8 ${page.color} rounded-full flex items-center justify-center text-white font-black text-sm`}>{i+1}</div>
+                    <span className={`text-gray-800 font-bold text-xl ${font}`}>{tool}</span>
                   </div>
-                </div>
-              );
-            })
-          )}
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className={`${bgTint} p-2 text-center text-gray-400 text-xs border-t ${borderColor} ${font}`}>
+            {isAr ? `صفحة ${currentPage + 1} - نظرية` : `Page ${currentPage + 1} - Theory`}
+          </div>
         </div>
-      </div>
-    </div>
-  );
-};
+      );
+    }
 
-const InfoTabs = ({ activeTab, onChangeTab, opSymbol, currentLevel, focusedCell, correctMatrix }) => {
-  const row = focusedCell ? focusedCell.row : 0;
-  const col = focusedCell ? focusedCell.col : 0;
+    // === LESSON PAGE 2: Practice ===
+    if (page.type === "lesson-p2") {
+      const bgTint = getBgTint(page.theme);
+      
+      return (
+        <div className={`h-full flex flex-col ${bgTint} rounded-lg shadow-2xl overflow-hidden`} dir={dir}>
+           {/* Header Minimal */}
+           <div className={`${page.color} h-6 w-full shadow-md`}></div>
+           
+           <div className="flex-1 p-6 flex flex-col space-y-6">
+             <div className="flex justify-between items-end border-b-2 border-gray-200 pb-4">
+                <h3 className={`text-4xl font-black text-gray-800 ${font}`}>{page.title}</h3>
+                <span className={`bg-gray-800 text-white px-3 py-1 rounded-lg font-bold text-lg uppercase ${font} shadow-lg`}>{isAr ? "عملي" : "Practice"}</span>
+             </div>
 
-  const aVal = currentLevel.A[row][col];
-  const bVal = currentLevel.B[row][col];
-  const example =
-    correctMatrix && correctMatrix[row]
-      ? correctMatrix[row][col]
-      : currentLevel.op === "add"
-      ? aVal + bVal
-      : aVal - bVal;
+             {/* 1. Step by Step Activity - Full Card */}
+             <div className="bg-white p-6 rounded-3xl shadow-lg border border-white flex-1">
+               <h4 className={`flex items-center gap-3 text-2xl uppercase ${page.color.replace('bg-', 'text-')} font-black mb-6 ${font}`}>
+                 <List size={32} />
+                 {isAr ? "خطوات التجربة" : "Experiment Steps"}
+               </h4>
+               <div className="space-y-4">
+                 {page.steps.map((step, i) => (
+                   <div key={i} className="flex gap-5 items-start">
+                     <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${page.color} text-white text-xl font-black shrink-0 shadow-md`}>
+                       {i + 1}
+                     </div>
+                     <p className={`text-2xl text-gray-700 font-bold pt-1 ${font}`}>{step}</p>
+                   </div>
+                 ))}
+               </div>
+             </div>
 
-  const tabLabel = (tab) => {
-    if (tab === "story") return "Story";
-    if (tab === "how") return "How";
-    return "Rule";
+             {/* 2. Engineer's Log - Styled Note */}
+             <div className="relative bg-[#fffdf0] border-2 border-dashed border-gray-400 rounded-2xl p-6 shadow-inner">
+               <div className="absolute -top-3 left-6 bg-gray-200 px-2 rounded-full border border-gray-400">
+                  <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+               </div>
+               
+               <h4 className={`flex items-center gap-2 text-md uppercase text-gray-500 font-black mb-3 ${font}`}>
+                 <ClipboardList size={20} />
+                 {isAr ? "سجل المهندس" : "Engineer's Log"}
+               </h4>
+               <p className={`text-2xl font-bold text-gray-800 mb-4 ${font}`}>{page.observation}</p>
+               <div className="bg-gray-200/50 p-4 rounded-xl h-24 border-b-2 border-gray-300"></div>
+             </div>
+
+             {/* 3. Fun Fact & Challenge Grid */}
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-yellow-100 p-5 rounded-2xl border-2 border-yellow-200 shadow-sm hover:scale-105 transition-transform">
+                    <h4 className={`flex items-center gap-2 text-sm uppercase text-yellow-700 font-black mb-2 ${font}`}>
+                      <Info size={18} />
+                      {isAr ? "هل تعلم؟" : "Fun Fact"}
+                    </h4>
+                    <p className={`text-gray-800 text-lg font-bold leading-tight ${font}`}>{page.funFact}</p>
+                </div>
+                <div className="bg-gray-800 text-white p-5 rounded-2xl shadow-xl hover:scale-105 transition-transform border-2 border-gray-600">
+                    <h4 className={`flex items-center gap-2 text-sm uppercase text-yellow-400 font-black mb-2 ${font}`}>
+                      <Star size={18} />
+                      {isAr ? "تحدي البطل" : "Hero Challenge"}
+                    </h4>
+                    <p className={`text-xl font-bold leading-tight ${font}`}>{page.challenge}</p>
+                </div>
+             </div>
+           </div>
+
+           <div className={`${bgTint} p-2 text-center text-gray-400 text-xs border-t border-gray-200 ${font}`}>
+            {isAr ? `صفحة ${currentPage + 1} - عملي` : `Page ${currentPage + 1} - Practice`}
+          </div>
+        </div>
+      );
+    }
+
+    return null;
   };
 
   return (
-    <div className="bg-pink-50 rounded-xl p-3 text-xs sm:text-sm text-pink-900 border border-pink-100">
-      <div className="flex gap-2 mb-2">
-        {["story", "how", "rule"].map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => onChangeTab(tab)}
-            className={`px-3 py-1 rounded-full text-xs font-bold ${
-              activeTab === tab ? "bg-pink-500 text-white" : "bg-white text-pink-700 border border-pink-100"
-            }`}
-          >
-            {tabLabel(tab)}
-          </button>
-        ))}
+    <div className="min-h-screen bg-gray-800 flex flex-col items-center justify-center p-4 font-sans book-root">
+      {/* PRINT CSS */}
+      <style>{`
+        @page {
+          size: A4;
+          margin: 10mm;
+        }
+        @media print {
+          body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            background: #ffffff !important;
+          }
+          .no-print {
+            display: none !important;
+          }
+          .book-root {
+            background: #ffffff !important;
+            min-height: auto !important;
+            padding: 0 !important;
+          }
+          .a4-page {
+            page-break-after: always;
+            break-after: page;
+          }
+          .a4-page:last-child {
+            page-break-after: auto;
+          }
+        }
+      `}</style>
+
+      {/* Top Bar */}
+      <div className="w-full max-w-[800px] flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 no-print">
+         <h1 className="text-white font-bold text-xl opacity-80">Full Color A4 Book</h1>
+         
+         <div className="flex gap-3 items-center justify-between md:justify-end w-full">
+           {/* Navigation buttons */}
+           <div className="flex gap-3 mx-0">
+              <button 
+                  onClick={prevPage} 
+                  disabled={currentPage === 0}
+                  className={`p-3 rounded-full ${currentPage === 0 ? 'bg-gray-600 text-gray-400' : 'bg-blue-500 text-white hover:bg-blue-400 shadow-lg shadow-blue-500/50'} transition-all`}
+              >
+                  <ChevronLeft size={20} />
+              </button>
+              <span className="px-4 py-2 bg-gray-700 rounded-full shadow-inner font-black text-white border border-gray-600 text-sm">
+                  {currentPage + 1} / {pages.length}
+              </span>
+              <button 
+                  onClick={nextPage} 
+                  disabled={currentPage === pages.length - 1}
+                  className={`p-3 rounded-full ${currentPage === pages.length - 1 ? 'bg-gray-600 text-gray-400' : 'bg-blue-500 text-white hover:bg-blue-400 shadow-lg shadow-blue-500/50'} transition-all`}
+              >
+                  <ChevronRight size={20} />
+              </button>
+           </div>
+
+           {/* Generate A4 Book Button */}
+           <button
+             type="button"
+             onClick={() => setPrintMode(true)}
+             className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-400 shadow-md shadow-emerald-500/40 transition-all"
+           >
+             <Book size={18} />
+             <span>Generate A4 Book</span>
+           </button>
+         </div>
       </div>
 
-      {activeTab === "story" && (
-        <p>
-          Two candy trays: A and B. We only mix candies that are in the{" "}
-          <span className="font-bold">same position</span>.
-        </p>
+      {/* A4 Container(s) */}
+      {printMode ? (
+        // PRINT MODE: render all pages as A4
+        <div className="w-full flex flex-col items-center">
+          {pages.map((p, idx) => (
+            <div
+              key={idx}
+              className="a4-page w-[210mm] min-h-[297mm] mx-auto mb-6 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-none"
+            >
+              <div className="w-full h-full">
+                <PageContent page={p} />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        // NORMAL PREVIEW MODE: single page with A4 aspect
+        <div className="w-full max-w-[800px] aspect-[1/1.414] relative bg-white shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden border-8 border-gray-700">
+          <PageContent page={pages[currentPage]} />
+        </div>
       )}
-
-      {activeTab === "how" && (
-        <ol className="list-decimal list-inside space-y-1">
-          <li>Tap a RESULT box.</li>
-          <li>
-            Look at A and B in the same spot, then do{" "}
-            <span className="font-mono font-bold">
-              A {opSymbol} B
-            </span>
-            .
-          </li>
-          <li>Type the answer (or use arrows).</li>
-          <li>Press Check.</li>
-        </ol>
-      )}
-
-      {activeTab === "rule" && (
-        <p>
-          Rule:{" "}
-          <span className="font-mono font-bold">
-            result[i][j] = A[i][j] {opSymbol} B[i][j]
-          </span>
-        </p>
-      )}
-
-      <div className="mt-2 bg-white rounded-lg p-2 border border-pink-100 font-mono text-[11px]">
-        Example (row {row + 1}, col {col + 1}):{" "}
-        <span className="font-bold">
-          {aVal} {opSymbol} {bVal} = {example}
-        </span>
-      </div>
+      
+      <p className="mt-6 text-gray-400 text-sm font-medium no-print">
+        Preview mode: A4 Portrait (Full Color Edition)
+      </p>
     </div>
   );
 };
 
-export default MatrixCandyMixer;
+export default BilingualBook;
