@@ -36,7 +36,8 @@ import {
   Plus,
   Copy,
   Trash2,
-  Edit3
+  Edit3,
+  Image as ImageIcon
 } from 'lucide-react';
 
 // -------- ICONS REGISTRY FOR SELECTION --------
@@ -111,6 +112,7 @@ const PageDecorations = ({ theme }) => (
 );
 
 // --- Theme Configuration ---
+
 const toneStyles = {
   indigo: {
     gradient: 'from-indigo-600 to-violet-700',
@@ -194,7 +196,7 @@ const toneStyles = {
   }
 };
 
-// --- COURSE BOOK PAGES (same content, with iconKey) ---
+// --- COURSE BOOK PAGES (Cleaned: No default images) ---
 const defaultPages = [
   {
     id: 1,
@@ -208,7 +210,7 @@ const defaultPages = [
       'كل حصة من الكورس ليها صفحات خاصة في الكتاب تساعدك تفتكر اللي اتعلمته وتطبقه',
       'في آخر المستوى هتكون بنيت مشروع إلكتروني بسيط من تصميمك انت'
     ],
-    images: ['أطفال يجلسون حول طاولة يلعبون بروبوتات صغيرة وأسلاك ولمبات ملونة في معمل ممتع']
+    images: [] 
   },
   {
     id: 2,
@@ -226,392 +228,9 @@ const defaultPages = [
       'الوحده 7: التخطيط لمشروعك الإلكتروني الأول',
       'الوحده 8: عرض المشروع ومراجعة المستوى الأول'
     ],
-    images: ['لوح كرتوني كبير مرسوم عليه ثماني محطات على شكل خطوات مرقمة من 1 إلى 8 مع أسهم تربط بينهم']
+    images: []
   },
-  {
-    id: 3,
-    tone: 'yellow',
-    iconKey: 'chip',
-    title: 'ما هي الإلكترونيات؟',
-    sectionTitle: 'الوحده 1 – بداية المغامرة',
-    question: 'بص حواليك… كام جهاز إلكتروني تقدر تعده في أوضتك؟',
-    questionNote: 'اكتب أو ارسم خمسة أجهزة تشوفها كل يوم',
-    paragraphs: [
-      'الإلكترونيات هي علم الأجهزة اللي بتستخدم الكهرباء علشان تشتغل',
-      'الموبايل والتابلت والتلفزيون واللابتوب وألعابك الإلكترونية كلها فيها دوائر إلكترونية جوّاها',
-      'من غير إلكترونيات مش هيبقى في إنترنت ولا ألعاب كمبيوتر ولا شاشات ذكية',
-      'في المستوى الأول هنتعلم أساسيات الإلكترونيات علشان تفهم الأجهزة دي بتشتغل من جوّه إزاي'
-    ],
-    images: [
-      'غرفة طفل فيها موبايل وتلفزيون ولابتوب وألعاب إلكترونية مضيئة متوصلة بدوائر كرتونية بسيطة'
-    ]
-  },
-  {
-    id: 4,
-    tone: 'green',
-    iconKey: 'box',
-    title: 'أدوات المستوى الأول',
-    sectionTitle: 'صندوق عدة المخترع الصغير',
-    paragraphs: [
-      'كل مهندس إلكترونيات عنده صندوق عدة يشتغل بيه',
-      'في الكيت بتاعك هتلاقي المكوّنات اللي هنستخدمها في كل الوحدات'
-    ],
-    bullets: [
-      'بطاريات وحامل بطارية مزدوج',
-      'أسلاك توصيل قصيرة وطويلة',
-      'ليد – لمبات إلكترونية صغيرة',
-      'صفارة Buzzer لعمل الأصوات',
-      'موتور صغير ومروحة للموتور',
-      'مفتاح تحكم Switch',
-      'مقاومة متغيّرة Potentiometer'
-    ],
-    images: ['رسوم كرتونية لكل عنصر من عناصر الكيت داخل صناديق صغيرة على خلفية هندسية']
-  },
-  {
-    id: 5,
-    tone: 'red',
-    iconKey: 'alert',
-    title: 'قواعد السلامة مع الإلكترونيات',
-    sectionTitle: 'الوحده 1 – سلامة أولًا',
-    paragraphs: [
-      'احنا في المستوى ده بنستخدم بطاريات صغيرة آمنة لكن برضه لازم نلتزم بقواعد السلامة',
-      'ما نوصلش طرف البطارية الموجب بالموجب أو السالب بالسالب مباشرة من غير مكوّن في النص',
-      'ما نقربش الأسلاك من الفم أو العينين وما نستخدمش كهربا البيت نهائي في التجارب',
-      'نشتغل دايمًا في مكان منظم وفاضي ونرجع كل مكوّن لمكانه بعد ما نخلص'
-    ],
-    images: [
-      'طفل يعمل تجارب إلكترونيات على مكتب مرتب وبجواره علامات تحذير لطيفة تذكّر بقواعد السلامة'
-    ]
-  },
-  {
-    id: 6,
-    tone: 'teal',
-    iconKey: 'branch',
-    title: 'ما هي الدائرة الكهربائية؟',
-    sectionTitle: 'الوحده 2 – طريق الطاقة',
-    paragraphs: [
-      'علشان أي جهاز يشتغل محتاج ثلاث حاجات مع بعض',
-      'مصدر طاقة زي البطارية وطريق تمشي فيه الطاقة زي الأسلاك وجهاز يشتغل بالطاقة زي الليد أو الصفارة أو الموتور',
-      'لما نوصل التلاتة مع بعض صح بيتكوّن عندنا طريق كامل اسمه الدائرة الكهربائية',
-      'لو الطريق كامل بنسميها دائرة مغلقة والجهاز يشتغل ولو الطريق مقطوع بنسميها دائرة مفتوحة والجهاز يطفي'
-    ],
-    images: [
-      'رسمة لدائرة بسيطة فيها بطارية وأسلاك ولمبة صغيرة مع سهم يوضح أن الطريق المغلق يشغل اللمبة والطريق المفتوح يطفيها'
-    ]
-  },
-  {
-    id: 7,
-    tone: 'purple',
-    iconKey: 'lightbulb',
-    title: 'تجربة الليد الأولى',
-    sectionTitle: 'الوحده 2 – خلي اللمبة تنور',
-    paragraphs: [
-      'الليد لمبة إلكترونية صغيرة تقدر تنور بطاقة قليلة من البطارية',
-      'لليد طرف طويل وطرف قصير والطرف الطويل بيتوصل غالبًا مع الموجب في البطارية',
-      'لما توصل البطارية مع الليد عن طريق سلكين صح اللمبة هتنور ولما تفك سلك واحد الدائرة هتفتح واللمبة هتطفي',
-      'جرّب ترسم في كشكولك الدائرة اللي عملتها وحط سهم صغير يوضّح اتجاه سريان التيار'
-    ],
-    images: [
-      'لوح تجارب فيه بطارية متصلة بليد عن طريق سلكين مع سهم يوضح اتجاه الشحنات داخل الدائرة'
-    ]
-  },
-  {
-    id: 8,
-    tone: 'yellow',
-    iconKey: 'zap',
-    title: 'التيار الكهربائي مثل الماء',
-    sectionTitle: 'الوحده 2 – فهم حركة الشحنات',
-    paragraphs: [
-      'تخيّل إن جوّا السلك في نقط صغيرة تتحرك زي المية في الأنبوبة',
-      'لما النقط دي تتحرك من البطارية وتلف وترجع لها بنسمي الحركة دي تيار كهربائي',
-      'البطارية زي خزان المية والأسلاك زي المواسير والجهاز زي مروحة بتشتغل لما المية تعدي فيها',
-      'في الدائرة بتاعتنا بنفكر إن التيار ماشي من الطرف الموجب للبطارية يعدي في المكوّنات ويرجع للطرف السالب'
-    ],
-    images: [
-      'أنبوبة مية مرسومة بجانب سلك كهربا وكل واحدة فيها سهم يوضح اتجاه الحركة مع بطارية ولمبة في البداية والنهاية'
-    ]
-  },
-  {
-    id: 9,
-    tone: 'blue',
-    iconKey: 'pen',
-    title: 'نشاط بيت للوحده 2',
-    sectionTitle: 'ارسم واكتب زي المهندسين',
-    paragraphs: [
-      'النشاط 1: ارسم دائرة الليد اللي عملناها في الوحده واكتب تحتها دائرة مغلقة',
-      'النشاط 2: ارسم نفس الدائرة لكن فك سلك واحد واكتب تحتها دائرة مفتوحة',
-      'النشاط 3: بجانب كل رسمة اكتب ماذا يحدث لللمبة تنور أو تطفي',
-      'النشاط 4: عدّد ثلاث أجهزة في البيت تفتكر إنها تحتوي على دائرة كهربائية تشبه تجربتك'
-    ],
-    images: [
-      'صفحة كشكول فيها رسمتين لدائرة لمبة واحدة مرة كاملة ومرة بسلك مفصول مع كلمات دائرة مغلقة ودائرة مفتوحة تحت كل رسمة'
-    ]
-  },
-  {
-    id: 10,
-    tone: 'green',
-    iconKey: 'speaker',
-    title: 'ما هو الصوت؟',
-    sectionTitle: 'الوحده 3 – من الاهتزاز للصوت',
-    question: 'إيه هو الصوت اللي بنسمعه؟',
-    questionNote: 'جرّب تخبط على سطح المكتب واسمع كويس',
-    paragraphs: [
-      'الصوت عبارة عن اهتزازات تنتشر في الهواء وفي المية وفي الأجسام الصلبة',
-      'لما نخبط على الخشب أو الحديد بيهتز الجسم وبعدها الأذن تسمع الصوت',
-      'في الإلكترونيات بنستخدم عناصر تغير الطاقة الكهربية لطاقة صوتية نقدر نسمعها',
-      'واحد من أهم العناصر دي هو الصفارة الإلكترونية Buzzer'
-    ],
-    images: [
-      'طفل يضع أذنه على سطح خشبي بينما يد أخرى تخبط خبطات خفيفة وتخرج موجات صوتية مرسومة'
-    ]
-  },
-  {
-    id: 11,
-    tone: 'red',
-    iconKey: 'alert',
-    title: 'الصفارة الإلكترونية',
-    sectionTitle: 'الوحده 3 – من الكهرباء للصوت',
-    paragraphs: [
-      'الصفارة عنصر إلكتروني يحول الطاقة الكهربية إلى طاقة صوتية',
-      'لما نوصل الصفارة في دائرة مع البطارية والسويتش نقدر نشغل ونطفي الصوت وقت ما نحب',
-      'جرس البيت بيستخدم فكرة قريبة جدًا من الدائرة اللي بنعملها بالصفارة',
-      'كل مرة تضغط على الزرار الدائرة تكتمل فيمر التيار ونسمع صوت الجرس أو الصفارة'
-    ],
-    images: [
-      'جرس باب كرتوني يخرج منه موجات صوتية مع دائرة بسيطة فيها بطارية وسويتش وصفارة متوصلة بالتوالي'
-    ]
-  },
-  {
-    id: 12,
-    tone: 'teal',
-    iconKey: 'settings',
-    title: 'نشاط بيت للوحده 3',
-    sectionTitle: 'جرس غرفتي السري',
-    paragraphs: [
-      'النشاط 1: صمّم دائرة صفارة بسيطة فيها بطارية وسويتش وصفارة وارسمها في كشكولك',
-      'النشاط 2: فكّر مكان مناسب في البيت لو عملنا فيه جرس صغير باستخدام نفس الفكرة',
-      'النشاط 3: اكتب جملة تشرح فيها متى يشتغل الجرس ومتى يطفي باستخدام كلمة دائرة مغلقة ومفتوحة',
-      'النشاط 4: لو قدرت تثبت الدائرة على كرتونة صغيرة اعمل صورة أو رسمة لشكل الجرس بعد التركيب'
-    ],
-    images: ['لوح كرتوني عليه دائرة صفارة مثبتة في ركن الغرفة بجانب باب كرتوني مكتوب عليه غرفة المخترع']
-  },
-  {
-    id: 13,
-    tone: 'amber',
-    iconKey: 'motor',
-    title: 'الحركة والطاقة الحركية',
-    sectionTitle: 'الوحده 4 – من السكون للحركة',
-    paragraphs: [
-      'من أشكال الطاقة المهمة في حياتنا الطاقة الحركية',
-      'السيارات والطائرات والعجل والمراوح كلها أمثلة على أشياء تتحرك بالطاقة الحركية',
-      'في الإلكترونيات نستخدم الموتور علشان نحول الطاقة الكهربية لطاقة حركية',
-      'الموتور بيخلي حاجات تلف زي المروحة أو تتزق لقدام زي العربية اللعبة'
-    ],
-    images: ['رسمة لمروحة سقف وعربية لعبة وطائرة صغيرة وكلهم عليهم أسهم توضح اتجاه الحركة']
-  },
-  {
-    id: 14,
-    tone: 'green',
-    iconKey: 'chip',
-    title: 'الموتور في دائرتنا',
-    sectionTitle: 'الوحده 4 – خلي الحاجة تتحرك',
-    paragraphs: [
-      'الموتور عنصر إلكتروني يحول الطاقة الكهربية إلى حركة دائرية',
-      'لما نوصل الموتور بالبطارية عن طريق الأسلاك يبدأ محور الموتور يلف',
-      'ممكن نركب على الموتور مروحة بلاستيك فنشوف الهواء يتحرك حوالينا',
-      'أو نركبه على عجلة لعبة صغيرة فنشوف العربية تتحرك على الأرض'
-    ],
-    images: [
-      'موتور صغير موصل ببطارية ويحرك مروحة بلاستيكية فوقه مع طفل يحاول يلمس الهواء الخارج من المروحة'
-    ]
-  },
-  {
-    id: 15,
-    tone: 'purple',
-    iconKey: 'pen',
-    title: 'نشاط بيت للوحده 4',
-    sectionTitle: 'مروحة مكتب أو عربية سباق',
-    paragraphs: [
-      'النشاط 1: اختر فكرة واحدة مروحة مكتب صغيرة أو عربية سباق بسيطة',
-      'النشاط 2: ارسم في كشكولك شكل المشروع من بره ثم ارسم تحته الدائرة الكهربية اللي جوّاه',
-      'النشاط 3: عدّد المكوّنات اللي هتحتاجها بطارية أسلاك موتور سويتش وربما مروحة بلاستيك',
-      'النشاط 4: اكتب جملة توضّح نوع الطاقة اللي خارجة من مشروعك طاقة حركية بتحرك الهوا أو العجل'
-    ],
-    images: [
-      'طفل يرسم في كشكوله شكل مروحة مكتب صغيرة وعربية سباق مع دوائر كهربية بسيطة تحت كل رسمة'
-    ]
-  },
-  {
-    id: 16,
-    tone: 'red',
-    iconKey: 'settings',
-    title: 'المتحكم الذكي – المقاومة المتغيّرة',
-    sectionTitle: 'الوحده 5 – زرار التحكم',
-    paragraphs: [
-      'المقاومة جزء في الدائرة بيصعّب حركة التيار زي كأن الطريق بقى أضيق والزحمة زادت',
-      'المقاومة المتغيّرة نقدر نلفّها علشان نزوّد أو نقلل المقاومة بايدينا',
-      'لما نزود المقاومة التيار يقل فيضعف النور أو يقل الصوت أو تبطأ الحركة',
-      'لما نقلل المقاومة التيار يزيد فيقوى النور أو يعلى الصوت أو تزيد سرعة الحركة'
-    ],
-    images: [
-      'نوب مقاومة متغيّرة كبيرة حولها رسمة لليد وهي تلف النوب مع لمبة يضعف ويشتد نورها في جانبين مختلفين'
-    ]
-  },
-  {
-    id: 17,
-    tone: 'yellow',
-    iconKey: 'lightbulb',
-    title: 'تجارب التحكم في النور والصوت والحركة',
-    sectionTitle: 'الوحده 5 – ثلاث تجارب',
-    paragraphs: [
-      'تجربة 1: بطارية سويتش مقاومة متغيّرة ليد وشوف كيف يتغير سطوع الضوء',
-      'تجربة 2: بطارية سويتش مقاومة متغيّرة صفارة وشوف كيف يتغير حجم الصوت',
-      'تجربة 3: بطارية سويتش مقاومة متغيّرة موتور وشوف كيف تتغير سرعة الدوران',
-      'كل مرة لفّ النوب ببطء وسجّل في كشكولك ماذا يحدث عند كل وضع مختلف'
-    ],
-    images: [
-      'ثلاث رسومات صغيرة متجاورة تمثل دائرة ليد ودائرة صفارة ودائرة موتور وكل واحدة عليها نوب مقاومة متغيّرة'
-    ]
-  },
-  {
-    id: 18,
-    tone: 'blue',
-    iconKey: 'list',
-    title: 'نشاط بيت للوحده 5',
-    sectionTitle: 'ثلاث مستويات تحكم',
-    paragraphs: [
-      'النشاط 1: اختر واحدة من الدوائر الثلاثة مصباح صفارة أو مروحة',
-      'النشاط 2: حدّد ثلاث مستويات تحب تسميهم مثلا هادي متوسط قوي',
-      'النشاط 3: لفّ المقاومة المتغيّرة وابحث عن وضع يناسب كل مستوى وسجّل مكان النوب لكل مستوى في كشكولك',
-      'النشاط 4: اكتب جملة تشرح فيها كيف تساعدك المقاومة المتغيّرة على التحكم في مشروعك بسهولة'
-    ],
-    images: [
-      'قرص مقاومة متغيّرة عليه ثلاث علامات ملونة مكتوب عندها هادي متوسط قوي بجانب دائرة إلكترونية صغيرة'
-    ]
-  },
-  {
-    id: 19,
-    tone: 'teal',
-    iconKey: 'component',
-    title: 'تصميم دوائر تحكم مختلفة',
-    sectionTitle: 'الوحده 6 – نفس المكوّنات أفكار مختلفة',
-    paragraphs: [
-      'دلوقتي عندنا نفس المكوّنات لكن نقدر نستخدمها بطرق مختلفة',
-      'ممكن نصمّم دائرة مصباح يمكن التحكم في شدته باستخدام السويتش والمقاومة المتغيّرة والليد',
-      'أو دائرة إنذار نتحكم في قوته باستخدام السويتش والمقاومة المتغيّرة والصفارة',
-      'أو دائرة مروحة بسرعات متعددة باستخدام السويتش والمقاومة المتغيّرة والموتور'
-    ],
-    images: [
-      'ثلاث دوائر مرسومة جنب بعض لمصباح وإنذار ومروحة كلهم متصلين ببطارية وسويتش ومقاومة متغيّرة'
-    ]
-  },
-  {
-    id: 20,
-    tone: 'purple',
-    iconKey: 'sparkles',
-    title: 'تحدي الوحده 6',
-    sectionTitle: 'أي دائرة هتكون فكرتك المفضلة؟',
-    paragraphs: [
-      'التحدي 1: اختر واحدة من الدوائر الثلاثة واعتبرها فكرتك الأساسية',
-      'التحدي 2: اكتب سبب اختيارك للدائرة دي وهل هي مفيدة في غرفتك أو بيتك',
-      'التحدي 3: حاول تضيف فكرة صغيرة للتطوير مثلا إضافة ليد مع الصفارة أو مروحة مع مصباح',
-      'التحدي 4: ارسم النسخة المطورة من الدائرة في كشكولك مع توضيح مكان كل مكوّن'
-    ],
-    images: [
-      'طفل يفكر أمام ثلاث لوحات دوائر مختلفة ويحمل في يده قلم يرسم دائرة رابعة مطورة على سبورة صغيرة'
-    ]
-  },
-  {
-    id: 21,
-    tone: 'green',
-    iconKey: 'branch',
-    title: 'مشروعي الإلكتروني الأول',
-    sectionTitle: 'الوحده 7 – خطة الاختراع',
-    paragraphs: [
-      'الخطوة 1: اختر فكرة مشروع من اللي جربناها أو ابتكر فكرة قريبة منها',
-      'الخطوة 2: اكتب اسم المشروع في أعلى الصفحة زي مصباح سريري أو مروحة مكتبي أو إنذار غرفتي',
-      'الخطوة 3: عدّد المكوّنات اللي هتحتاجها من الكيت بطارية سويتش مقاومة متغيّرة ليد صفارة موتور أسلاك توصيل',
-      'الخطوة 4: ارسم الدائرة الكهربية اللي تخلي المشروع يشتغل وحدد مكان كل مكوّن بوضوح'
-    ],
-    images: [
-      'لوحة مشروع كرتونية عليها رسم دائرة كاملة ومكتوب تحتها اسم الطالب واسم المشروع مع نجوم صغيرة حول اللوحة'
-    ]
-  },
-  {
-    id: 22,
-    tone: 'yellow',
-    iconKey: 'pen',
-    title: 'قصة اختراعي',
-    sectionTitle: 'الوحده 7 – احكي حكاية فكرتك',
-    paragraphs: [
-      'اكتب في كلمتين لمين عملت المشروع لنفسك أو لأخوك أو لحد من العيلة',
-      'اشرح في سطرين إمتى نستخدم المشروع مثلا قبل النوم أو عند فتح باب الغرفة',
-      'اكتب نوع الطاقة اللي بتخرج من مشروعك نور أو صوت أو حركة أو أكثر من نوع',
-      'اكتب فكرة تطوير تحب تضيفها للمشروع في المستقبل لو كان عندك مكوّنات زيادة'
-    ],
-    images: [
-      'طفل يكتب في كراسة بعنوان قصة اختراعي وإلى جانبه مشروع إلكتروني صغير موصل ببطارية'
-    ]
-  },
-  {
-    id: 23,
-    tone: 'blue',
-    iconKey: 'check',
-    title: 'أسئلة مراجعة المستوى',
-    sectionTitle: 'الوحده 8 – اختبر نفسك',
-    paragraphs: [
-      'س1: ما الفرق بين الدائرة المفتوحة والدائرة المغلقة؟',
-      'س2: ما وظيفة البطارية في الدائرة وما نوع الطاقة اللي جوّاها؟',
-      'س3: كيف يشبه التيار الكهربائي الماء في المواسير؟',
-      'س4: ما وظيفة السويتش ومتى نحتاجه في الدائرة؟',
-      'س5: ماذا تفعل المقاومة المتغيّرة في الدائرة وماذا يحدث للنور أو للصوت عندما نزيد المقاومة؟',
-      'س6: اذكر مثالًا لجهاز يخرج طاقة ضوئية وآخر يخرج طاقة صوتية وثالث يخرج طاقة حركية',
-      'س7: اكتب سلسلة تحوّل الطاقة في دائرة مصباح وفي دائرة صفارة وفي دائرة موتور'
-    ],
-    images: [
-      'ورقة اختبار لطيفة بأسئلة قصيرة حول الإلكترونيات وبجانبها طفل يفكر وعلى رأسه لمبة مضيئة'
-    ]
-  },
-  {
-    id: 24,
-    tone: 'pink',
-    iconKey: 'star',
-    title: 'أنا الآن مخترع مستوى 1',
-    sectionTitle: 'الوحده 8 – لحظة الإنجاز',
-    paragraphs: [
-      'مبروك عليك إنهاء مغامرة مخترع الإلكترونيات الصغير المستوى الأول',
-      'دلوقتي تقدر تفهم معنى الدائرة الكهربائية والتيار والطاقة وتعرف تستخدم الليد والصفارة والموتور والسويتش والمقاومة المتغيّرة',
-      'اكتب هنا جملة عن أكتر حاجة حبيتها في المستوى الأول وجملة عن حاجة نفسك تتعلمها في المستوى اللي بعده',
-      'وقّع باسمك وتاريخ اليوم في آخر الصفحة واعتبر دي شهادة إنك بدأت طريقك في عالم الإلكترونيات'
-    ],
-    images: [
-      'أطفال يرتدون قبعات تخرج STEM ويحملون شهادات إنجاز أمام لافتة مكتوب عليها مخترع إلكترونيات مستوى 1'
-    ]
-  },
-  {
-    id: 25,
-    tone: 'indigo',
-    iconKey: 'book',
-    title: 'قاموس الكلمات المهمة',
-    sectionTitle: 'لو نسيت كلمة ارجع للصفحة دي',
-    paragraphs: [
-      'الإلكترونيات: علم الأجهزة اللي بتستخدم الكهرباء علشان تعمل شغل زي النور والصوت والحركة',
-      'الدائرة الكهربائية: طريق مغلق تمشي فيه الطاقة من البطارية للجهاز وترجع تاني',
-      'الدائرة المفتوحة: طريق مقطوع لا يمر فيه التيار فيتوقف الجهاز عن العمل',
-      'التيار الكهربائي: حركة الشحنات في السلك مثل حركة الماء في المواسير',
-      'البطارية: مصدر طاقة كيميائية تتحول لطاقة كهربية في الدائرة',
-      'السويتش: مفتاح يفتح ويقفل الطريق في الدائرة علشان نشغل ونطفي بسهولة',
-      'المقاومة المتغيّرة: جزء نقدر نلفّه علشان نزوّد ونقلّل التيار اللي رايح للجهاز',
-      'الليد: لمبة إلكترونية صغيرة تحول الطاقة الكهربية إلى طاقة ضوئية',
-      'الصفارة: عنصر يحوّل الطاقة الكهربية إلى طاقة صوتية',
-      'الموتور: عنصر يحوّل الطاقة الكهربية إلى طاقة حركية',
-      'طاقة كيميائية / كهربية / ضوئية / صوتية / حركية: أشكال مختلفة للطاقة شفناها في تجاربنا',
-      'مشروع إلكتروني: دائرة مكوّنة من بطارية وأسلاك ومكوّنات أخرى تخدم فكرة مفيدة أو ممتعة'
-    ],
-    images: [
-      'لوحة كرتونية عليها بطارية ولمبة وصفارة وموتور وسويتش ومقاومة متغيّرة وكل مكون مكتوب تحته اسمه كنشرة مصغرة'
-    ]
-  }
+
 ];
 
 // --- Sub Components ---
@@ -625,7 +244,7 @@ const QuestionCard = ({ question, note, theme }) => (
     </div>
 
     <div className={`bg-white border-2 border-dashed ${theme.border} rounded-2xl p-6 shadow-sm relative overflow-hidden`}>
-      <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl ${theme.gradient} opacity-[0.04] rounded-bl-full`} />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white to-transparent opacity-[0.04] rounded-bl-full" />
       <div className="absolute bottom-0 left-0 w-24 h-24 bg-slate-100 opacity-[0.4] rounded-tr-full" />
 
       <div className="flex gap-5 relative z-10">
@@ -694,7 +313,7 @@ const EnhancedBlueprintImage = ({ desc, theme, index }) => (
 );
 
 const getIconForText = (text, defaultIcon) => {
-  const lowerText = text.toLowerCase();
+  const lowerText = (text || '').toLowerCase();
   if (lowerText.includes('بطارية') || lowerText.includes('شحنات')) return <BatteryCharging size={18} />;
   if (lowerText.includes('ليد') || lowerText.includes('ضوء') || lowerText.includes('مصباح') || lowerText.includes('لمبة'))
     return <Lightbulb size={18} />;
@@ -708,32 +327,30 @@ const getIconForText = (text, defaultIcon) => {
   return defaultIcon;
 };
 
+const DefaultBullet = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect
+        x="2"
+        y="2"
+        width="12"
+        height="12"
+        rx="4"
+        fill="currentColor"
+        fillOpacity="0.2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <circle cx="8" cy="8" r="3" fill="currentColor" />
+    </svg>
+);
+
 const EnhancedParagraph = ({ text, theme, iconKey }) => {
   const IconElement = useMemo(() => {
-    const DefaultBullet = () => (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect
-          x="2"
-          y="2"
-          width="12"
-          height="12"
-          rx="4"
-          fill="currentColor"
-          fillOpacity="0.2"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <circle cx="8" cy="8" r="3" fill="currentColor" />
-      </svg>
-    );
-
-    // لو فيه iconKey مختار يدويًا
     if (iconKey && iconRegistry[iconKey]) {
       const Comp = iconRegistry[iconKey];
       return <Comp size={18} />;
     }
 
-    // لو مفيش → استخدم النظام الأوتوماتيك
     return getIconForText(text, <DefaultBullet />);
   }, [text, iconKey]);
 
@@ -751,7 +368,7 @@ const EnhancedParagraph = ({ text, theme, iconKey }) => {
 
 const EnhancedTechList = ({ items, theme }) => {
   const getComponentIcon = (item) => {
-    const lowerItem = item.toLowerCase();
+    const lowerItem = (item || '').toLowerCase();
     if (lowerItem.includes('بطارية')) return <Battery size={18} />;
     if (lowerItem.includes('موتور')) return <Fan size={18} />;
     if (lowerItem.includes('مراوح')) return <Fan size={18} />;
@@ -782,7 +399,7 @@ const EnhancedTechList = ({ items, theme }) => {
   );
 };
 
-// --- BLOCKS EDITOR (paragraphs + space blocks + icon per paragraph) ---
+// --- BLOCKS EDITOR (Paragraphs, Spaces, AND IMAGES) ---
 
 const BlocksEditor = ({ blocks = [], onChange }) => {
   const safeBlocks = Array.isArray(blocks) ? blocks : [];
@@ -798,7 +415,12 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
       type,
       text: '',
       height: type === 'space' ? 32 : undefined,
-      iconKey: undefined
+      iconKey: undefined,
+      // Image defaults
+      src: type === 'image' ? '' : undefined,
+      width: type === 'image' ? 70 : undefined,
+      borderRadius: type === 'image' ? 24 : undefined,
+      caption: type === 'image' ? '' : undefined
     };
     onChange([...safeBlocks, newBlock]);
   };
@@ -809,7 +431,11 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
       type,
       text: '',
       height: type === 'space' ? 32 : undefined,
-      iconKey: undefined
+      iconKey: undefined,
+      src: type === 'image' ? '' : undefined,
+      width: type === 'image' ? 70 : undefined,
+      borderRadius: type === 'image' ? 24 : undefined,
+      caption: type === 'image' ? '' : undefined
     };
     const next = [...safeBlocks];
     next.splice(index + 1, 0, newBlock);
@@ -830,89 +456,71 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
     onChange(next);
   };
 
+  const handleImageUpload = (e, index) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const src = evt.target && evt.target.result;
+      if (typeof src === 'string') {
+        updateBlock(index, { src });
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
   return (
     <div>
-      <label className="block text-slate-400 mb-1 font-medium">
-        محتوى الصفحة (بلوكات)
-      </label>
+      <label className="block text-slate-400 mb-1 font-medium">محتوى الصفحة</label>
       <p className="text-[10px] text-slate-500 mb-2">
-        كل عنصر هنا يا إما فقرة نص أو بلوك مسافة تقدر تتحكم في ارتفاعه، وكمان تقدر تختار أيقونة كل فقرة.
+        رتب المحتوى (نصوص، صور، مسافات) بالطريقة التي تفضلها.
       </p>
 
-      <div className="space-y-2 max-h-[260px] overflow-y-auto pr-1">
+      <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
         {safeBlocks.length === 0 && (
           <div className="text-[11px] text-slate-500 mb-1">
-            لا يوجد محتوى بعد. أضف فقرة أو مسافة من الأزرار بالأسفل.
+            لا يوجد محتوى بعد. أضف عناصر من الأزرار بالأسفل.
           </div>
         )}
 
         {safeBlocks.map((block, index) => {
-          const isParagraph = block.type !== 'space';
-          const height = typeof block.height === 'number' ? block.height : 32;
-          const currentIconKey = block.iconKey || 'auto';
-
-          if (isParagraph) {
+          // --- RENDER PARAGRAPH BLOCK ---
+          if (block.type === 'paragraph') {
+            const currentIconKey = block.iconKey || 'auto';
             return (
               <div
                 key={block.id || `p-${index}`}
                 className="rounded-2xl bg-slate-900/70 border border-slate-700 px-3 py-2 space-y-2"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] text-slate-300 font-semibold">
-                    فقرة #{index + 1}
-                  </span>
+                  <span className="text-[11px] text-slate-300 font-semibold">نص #{index + 1}</span>
                   <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => moveBlock(index, -1)}
-                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
-                      disabled={index === 0}
-                    >
+                    <button type="button" onClick={() => moveBlock(index, -1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === 0}>
                       <ChevronUp size={12} />
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => moveBlock(index, 1)}
-                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
-                      disabled={index === safeBlocks.length - 1}
-                    >
+                    <button type="button" onClick={() => moveBlock(index, 1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === safeBlocks.length - 1}>
                       <ChevronDown size={12} />
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => addBlockAfter(index, 'space')}
-                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-emerald-300 hover:border-emerald-500/70 transition-colors"
-                      title="إضافة مسافة بعد هذه الفقرة"
-                    >
+                    <button type="button" onClick={() => addBlockAfter(index, 'space')} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-emerald-300 hover:border-emerald-500/70 transition-colors" title="إضافة مسافة بعد">
                       <Plus size={12} />
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => removeBlock(index)}
-                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors"
-                    >
+                    <button type="button" onClick={() => removeBlock(index)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors">
                       <Trash2 size={12} />
                     </button>
                   </div>
                 </div>
 
-                {/* Icon selector for this paragraph */}
                 <div className="flex items-center gap-2 text-[10px] text-slate-400">
-                  <span className="whitespace-nowrap">أيقونة الفقرة:</span>
+                  <span className="whitespace-nowrap">أيقونة:</span>
                   <select
                     value={currentIconKey}
-                    onChange={(e) =>
-                      updateBlock(index, {
-                        iconKey: e.target.value === 'auto' ? undefined : e.target.value
-                      })
-                    }
+                    onChange={(e) => updateBlock(index, { iconKey: e.target.value === 'auto' ? undefined : e.target.value })}
                     className="flex-1 rounded-lg bg-slate-900/80 border border-slate-700 px-2 py-1 text-[10px] text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500"
                   >
-                    <option value="auto">تلقائي حسب النص</option>
+                    <option value="auto">تلقائي</option>
                     {ICON_OPTIONS.map((opt) => (
-                      <option key={opt.key} value={opt.key}>
-                        {opt.label}
-                      </option>
+                      <option key={opt.key} value={opt.key}>{opt.label}</option>
                     ))}
                   </select>
                 </div>
@@ -928,7 +536,72 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
             );
           }
 
-          // Space block
+          // --- RENDER IMAGE BLOCK ---
+          if (block.type === 'image') {
+            const width = typeof block.width === 'number' ? block.width : 70;
+            const radius = typeof block.borderRadius === 'number' ? block.borderRadius : 24;
+
+            return (
+              <div
+                key={block.id || `img-${index}`}
+                className="rounded-2xl bg-slate-900/70 border border-slate-700 px-3 py-2 space-y-2"
+              >
+                 <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] text-slate-300 font-semibold flex items-center gap-1.5">
+                    <ImageIcon size={12} className="text-emerald-400" />
+                    صورة #{index + 1}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button type="button" onClick={() => moveBlock(index, -1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === 0}>
+                      <ChevronUp size={12} />
+                    </button>
+                    <button type="button" onClick={() => moveBlock(index, 1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === safeBlocks.length - 1}>
+                      <ChevronDown size={12} />
+                    </button>
+                    <button type="button" onClick={() => removeBlock(index)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors">
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-xl bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
+                    {block.src ? (
+                      <img src={block.src} alt="preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <ImageIcon size={20} className="text-slate-500" />
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-1.5">
+                    <label className="inline-block px-2 py-1 rounded-lg bg-slate-800 border border-slate-600 text-[10px] text-slate-200 cursor-pointer hover:border-sky-500/70 transition-colors">
+                      {block.src ? 'تغيير الصورة' : 'رفع صورة'}
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, index)} />
+                    </label>
+                    <input
+                      value={block.caption || ''}
+                      onChange={(e) => updateBlock(index, { caption: e.target.value })}
+                      className="w-full rounded-lg bg-slate-900/60 border border-slate-700 px-2 py-1 text-[10px] text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                      placeholder="الكابشن (اختياري)"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                   <div>
+                     <span className="text-[9px] text-slate-400 block mb-0.5">العرض: {width}%</span>
+                     <input type="range" min={20} max={100} value={width} onChange={(e) => updateBlock(index, { width: Number(e.target.value) })} className="w-full h-1" />
+                   </div>
+                   <div>
+                     <span className="text-[9px] text-slate-400 block mb-0.5">الحواف: {radius}px</span>
+                     <input type="range" min={0} max={48} value={radius} onChange={(e) => updateBlock(index, { borderRadius: Number(e.target.value) })} className="w-full h-1" />
+                   </div>
+                </div>
+              </div>
+            );
+          }
+
+          // --- RENDER SPACE BLOCK ---
+          const height = typeof block.height === 'number' ? block.height : 32;
           return (
             <div
               key={block.id || `s-${index}`}
@@ -937,92 +610,62 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[11px] text-slate-300 font-semibold flex items-center gap-1.5">
                   <Sparkles size={12} className="text-sky-400" />
-                  مسافة فاصلة #{index + 1}
+                  مسافة #{index + 1}
                 </span>
                 <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => moveBlock(index, -1)}
-                    className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
-                    disabled={index === 0}
-                  >
+                  <button type="button" onClick={() => moveBlock(index, -1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === 0}>
                     <ChevronUp size={12} />
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => moveBlock(index, 1)}
-                    className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
-                    disabled={index === safeBlocks.length - 1}
-                  >
+                  <button type="button" onClick={() => moveBlock(index, 1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === safeBlocks.length - 1}>
                     <ChevronDown size={12} />
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => removeBlock(index)}
-                    className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors"
-                  >
+                  <button type="button" onClick={() => removeBlock(index)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors">
                     <Trash2 size={12} />
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <div className="flex items-center justify_between text-[11px] text-slate-400">
-                  <span>ارتفاع المسافة: {height}px</span>
-                  <span className="text-slate-500">
-                    تقريبًا&nbsp;
-                    {Math.max(1, Math.round(height / 24))} سطر
-                  </span>
-                </div>
-                <input
+              <div className="flex items-center gap-2">
+                 <input
                   type="range"
                   min={8}
                   max={160}
                   step={4}
                   value={height}
                   onChange={(e) => updateBlock(index, { height: Number(e.target.value) })}
-                  className="w-full"
+                  className="flex-1 h-1"
                 />
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min={0}
-                    max={240}
-                    value={height}
-                    onChange={(e) =>
-                      updateBlock(index, { height: Number(e.target.value) || 0 })
-                    }
-                    className="w-16 rounded-lg bg-slate-900/70 border border-slate-700 px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                  />
-                  <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                    <div
-                      className="h-1.5 rounded-full bg-sky-500"
-                      style={{ width: `${Math.min(100, (height / 160) * 100)}%` }}
-                    />
-                  </div>
-                </div>
+                <span className="text-[9px] text-slate-400 w-8 text-left">{height}px</span>
               </div>
             </div>
           );
         })}
       </div>
 
-      <div className="mt-2 flex items-center gap-2">
+      <div className="mt-2 flex items-center gap-1.5 flex-wrap">
         <button
           type="button"
           onClick={() => addBlock('paragraph')}
           className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-700 text-[11px] text-slate-200 hover:bg-slate-800 transition-colors"
         >
           <Plus size={12} />
-          إضافة فقرة
+          فقرة
+        </button>
+        <button
+          type="button"
+          onClick={() => addBlock('image')}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-700 text-[11px] text-slate-200 hover:bg-slate-800 transition-colors"
+        >
+          <ImageIcon size={12} />
+          صورة
         </button>
         <button
           type="button"
           onClick={() => addBlock('space')}
           className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-700 text-[11px] text-slate-200 hover:bg-slate-800 transition-colors"
         >
-          <Plus size={12} />
-          إضافة مسافة فاصلة
+          <Sparkles size={12} />
+          مسافة
         </button>
       </div>
     </div>
@@ -1087,6 +730,163 @@ const BulletsEditor = ({ bullets = [], onChange }) => {
   );
 };
 
+// --- IMAGES EDITOR (upload image + caption + dimensions + round corners) ---
+
+const ImagesEditor = ({ images = [], onChange }) => {
+  const safeImages = Array.isArray(images) ? images : [];
+
+  const updateImage = (index, patch) => {
+    const next = safeImages.map((img, i) => (i === index ? { ...img, ...patch } : img));
+    onChange(next);
+  };
+
+  const removeImage = (index) => {
+    const next = safeImages.filter((_, i) => i !== index);
+    onChange(next);
+  };
+
+  const handleFileChange = (event, index = null) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const src = e.target && e.target.result;
+      if (typeof src !== 'string') return;
+
+      if (index === null) {
+        const newImg = {
+          id: `img-${Date.now()}-${Math.random()}`,
+          src,
+          caption: '',
+          width: 70,
+          borderRadius: 24
+        };
+        onChange([...safeImages, newImg]);
+      } else {
+        updateImage(index, { src });
+      }
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  };
+
+  return (
+    <div className="mt-3">
+      <label className="block text-slate-400 mb-1 font-medium">الصور داخل الصفحة</label>
+      <p className="text-[10px] text-slate-500 mb-2">
+        ارفع صورة من جهازك (بدون لينك). تقدر تتحكم في الكابشن، عرض الصورة، واستدارة الحواف.
+      </p>
+
+      <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+        {safeImages.map((img, idx) => {
+          const width = typeof img.width === 'number' ? img.width : 70;
+          const radius = typeof img.borderRadius === 'number' ? img.borderRadius : 24;
+          return (
+            <div
+              key={img.id || `img-${idx}`}
+              className="rounded-2xl bg-slate-900/70 border border-slate-700 px-3 py-3 space-y-2"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] text-slate-300 font-semibold flex items-center gap-1.5">
+                  <ImageIcon size={12} className="text-sky-400" />
+                  صورة #{idx + 1}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <label className="px-2 py-1 rounded-lg bg-slate-900/80 border border-slate-700 text-[10px] text-slate-200 cursor-pointer hover:border-sky-500/70 hover:text-sky-200 transition-colors">
+                    تغيير الصورة
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleFileChange(e, idx)}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => removeImage(idx)}
+                    className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-16 h-16 rounded-xl bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center">
+                  {img.src ? (
+                    <img
+                      src={img.src}
+                      alt={img.caption || `صورة ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                      style={{ borderRadius: radius }}
+                    />
+                  ) : (
+                    <ImageIcon size={20} className="text-slate-500" />
+                  )}
+                </div>
+                <div className="flex-1 space-y-1">
+                  <label className="block text-[10px] text-slate-400 mb-0.5">الكابشن تحت الصورة</label>
+                  <input
+                    value={img.caption || ''}
+                    onChange={(e) => updateImage(idx, { caption: e.target.value })}
+                    className="w-full rounded-lg bg-slate-900/70 border border-slate-700 px-2 py-1.5 text-[11px] text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    placeholder="مثلاً: دائرة الليد الأولى"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5 mt-2">
+                <div className="flex items-center justify-between text-[10px] text-slate-400">
+                  <span>عرض الصورة داخل الصفحة: {width}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={20}
+                  max={100}
+                  value={width}
+                  onChange={(e) => updateImage(idx, { width: Number(e.target.value) })}
+                  className="w-full"
+                />
+
+                <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2">
+                  <span>استدارة الحواف: {radius}px</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={48}
+                  value={radius}
+                  onChange={(e) => updateImage(idx, { borderRadius: Number(e.target.value) })}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          );
+        })}
+
+        {safeImages.length === 0 && (
+          <div className="text-[11px] text-slate-500">
+            لا توجد صور في هذه الصفحة بعد. أضف صورة من الأسفل.
+          </div>
+        )}
+      </div>
+
+      <div className="mt-2">
+        <label className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-700 text-[11px] text-slate-200 cursor-pointer hover:bg-slate-800 transition-colors">
+          <ImageIcon size={12} />
+          رفع صورة جديدة
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => handleFileChange(e, null)}
+          />
+        </label>
+      </div>
+    </div>
+  );
+};
+
 // --- Book Sidebar ---
 
 const BookSidebar = ({
@@ -1103,7 +903,7 @@ const BookSidebar = ({
 }) => {
   return (
     <div className="no-print w-full lg:w-[260px] bg-slate-900/70 border border-slate-700/60 rounded-3xl p-4 flex flex-col gap-4 shadow-[0_18px_45px_rgba(15,23,42,0.9)]">
-      <div className="flex items-center justify_between mb-1">
+      <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2 text-slate-200">
           <ShieldCheck size={18} className="text-emerald-400" />
           <span className="text-xs font-semibold tracking-[0.16em] uppercase">Book settings</span>
@@ -1192,6 +992,10 @@ const BookSidebar = ({
           {pages.map((p, idx) => {
             const theme = toneStyles[p.tone] || toneStyles.default;
             const active = idx === currentIndex;
+            const description = p.noHeader
+              ? 'صفحة بدون ترويسة'
+              : p.sectionTitle || p.subtitle || 'صفحة عادية';
+
             return (
               <button
                 key={p.id || idx}
@@ -1217,7 +1021,7 @@ const BookSidebar = ({
                     </span>
                   </div>
                   <p className="text-[10px] text-slate-400 truncate">
-                    {p.sectionTitle || p.subtitle || 'صفحة عادية'}
+                    {description}
                   </p>
                 </div>
                 <span
@@ -1321,6 +1125,20 @@ const PageEditorPanel = ({
           </select>
         </div>
 
+        {/* Headerless toggle */}
+        <div className="flex items-center gap-2">
+          <input
+            id={`noHeader-${page.id}`}
+            type="checkbox"
+            checked={!!page.noHeader}
+            onChange={(e) => onFieldChange('noHeader', e.target.checked)}
+            className="w-3 h-3 rounded border-slate-600 bg-slate-900 text-sky-500 focus:ring-sky-500"
+          />
+          <label htmlFor={`noHeader-${page.id}`} className="text-[11px] text-slate-300">
+            صفحة بدون ترويسة علوية (بدون البانر الملون والعنوان في الأعلى)
+          </label>
+        </div>
+
         {/* Icon selector for page header */}
         <div>
           <label className="block text-slate-400 mb-1 font-medium">Page icon</label>
@@ -1347,14 +1165,15 @@ const PageEditorPanel = ({
           </div>
         </div>
 
-        {/* Blocks (paragraphs + spaces + icons) */}
+        {/* Blocks */}
         <BlocksEditor blocks={page.blocks || []} onChange={onBlocksChange} />
 
         {/* Bullets */}
         <BulletsEditor bullets={page.bullets || []} onChange={onBulletsChange} />
 
         <p className="text-[10px] text-slate-500 mt-2">
-          عدل عنوان الصفحة والألوان والأيقونة والنصوص، واستخدم بلوكات المسافة والتحكم في أيقونة كل فقرة لعمل تصميم مرتب.
+          عدل عنوان الصفحة والألوان والأيقونة والنصوص، واستخدم بلوكات المسافة والتحكم في أيقونة كل فقرة والصور
+          المرفوعة لعمل تصميم مرتب.
         </p>
       </div>
     </div>
@@ -1382,7 +1201,7 @@ const normalizePage = (raw) => {
 
   blocks = blocks.map((b, idx) => ({
     id: b.id || `b-${idx}-${Date.now()}`,
-    type: b.type === 'space' ? 'space' : 'paragraph',
+    type: (b.type === 'space' || b.type === 'image') ? b.type : 'paragraph',
     text: b.text || '',
     height:
       b.type === 'space'
@@ -1390,14 +1209,19 @@ const normalizePage = (raw) => {
           ? b.height
           : 32
         : undefined,
-    iconKey: b.iconKey || undefined
+    iconKey: b.iconKey || undefined,
+    // Image normalizers
+    src: b.type === 'image' ? b.src : undefined,
+    width: b.type === 'image' ? (typeof b.width === 'number' ? b.width : 70) : undefined,
+    borderRadius: b.type === 'image' ? (typeof b.borderRadius === 'number' ? b.borderRadius : 24) : undefined,
+    caption: b.type === 'image' ? (b.caption || '') : undefined
   }));
 
   const paragraphs = blocks
     .filter((b) => b.type === 'paragraph' && b.text && b.text.trim().length > 0)
     .map((b) => b.text);
 
-  return { ...p, blocks, paragraphs };
+  return { ...p, blocks, paragraphs, images: [] }; // Reset images array to ensure old ones are gone
 };
 
 // --- Page Renderer ---
@@ -1406,6 +1230,7 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
   const theme = toneStyles[page.tone] || toneStyles.default;
   const levelTag = bookMeta?.levelTag || 'Sparvi Lab · Level 1';
   const IconComp = iconRegistry[page.iconKey] || Book;
+  const showHeader = !page.noHeader;
 
   const blocks =
     page.blocks && Array.isArray(page.blocks) && page.blocks.length
@@ -1421,7 +1246,7 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
     <div className={`relative flex justify-center ${printMode ? 'py-0' : 'py-6'}`} dir="rtl">
       <div
         className={`relative bg-white flex flex-col overflow-hidden ${
-          printMode ? 'rounded-none shadow-none' : 'rounded-[24px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]'
+          printMode ? '' : 'rounded-[24px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]'
         }`}
         style={{
           width: printMode ? '210mm' : '794px',
@@ -1431,50 +1256,54 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
         <CircuitPattern colorClass={theme.subText} opacity="0.05" />
         <PageDecorations theme={theme} />
 
-        <div className={`relative px-8 pt-12 pb-16 bg-gradient-to-bl ${theme.gradient} text-white overflow-hidden`}>
-          <div className="absolute top-[-50%] right-[-20%] w-[80%] h-[80%] bg-white opacity-[0.08] rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-[-20%] left-[-10%] w-[40%] h-[40%] bg-black opacity-[0.1] rounded-full blur-2xl pointer-events-none" />
+        {showHeader && (
+          <div className={`relative px-8 pt-12 pb-16 bg-gradient-to-bl ${theme.gradient} text-white overflow-hidden`}>
+            <div className="absolute top-[-50%] right-[-20%] w-[80%] h-[80%] bg-white opacity-[0.08] rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-[-20%] left-[-10%] w-[40%] h-[40%] bg-black opacity-[0.1] rounded-full blur-2xl pointer-events-none" />
 
-          <div className="relative z-10 flex justify-between items-start">
-            <div className="flex-1 pl-6">
-              <div className="flex items-center gap-3 mb-4 opacity-90">
-                <span className="text-[11px] font-black tracking-[0.2em] bg-white/20 px-3 py-1 rounded-full text-white border border-white/30 uppercase backdrop-blur-md shadow-sm">
-                  {levelTag}
-                </span>
-                <span className="h-px flex-1 bg-gradient-to-l from-white/50 to-transparent" />
+            <div className="relative z-10 flex justify-between items-start">
+              <div className="flex-1 pl-6">
+                <div className="flex items-center gap-3 mb-4 opacity-90">
+                  <span className="text-[11px] font-black tracking-[0.2em] bg-white/20 px-3 py-1 rounded-full text-white border border-white/30 uppercase backdrop-blur-md shadow-sm">
+                    {levelTag}
+                  </span>
+                  <span className="h-px flex-1 bg-gradient-to-l from-white/50 to-transparent" />
+                </div>
+
+                <h1 className="text-5xl md:text-6xl font-black leading-tight drop-shadow-lg tracking-tight">
+                  {page.title}
+                </h1>
+
+                {page.sectionTitle && (
+                  <div className="mt-4 inline-flex items-center gap-2 bg-white/10 px-4 py-1.5 rounded-lg backdrop-blur-sm border border-white/10">
+                    <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_white]" />
+                    <p className="text-xl text-white font-bold">{page.sectionTitle}</p>
+                  </div>
+                )}
               </div>
 
-              <h1 className="text-5xl md:text-6xl font-black leading-tight drop-shadow-lg tracking-tight">{page.title}</h1>
-
-              {page.sectionTitle && (
-                <div className="mt-4 inline-flex items-center gap-2 bg-white/10 px-4 py-1.5 rounded-lg backdrop-blur-sm border border-white/10">
-                  <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_white]" />
-                  <p className="text-xl text-white font-bold">{page.sectionTitle}</p>
+              <div className="shrink-0 relative -mt-4 -mr-4">
+                <div className="absolute inset-0 bg-white/30 blur-2xl rounded-full scale-110" />
+                <div className="relative w-28 h-28 bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md border-[3px] border-white/40 rounded-3xl flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.2)] transform rotate-6 group hover:rotate-0 transition-transform duration-500">
+                  <div className="text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.3)] scale-125">
+                    <IconComp size={40} />
+                  </div>
+                  <Zap size={20} className="absolute -top-2 -left-2 text-white opacity-80 rotate-45" />
                 </div>
-              )}
-            </div>
-
-            <div className="shrink-0 relative -mt-4 -mr-4">
-              <div className="absolute inset-0 bg-white/30 blur-2xl rounded-full scale-110" />
-              <div className="relative w-28 h-28 bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md border-[3px] border-white/40 rounded-3xl flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.2)] transform rotate-6 group hover:rotate-0 transition-transform duration-500">
-                <div className="text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.3)] scale-125">
-                  <IconComp size={40} />
-                </div>
-                <Zap size={20} className="absolute -top-2 -left-2 text-white opacity-80 rotate-45" />
               </div>
             </div>
-          </div>
 
-          <div className="absolute bottom-0 left-0 right-0 translate-y-[1px]">
-            <svg viewBox="0 0 1440 100" className="fill-white w-full h-auto">
-              <path d="M0,40 C320,120 420,0 840,30 C1100,60 1300,10 1440,40 L1440,100 L0,100 Z" opacity="0.2" />
-              <path d="M0,60 C320,140 500,20 1000,50 C1200,70 1300,30 1440,60 L1440,100 L0,100 Z" opacity="0.4" />
-              <path d="M0,80 C320,150 550,50 1100,80 C1300,90 1400,60 1440,80 L1440,100 L0,100 Z" />
-            </svg>
+            <div className="absolute bottom-0 left-0 right-0 translate-y-[1px]">
+              <svg viewBox="0 0 1440 100" className="fill-white w-full h-auto">
+                <path d="M0,40 C320,120 420,0 840,30 C1100,60 1300,10 1440,40 L1440,100 L0,100 Z" opacity="0.2" />
+                <path d="M0,60 C320,140 500,20 1000,50 C1200,70 1300,30 1440,60 L1440,100 L0,100 Z" opacity="0.4" />
+                <path d="M0,80 C320,150 550,50 1100,80 C1300,90 1400,60 1440,80 L1440,100 L0,100 Z" />
+              </svg>
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="flex-1 px-10 md:px-14 py-10 relative z-10">
+        <div className={`flex-1 px-10 md:px-14 ${showHeader ? 'py-10' : 'py-12'} relative z-10`}>
           {(page.subtitle || page.subheading) && (
             <div className="mb-10 relative">
               <div className={`absolute right-0 top-0 bottom-0 w-2 rounded-full bg-gradient-to-b ${theme.gradient} opacity-80`} />
@@ -1499,12 +1328,39 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
           {blocks && blocks.length > 0 && (
             <div className="space-y-6 mb-10">
               {blocks.map((block, idx) => {
-                if (block.type === 'space') {
-                  const height = typeof block.height === 'number' ? block.height : 32;
-                  return (
-                    <div key={block.id || `space-${idx}`} style={{ height }} />
+                // RENDER IMAGE BLOCK
+                if (block.type === 'image') {
+                  const width = typeof block.width === 'number' ? block.width : 70;
+                  const radius = typeof block.borderRadius === 'number' ? block.borderRadius : 24;
+                  if (!block.src) return null;
+                   return (
+                    <div key={block.id || `img-b-${idx}`} className="flex flex-col items-center gap-3 my-4">
+                      <div className="w-full flex justify-center">
+                        <img
+                          src={block.src}
+                          alt={block.caption || `صورة ${idx + 1}`}
+                          className="border border-slate-200 object-contain"
+                          style={{
+                            maxWidth: `${width}%`,
+                            borderRadius: radius,
+                            boxShadow: '0 10px 25px rgba(15,23,42,0.2)'
+                          }}
+                        />
+                      </div>
+                      {block.caption && (
+                        <p className="text-xs text-slate-500 text-center max-w-md">{block.caption}</p>
+                      )}
+                    </div>
                   );
                 }
+
+                // RENDER SPACE BLOCK
+                if (block.type === 'space') {
+                  const height = typeof block.height === 'number' ? block.height : 32;
+                  return <div key={block.id || `space-${idx}`} style={{ height }} />;
+                }
+
+                // RENDER TEXT BLOCK
                 return (
                   <EnhancedParagraph
                     key={block.id || `p-${idx}`}
@@ -1523,7 +1379,7 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
             >
               <CircuitPattern colorClass={theme.subText} opacity="0.03" />
               <div className="relative z-10">
-                <h3 className={`text-lg font-black ${theme.subText} mb-4 flex.items-center gap-3 uppercase tracking-wider`}>
+                <h3 className={`text-lg font-black ${theme.subText} mb-4 flex items-center gap-3 uppercase tracking-wider`}>
                   <div className={`p-2 rounded-lg ${theme.bg} border ${theme.border}`}>
                     <List size={20} />
                   </div>
@@ -1533,15 +1389,6 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
               </div>
             </div>
           )}
-
-          {/* Images placeholder (disabled for now, عشان هتحط <img src> بنفسك بعدين) */}
-          {/* {page.images && page.images.length > 0 && (
-            <div className="grid grid-cols-1 gap-8 mt-10">
-              {page.images.map((img, idx) => (
-                <EnhancedBlueprintImage key={idx} desc={img} index={idx} theme={theme} />
-              ))}
-            </div>
-          )} */}
         </div>
 
         <div className="h-16 mt-auto border-t-2 border-slate-100 bg-slate-50/80 backdrop-blur flex items-center justify-between px-10 text-slate-500 relative">
@@ -1593,6 +1440,10 @@ const BilingualBook = () => {
       const parsed = JSON.parse(raw);
       if (parsed.pages && Array.isArray(parsed.pages)) {
         setPages(parsed.pages.map((p) => normalizePage(p)));
+        if (typeof parsed.currentPageIndex === 'number' && parsed.pages.length) {
+          const maxIndex = parsed.pages.length - 1;
+          setCurrentPageIndex(Math.max(0, Math.min(parsed.currentPageIndex, maxIndex)));
+        }
       }
       if (parsed.bookMeta) {
         setBookMeta(parsed.bookMeta);
@@ -1602,18 +1453,18 @@ const BilingualBook = () => {
     }
   }, []);
 
-  // Save to localStorage
+  // Save to localStorage (includes images + headerless flag)
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ pages, bookMeta })
+        JSON.stringify({ pages, bookMeta, currentPageIndex })
       );
     } catch {
       // ignore
     }
-  }, [pages, bookMeta]);
+  }, [pages, bookMeta, currentPageIndex]);
 
   const nextPage = () => {
     setCurrentPageIndex((prev) => Math.min(prev + 1, totalPages - 1));
@@ -1661,7 +1512,8 @@ const BilingualBook = () => {
       bullets: [],
       question: '',
       questionNote: '',
-      images: []
+      images: [],
+      noHeader: false
     });
     setPages((prev) => {
       const newPages = [...prev, newPage];
@@ -1727,7 +1579,7 @@ const BilingualBook = () => {
   }, [printMode]);
 
   return (
-<div className="min-h-screen bg-slate-900 flex flex-col items-center p-4 font-sans relative overflow-hidden book-root">
+    <div className="min-h-screen bg-slate-900 flex flex-col items-center p-4 font-sans relative overflow-hidden book-root">
       {/* Print CSS: A4, no white spacing */}
       <style>{`
         @page {
@@ -1784,8 +1636,8 @@ const BilingualBook = () => {
 
       {/* Background Ambience */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none no-print">
-        <div className="absolute.top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-indigo-600/20 rounded-full.blur-[150px]" />
-        <div className="absolute.bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] bg-sky-600/20 rounded-full.blur-[150px]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-indigo-600/20 rounded-full blur-[150px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] bg-sky-600/20 rounded-full blur-[150px]" />
         <CircuitPattern colorClass="text-white" opacity="0.02" />
       </div>
 
@@ -1796,7 +1648,7 @@ const BilingualBook = () => {
             <Book className="text-sky-400" size={24} />
           </div>
           <div>
-            <span className="font-black text-2xl tracking-wide block.leading-none">
+            <span className="font-black text-2xl tracking-wide block leading-none">
               {bookMeta.brandName || 'Sparvi Lab'}
             </span>
             <span className="text-sky-400/80 text-sm font-mono tracking-wider block">
@@ -1824,7 +1676,7 @@ const BilingualBook = () => {
             <button
               onClick={prevPage}
               disabled={currentPageIndex === 0}
-              className="w-11 h-11 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-slate-700 hover:text-white.disabled:opacity-40 disabled:cursor-not-allowed transition-all border border-slate-700"
+              className="w-11 h-11 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-slate-700 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all border border-slate-700"
             >
               <ChevronRight size={20} />
             </button>
@@ -1838,7 +1690,7 @@ const BilingualBook = () => {
             <button
               onClick={nextPage}
               disabled={currentPageIndex === totalPages - 1}
-              className="w-11 h-11 rounded-full bg-sky-600 text-white flex items-center justify-center hover:bg-sky-500.disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-sky-600/30 transition-all border border-sky-500/50"
+              className="w-11 h-11 rounded-full bg-sky-600 text-white flex items-center justify-center hover:bg-sky-500 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-sky-600/30 transition-all border border-sky-500/50"
             >
               <ChevronLeft size={20} />
             </button>
