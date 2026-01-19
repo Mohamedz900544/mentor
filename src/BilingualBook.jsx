@@ -1972,31 +1972,73 @@ const BilingualBook = () => {
   };
 
   // Book schema helpers
-  const buildSchemaFromPages = () => {
-    return pages.map((p) => {
-      const blocks = Array.isArray(p.blocks) ? p.blocks : [];
-      const paragraphs = blocks
-        .filter((b) => b.type === 'paragraph' && b.text && b.text.trim().length > 0)
-        .map((b) => b.text);
-      const bullets = blocks
-        .filter((b) => b.type === 'bullets' && Array.isArray(b.items))
-        .flatMap((b) => b.items || [])
-        .filter((item) => item && item.trim().length > 0);
+const buildSchemaFromPages = () => {
+  return pages.map((p) => {
+    const blocks = Array.isArray(p.blocks) ? p.blocks : [];
+
+    const paragraphs = blocks
+      .filter((b) => b.type === 'paragraph' && b.text && b.text.trim().length > 0)
+      .map((b) => b.text);
+
+    const bullets = blocks
+      .filter((b) => b.type === 'bullets' && Array.isArray(b.items))
+      .flatMap((b) => b.items || [])
+      .filter((item) => item && item.trim().length > 0);
+
+    // 🔹 this will show in JSON, including image blocks
+    const blocksSchema = blocks.map((b) => {
+      if (b.type === 'image') {
+        return {
+          type: 'image',
+          // leave src empty so you can upload / fill later
+          // you *can* manually put a URL or base64 here if you want
+          src: b.src ? '' : '',
+          caption: b.caption || '',
+          width: typeof b.width === 'number' ? b.width : 70,
+          borderRadius: typeof b.borderRadius === 'number' ? b.borderRadius : 24
+        };
+      }
+
+      if (b.type === 'space') {
+        return {
+          type: 'space',
+          height: typeof b.height === 'number' ? b.height : 32
+        };
+      }
+
+      if (b.type === 'bullets') {
+        return {
+          type: 'bullets',
+          title: b.title || p.bulletsTitle || 'المكونات والأدوات المطلوبة',
+          items: Array.isArray(b.items) ? b.items : []
+        };
+      }
+
+      // paragraph
       return {
-        id: p.id,
-        tone: p.tone,
-        iconKey: p.iconKey,
-        title: p.title,
-        sectionTitle: p.sectionTitle,
-        subtitle: p.subtitle,
-        question: p.question,
-        questionNote: p.questionNote,
-        paragraphs,
-        bullets,
-        noHeader: !!p.noHeader
+        type: 'paragraph',
+        text: b.text || '',
+        iconKey: b.iconKey || undefined
       };
     });
-  };
+
+    return {
+      id: p.id,
+      tone: p.tone,
+      iconKey: p.iconKey,
+      title: p.title,
+      sectionTitle: p.sectionTitle,
+      subtitle: p.subtitle,
+      question: p.question,
+      questionNote: p.questionNote,
+      paragraphs,
+      bullets,
+      noHeader: !!p.noHeader,
+      // 🔥 this is the important part
+      blocks: blocksSchema
+    };
+  });
+};
 
   const handleGenerateSchemaFromPages = () => {
     try {
@@ -2029,21 +2071,23 @@ const BilingualBook = () => {
         throw new Error('المخطط يجب أن يكون Array من الصفحات.');
       }
 
-      const newPages = parsed.map((obj) =>
-        normalizePage({
-          id: obj.id ?? Date.now(),
-          tone: obj.tone || 'blue',
-          iconKey: obj.iconKey || 'book',
-          title: obj.title || 'صفحة جديدة',
-          sectionTitle: obj.sectionTitle || '',
-          subtitle: obj.subtitle || '',
-          paragraphs: Array.isArray(obj.paragraphs) ? obj.paragraphs : [],
-          bullets: Array.isArray(obj.bullets) ? obj.bullets : [],
-          question: obj.question || '',
-          questionNote: obj.questionNote || '',
-          noHeader: !!obj.noHeader
-        })
-      );
+ const newPages = parsed.map((obj) =>
+  normalizePage({
+    // keep all incoming fields, including blocks (paragraphs, bullets, images, spaces)
+    ...obj,
+    id: obj.id ?? Date.now(),
+    tone: obj.tone || 'blue',
+    iconKey: obj.iconKey || 'book',
+    title: obj.title || 'صفحة جديدة',
+    sectionTitle: obj.sectionTitle || '',
+    subtitle: obj.subtitle || '',
+    paragraphs: Array.isArray(obj.paragraphs) ? obj.paragraphs : [],
+    bullets: Array.isArray(obj.bullets) ? obj.bullets : [],
+    question: obj.question || '',
+    questionNote: obj.questionNote || '',
+    noHeader: !!obj.noHeader
+  })
+);
 
       if (!newPages.length) {
         throw new Error('المخطط لا يحتوي على صفحات.');
