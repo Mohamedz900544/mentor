@@ -32,6 +32,8 @@ import SplittingCurrentLesson from "./Physics & Engineering/Electrical Circuits/
 import CircuitUnitMap from "./Physics & Engineering/Electrical Circuits/CircuitUnitMap";
 
 import LearningPathsMain from "./LearningPathsMain";
+import BilingualBook from "./BilingualBook";
+
 
 import FindingHalfLesson1 from "./Mathematics/Arithmetic Thinking/Level 1  Visualize Fractions/FindingHalfLessons1";
 import CombiningPartsLesson from "./Mathematics/Arithmetic Thinking/Level 1  Visualize Fractions/CombiningPartsLesson";
@@ -97,6 +99,8 @@ export default function App() {
         <Route path="/SixthsAndTwelfthsLesson-1" element={<SixthsAndTwelfthsLesson/>} />
         <Route path="/EighthsAndSixteenthsLesson-1" element={<EighthsAndSixteenthsLesson/>} />
         <Route path="/MakingEquivalentFractionsLesson-1" element={<MakingEquivalentFractionsLesson/>} />
+        <Route path="/Book-maker" element={<BilingualBook/>} />
+
 
 
 
