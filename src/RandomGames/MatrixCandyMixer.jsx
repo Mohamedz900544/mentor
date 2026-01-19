@@ -200,398 +200,102 @@ const toneStyles = {
 const defaultPages = [
   {
     id: 1,
-    tone: 'indigo',
-    iconKey: 'star',
-    title: 'مخترع الإلكترونيات الصغير',
-    subtitle: 'مرحبًا بك في المستوى الأول',
+    tone: 'green',
+    iconKey: 'box',
+    title: 'أدوات المستوى الأول',
+    sectionTitle: 'صندوق عدة المخترع الصغير',
     paragraphs: [
-      'أهلاً يا مخترع في مغامرة الإلكترونيات مع Sparvi Lab',
-      'في المستوى ده هنتعلم إزاي نخلي اللمبة تنور والجرس يرن والموتور يتحرك باستخدام دوائر بسيطة',
-      'كل حصة من الكورس ليها صفحات خاصة في الكتاب تساعدك تفتكر اللي اتعلمته وتطبقه',
-      'في آخر المستوى هتكون بنيت مشروع إلكتروني بسيط من تصميمك انت'
+      'إنت دلوقتي مخترع إلكترونيات صغير، وعندك صندوق عدة خاص بيك.',
+      'كل قطعة في الكيت ليها دور مهم في النور والحركة والصوت اللي هنعملهم مع بعض.'
     ],
-    images: [] 
+    bullets: [
+      'بطاريات وحامل بطارية: ده اللي بيدي طاقة للدائرة.',
+      'أسلاك توصيل قصيرة وطويلة علشان نربط بين المكوّنات.',
+      'ليد – لمبات إلكترونية صغيرة بتنور بألوان جميلة.',
+      'صفارة Buzzer بتطلع أصوات وتنبهك.',
+      'موتور صغير ومروحة تخلي الحاجة تتحرك وتلف.',
+      'مفتاح تحكم Switch علشان نفتح ونقفل الدائرة.',
+      'مقاومة متغيّرة Potentiometer نغيّر بيها قوة النور أو الصوت.'
+    ]
   },
+
   {
     id: 2,
-    tone: 'blue',
-    iconKey: 'list',
-    title: 'خريطة المستوى الأول',
-    sectionTitle: '8 وحدات',
+    tone: 'yellow',
+    iconKey: 'zap',
+    title: 'يعني إيه كهرباء؟',
+    sectionTitle: 'الطاقة اللي بتصحي النور',
     paragraphs: [
-      'الوحده 1: ليه الإلكترونيات مهمة في حياتنا وقواعد السلامة',
-      'الوحده 2: ما هي الدائرة الكهربائية وتجربة الليد الأولى',
-      'الوحده 3: الصوت والصفارة وتجارب الجرس الصغير',
-      'الوحده 4: الحركة والموتور وتجارب المروحة والعربية اللعبة',
-      'الوحده 5: المقاومة المتغيّرة والتحكم في النور والصوت والحركة',
-      'الوحده 6: تصميم دوائر تحكم مختلفة باستخدام نفس المكوّنات',
-      'الوحده 7: التخطيط لمشروعك الإلكتروني الأول',
-      'الوحده 8: عرض المشروع ومراجعة المستوى الأول'
+      'الكهرباء نوع من الطاقة، بتخلي الحاجات تنوّر أو تتحرك أو تطلع صوت.',
+      'إحنا في المستوى ده هنتعلّم إزاي نمشي الكهرباء في طريق اسمه دائرة كهربائية.'
     ],
-    images: []
+    bullets: [
+      'اللمبة في البيت بتحتاج كهرباء علشان تنوّر.',
+      'المروحة بتحتاج كهرباء علشان تلف وتحرّك الهوا.',
+      'التلفزيون والموبايل بيحتاجوا كهرباء علشان يشتغلوا.',
+      'البطارية هي مصدر الطاقة الصغير اللي هنستخدمه في تجاربنا.',
+      'إحنا هنستخدم الكهرباء بشكل آمن وبسيط جوه الكيت بتاعنا.'
+    ]
   },
+
   {
     id: 3,
-    tone: 'red',
-    iconKey: 'list',
-    title: 'خريطة المستوى الأول',
-    sectionTitle: '8 وحدات',
+    tone: 'blue',
+    iconKey: 'star',
+    title: 'حكاية لومي وبطّا',
+    sectionTitle: 'اللمبة النعسانة وصاحبتها البطارية',
     paragraphs: [
-      'الوحده 1: ليه الإلكترونيات مهمة في حياتنا وقواعد السلامة',
-      'الوحده 2: ما هي الدائرة الكهربائية وتجربة الليد الأولى',
-      'الوحده 3: الصوت والصفارة وتجارب الجرس الصغير',
-      'الوحده 4: الحركة والموتور وتجارب المروحة والعربية اللعبة',
-      'الوحده 5: المقاومة المتغيّرة والتحكم في النور والصوت والحركة',
-      'الوحده 6: تصميم دوائر تحكم مختلفة باستخدام نفس المكوّنات',
-      'الوحده 7: التخطيط لمشروعك الإلكتروني الأول',
-      'الوحده 8: عرض المشروع ومراجعة المستوى الأول'
+      'في لمبة صغيرة اسمها لومي، كانت دايمًا نعسانة ومابتنورش لوحدها.',
+      'لومي ليها صاحبة اسمها بطّا، البطارية اللي بتدي طاقة، بس الطاقة توصل للومي لما يمسكوا في إيد بعض في دايرة كاملة.'
     ],
-    images: []
+    bullets: [
+      'لو الطريق بينهم مكسور لومي تفضل نايمة والنور مطفي.',
+      'لو الطريق كامل على شكل دايرة، لومي تصحى وتنور.',
+      'لما الدائرة مفتوحة بنسميها open circuit.',
+      'لما الدائرة مقفولة بنسميها closed circuit.',
+      'إحنا هنساعد لومي وبطّا يمسكوا في إيد بعض جوه تجربتنا.'
+    ]
   },
-  // {
-  //   id: 3,
-  //   tone: 'yellow',
-  //   iconKey: 'chip',
-  //   title: 'ما هي الإلكترونيات؟',
-  //   sectionTitle: 'الوحده 1 – بداية المغامرة',
-  //   question: 'بص حواليك… كام جهاز إلكتروني تقدر تعده في أوضتك؟',
-  //   questionNote: 'اكتب أو ارسم خمسة أجهزة تشوفها كل يوم',
-  //   paragraphs: [
-  //     'الإلكترونيات هي علم الأجهزة اللي بتستخدم الكهرباء علشان تشتغل',
-  //     'الموبايل والتابلت والتلفزيون واللابتوب وألعابك الإلكترونية كلها فيها دوائر إلكترونية جوّاها',
-  //     'من غير إلكترونيات مش هيبقى في إنترنت ولا ألعاب كمبيوتر ولا شاشات ذكية',
-  //     'في المستوى الأول هنتعلم أساسيات الإلكترونيات علشان تفهم الأجهزة دي بتشتغل من جوّه إزاي'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 4,
-  //   tone: 'green',
-  //   iconKey: 'box',
-  //   title: 'أدوات المستوى الأول',
-  //   sectionTitle: 'صندوق عدة المخترع الصغير',
-  //   paragraphs: [
-  //     'كل مهندس إلكترونيات عنده صندوق عدة يشتغل بيه',
-  //     'في الكيت بتاعك هتلاقي المكوّنات اللي هنستخدمها في كل الوحدات'
-  //   ],
-  //   bullets: [
-  //     'بطاريات وحامل بطارية مزدوج',
-  //     'أسلاك توصيل قصيرة وطويلة',
-  //     'ليد – لمبات إلكترونية صغيرة',
-  //     'صفارة Buzzer لعمل الأصوات',
-  //     'موتور صغير ومروحة للموتور',
-  //     'مفتاح تحكم Switch',
-  //     'مقاومة متغيّرة Potentiometer'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 5,
-  //   tone: 'red',
-  //   iconKey: 'alert',
-  //   title: 'قواعد السلامة مع الإلكترونيات',
-  //   sectionTitle: 'الوحده 1 – سلامة أولًا',
-  //   paragraphs: [
-  //     'احنا في المستوى ده بنستخدم بطاريات صغيرة آمنة لكن برضه لازم نلتزم بقواعد السلامة',
-  //     'ما نوصلش طرف البطارية الموجب بالموجب أو السالب بالسالب مباشرة من غير مكوّن في النص',
-  //     'ما نقربش الأسلاك من الفم أو العينين وما نستخدمش كهربا البيت نهائي في التجارب',
-  //     'نشتغل دايمًا في مكان منظم وفاضي ونرجع كل مكوّن لمكانه بعد ما نخلص'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 6,
-  //   tone: 'teal',
-  //   iconKey: 'branch',
-  //   title: 'ما هي الدائرة الكهربائية؟',
-  //   sectionTitle: 'الوحده 2 – طريق الطاقة',
-  //   paragraphs: [
-  //     'علشان أي جهاز يشتغل محتاج ثلاث حاجات مع بعض',
-  //     'مصدر طاقة زي البطارية وطريق تمشي فيه الطاقة زي الأسلاك وجهاز يشتغل بالطاقة زي الليد أو الصفارة أو الموتور',
-  //     'لما نوصل التلاتة مع بعض صح بيتكوّن عندنا طريق كامل اسمه الدائرة الكهربائية',
-  //     'لو الطريق كامل بنسميها دائرة مغلقة والجهاز يشتغل ولو الطريق مقطوع بنسميها دائرة مفتوحة والجهاز يطفي'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 7,
-  //   tone: 'purple',
-  //   iconKey: 'lightbulb',
-  //   title: 'تجربة الليد الأولى',
-  //   sectionTitle: 'الوحده 2 – خلي اللمبة تنور',
-  //   paragraphs: [
-  //     'الليد لمبة إلكترونية صغيرة تقدر تنور بطاقة قليلة من البطارية',
-  //     'لليد طرف طويل وطرف قصير والطرف الطويل بيتوصل غالبًا مع الموجب في البطارية',
-  //     'لما توصل البطارية مع الليد عن طريق سلكين صح اللمبة هتنور ولما تفك سلك واحد الدائرة هتفتح واللمبة هتطفي',
-  //     'جرّب ترسم في كشكولك الدائرة اللي عملتها وحط سهم صغير يوضّح اتجاه سريان التيار'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 8,
-  //   tone: 'yellow',
-  //   iconKey: 'zap',
-  //   title: 'التيار الكهربائي مثل الماء',
-  //   sectionTitle: 'الوحده 2 – فهم حركة الشحنات',
-  //   paragraphs: [
-  //     'تخيّل إن جوّا السلك في نقط صغيرة تتحرك زي المية في الأنبوبة',
-  //     'لما النقط دي تتحرك من البطارية وتلف وترجع لها بنسمي الحركة دي تيار كهربائي',
-  //     'البطارية زي خزان المية والأسلاك زي المواسير والجهاز زي مروحة بتشتغل لما المية تعدي فيها',
-  //     'في الدائرة بتاعتنا بنفكر إن التيار ماشي من الطرف الموجب للبطارية يعدي في المكوّنات ويرجع للطرف السالب'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 9,
-  //   tone: 'blue',
-  //   iconKey: 'pen',
-  //   title: 'نشاط بيت للوحده 2',
-  //   sectionTitle: 'ارسم واكتب زي المهندسين',
-  //   paragraphs: [
-  //     'النشاط 1: ارسم دائرة الليد اللي عملناها في الوحده واكتب تحتها دائرة مغلقة',
-  //     'النشاط 2: ارسم نفس الدائرة لكن فك سلك واحد واكتب تحتها دائرة مفتوحة',
-  //     'النشاط 3: بجانب كل رسمة اكتب ماذا يحدث لللمبة تنور أو تطفي',
-  //     'النشاط 4: عدّد ثلاث أجهزة في البيت تفتكر إنها تحتوي على دائرة كهربائية تشبه تجربتك'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 10,
-  //   tone: 'green',
-  //   iconKey: 'speaker',
-  //   title: 'ما هو الصوت؟',
-  //   sectionTitle: 'الوحده 3 – من الاهتزاز للصوت',
-  //   question: 'إيه هو الصوت اللي بنسمعه؟',
-  //   questionNote: 'جرّب تخبط على سطح المكتب واسمع كويس',
-  //   paragraphs: [
-  //     'الصوت عبارة عن اهتزازات تنتشر في الهواء وفي المية وفي الأجسام الصلبة',
-  //     'لما نخبط على الخشب أو الحديد بيهتز الجسم وبعدها الأذن تسمع الصوت',
-  //     'في الإلكترونيات بنستخدم عناصر تغير الطاقة الكهربية لطاقة صوتية نقدر نسمعها',
-  //     'واحد من أهم العناصر دي هو الصفارة الإلكترونية Buzzer'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 11,
-  //   tone: 'red',
-  //   iconKey: 'alert',
-  //   title: 'الصفارة الإلكترونية',
-  //   sectionTitle: 'الوحده 3 – من الكهرباء للصوت',
-  //   paragraphs: [
-  //     'الصفارة عنصر إلكتروني يحول الطاقة الكهربية إلى طاقة صوتية',
-  //     'لما نوصل الصفارة في دائرة مع البطارية والسويتش نقدر نشغل ونطفي الصوت وقت ما نحب',
-  //     'جرس البيت بيستخدم فكرة قريبة جدًا من الدائرة اللي بنعملها بالصفارة',
-  //     'كل مرة تضغط على الزرار الدائرة تكتمل فيمر التيار ونسمع صوت الجرس أو الصفارة'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 12,
-  //   tone: 'teal',
-  //   iconKey: 'settings',
-  //   title: 'نشاط بيت للوحده 3',
-  //   sectionTitle: 'جرس غرفتي السري',
-  //   paragraphs: [
-  //     'النشاط 1: صمّم دائرة صفارة بسيطة فيها بطارية وسويتش وصفارة وارسمها في كشكولك',
-  //     'النشاط 2: فكّر مكان مناسب في البيت لو عملنا فيه جرس صغير باستخدام نفس الفكرة',
-  //     'النشاط 3: اكتب جملة تشرح فيها متى يشتغل الجرس ومتى يطفي باستخدام كلمة دائرة مغلقة ومفتوحة',
-  //     'النشاط 4: لو قدرت تثبت الدائرة على كرتونة صغيرة اعمل صورة أو رسمة لشكل الجرس بعد التركيب'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 13,
-  //   tone: 'amber',
-  //   iconKey: 'motor',
-  //   title: 'الحركة والطاقة الحركية',
-  //   sectionTitle: 'الوحده 4 – من السكون للحركة',
-  //   paragraphs: [
-  //     'من أشكال الطاقة المهمة في حياتنا الطاقة الحركية',
-  //     'السيارات والطائرات والعجل والمراوح كلها أمثلة على أشياء تتحرك بالطاقة الحركية',
-  //     'في الإلكترونيات نستخدم الموتور علشان نحول الطاقة الكهربية لطاقة حركية',
-  //     'الموتور بيخلي حاجات تلف زي المروحة أو تتزق لقدام زي العربية اللعبة'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 14,
-  //   tone: 'green',
-  //   iconKey: 'chip',
-  //   title: 'الموتور في دائرتنا',
-  //   sectionTitle: 'الوحده 4 – خلي الحاجة تتحرك',
-  //   paragraphs: [
-  //     'الموتور عنصر إلكتروني يحول الطاقة الكهربية إلى حركة دائرية',
-  //     'لما نوصل الموتور بالبطارية عن طريق الأسلاك يبدأ محور الموتور يلف',
-  //     'ممكن نركب على الموتور مروحة بلاستيك فنشوف الهواء يتحرك حوالينا',
-  //     'أو نركبه على عجلة لعبة صغيرة فنشوف العربية تتحرك على الأرض'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 15,
-  //   tone: 'purple',
-  //   iconKey: 'pen',
-  //   title: 'نشاط بيت للوحده 4',
-  //   sectionTitle: 'مروحة مكتب أو عربية سباق',
-  //   paragraphs: [
-  //     'النشاط 1: اختر فكرة واحدة مروحة مكتب صغيرة أو عربية سباق بسيطة',
-  //     'النشاط 2: ارسم في كشكولك شكل المشروع من بره ثم ارسم تحته الدائرة الكهربية اللي جوّاه',
-  //     'النشاط 3: عدّد المكوّنات اللي هتحتاجها بطارية أسلاك موتور سويتش وربما مروحة بلاستيك',
-  //     'النشاط 4: اكتب جملة توضّح نوع الطاقة اللي خارجة من مشروعك طاقة حركية بتحرك الهوا أو العجل'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 16,
-  //   tone: 'red',
-  //   iconKey: 'settings',
-  //   title: 'المتحكم الذكي – المقاومة المتغيّرة',
-  //   sectionTitle: 'الوحده 5 – زرار التحكم',
-  //   paragraphs: [
-  //     'المقاومة جزء في الدائرة بيصعّب حركة التيار زي كأن الطريق بقى أضيق والزحمة زادت',
-  //     'المقاومة المتغيّرة نقدر نلفّها علشان نزوّد أو نقلل المقاومة بايدينا',
-  //     'لما نزود المقاومة التيار يقل فيضعف النور أو يقل الصوت أو تبطأ الحركة',
-  //     'لما نقلل المقاومة التيار يزيد فيقوى النور أو يعلى الصوت أو تزيد سرعة الحركة'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 17,
-  //   tone: 'yellow',
-  //   iconKey: 'lightbulb',
-  //   title: 'تجارب التحكم في النور والصوت والحركة',
-  //   sectionTitle: 'الوحده 5 – ثلاث تجارب',
-  //   paragraphs: [
-  //     'تجربة 1: بطارية سويتش مقاومة متغيّرة ليد وشوف كيف يتغير سطوع الضوء',
-  //     'تجربة 2: بطارية سويتش مقاومة متغيّرة صفارة وشوف كيف يتغير حجم الصوت',
-  //     'تجربة 3: بطارية سويتش مقاومة متغيّرة موتور وشوف كيف تتغير سرعة الدوران',
-  //     'كل مرة لفّ النوب ببطء وسجّل في كشكولك ماذا يحدث عند كل وضع مختلف'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 18,
-  //   tone: 'blue',
-  //   iconKey: 'list',
-  //   title: 'نشاط بيت للوحده 5',
-  //   sectionTitle: 'ثلاث مستويات تحكم',
-  //   paragraphs: [
-  //     'النشاط 1: اختر واحدة من الدوائر الثلاثة مصباح صفارة أو مروحة',
-  //     'النشاط 2: حدّد ثلاث مستويات تحب تسميهم مثلا هادي متوسط قوي',
-  //     'النشاط 3: لفّ المقاومة المتغيّرة وابحث عن وضع يناسب كل مستوى وسجّل مكان النوب لكل مستوى في كشكولك',
-  //     'النشاط 4: اكتب جملة تشرح فيها كيف تساعدك المقاومة المتغيّرة على التحكم في مشروعك بسهولة'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 19,
-  //   tone: 'teal',
-  //   iconKey: 'component',
-  //   title: 'تصميم دوائر تحكم مختلفة',
-  //   sectionTitle: 'الوحده 6 – نفس المكوّنات أفكار مختلفة',
-  //   paragraphs: [
-  //     'دلوقتي عندنا نفس المكوّنات لكن نقدر نستخدمها بطرق مختلفة',
-  //     'ممكن نصمّم دائرة مصباح يمكن التحكم في شدته باستخدام السويتش والمقاومة المتغيّرة والليد',
-  //     'أو دائرة إنذار نتحكم في قوته باستخدام السويتش والمقاومة المتغيّرة والصفارة',
-  //     'أو دائرة مروحة بسرعات متعددة باستخدام السويتش والمقاومة المتغيّرة والموتور'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 20,
-  //   tone: 'purple',
-  //   iconKey: 'sparkles',
-  //   title: 'تحدي الوحده 6',
-  //   sectionTitle: 'أي دائرة هتكون فكرتك المفضلة؟',
-  //   paragraphs: [
-  //     'التحدي 1: اختر واحدة من الدوائر الثلاثة واعتبرها فكرتك الأساسية',
-  //     'التحدي 2: اكتب سبب اختيارك للدائرة دي وهل هي مفيدة في غرفتك أو بيتك',
-  //     'التحدي 3: حاول تضيف فكرة صغيرة للتطوير مثلا إضافة ليد مع الصفارة أو مروحة مع مصباح',
-  //     'التحدي 4: ارسم النسخة المطورة من الدائرة في كشكولك مع توضيح مكان كل مكوّن'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 21,
-  //   tone: 'green',
-  //   iconKey: 'branch',
-  //   title: 'مشروعي الإلكتروني الأول',
-  //   sectionTitle: 'الوحده 7 – خطة الاختراع',
-  //   paragraphs: [
-  //     'الخطوة 1: اختر فكرة مشروع من اللي جربناها أو ابتكر فكرة قريبة منها',
-  //     'الخطوة 2: اكتب اسم المشروع في أعلى الصفحة زي مصباح سريري أو مروحة مكتبي أو إنذار غرفتي',
-  //     'الخطوة 3: عدّد المكوّنات اللي هتحتاجها من الكيت بطارية سويتش مقاومة متغيّرة ليد صفارة موتور أسلاك توصيل',
-  //     'الخطوة 4: ارسم الدائرة الكهربية اللي تخلي المشروع يشتغل وحدد مكان كل مكوّن بوضوح'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 22,
-  //   tone: 'yellow',
-  //   iconKey: 'pen',
-  //   title: 'قصة اختراعي',
-  //   sectionTitle: 'الوحده 7 – احكي حكاية فكرتك',
-  //   paragraphs: [
-  //     'اكتب في كلمتين لمين عملت المشروع لنفسك أو لأخوك أو لحد من العيلة',
-  //     'اشرح في سطرين إمتى نستخدم المشروع مثلا قبل النوم أو عند فتح باب الغرفة',
-  //     'اكتب نوع الطاقة اللي بتخرج من مشروعك نور أو صوت أو حركة أو أكثر من نوع',
-  //     'اكتب فكرة تطوير تحب تضيفها للمشروع في المستقبل لو كان عندك مكوّنات زيادة'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 23,
-  //   tone: 'blue',
-  //   iconKey: 'check',
-  //   title: 'أسئلة مراجعة المستوى',
-  //   sectionTitle: 'الوحده 8 – اختبر نفسك',
-  //   paragraphs: [
-  //     'س1: ما الفرق بين الدائرة المفتوحة والدائرة المغلقة؟',
-  //     'س2: ما وظيفة البطارية في الدائرة وما نوع الطاقة اللي جوّاها؟',
-  //     'س3: كيف يشبه التيار الكهربائي الماء في المواسير؟',
-  //     'س4: ما وظيفة السويتش ومتى نحتاجه في الدائرة؟',
-  //     'س5: ماذا تفعل المقاومة المتغيّرة في الدائرة وماذا يحدث للنور أو للصوت عندما نزيد المقاومة؟',
-  //     'س6: اذكر مثالًا لجهاز يخرج طاقة ضوئية وآخر يخرج طاقة صوتية وثالث يخرج طاقة حركية',
-  //     'س7: اكتب سلسلة تحوّل الطاقة في دائرة مصباح وفي دائرة صفارة وفي دائرة موتور'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 24,
-  //   tone: 'pink',
-  //   iconKey: 'star',
-  //   title: 'أنا الآن مخترع مستوى 1',
-  //   sectionTitle: 'الوحده 8 – لحظة الإنجاز',
-  //   paragraphs: [
-  //     'مبروك عليك إنهاء مغامرة مخترع الإلكترونيات الصغير المستوى الأول',
-  //     'دلوقتي تقدر تفهم معنى الدائرة الكهربائية والتيار والطاقة وتعرف تستخدم الليد والصفارة والموتور والسويتش والمقاومة المتغيّرة',
-  //     'اكتب هنا جملة عن أكتر حاجة حبيتها في المستوى الأول وجملة عن حاجة نفسك تتعلمها في المستوى اللي بعده',
-  //     'وقّع باسمك وتاريخ اليوم في آخر الصفحة واعتبر دي شهادة إنك بدأت طريقك في عالم الإلكترونيات'
-  //   ],
-  //   images: []
-  // },
-  // {
-  //   id: 25,
-  //   tone: 'indigo',
-  //   iconKey: 'book',
-  //   title: 'قاموس الكلمات المهمة',
-  //   sectionTitle: 'لو نسيت كلمة ارجع للصفحة دي',
-  //   paragraphs: [
-  //     'الإلكترونيات: علم الأجهزة اللي بتستخدم الكهرباء علشان تعمل شغل زي النور والصوت والحركة',
-  //     'الدائرة الكهربائية: طريق مغلق تمشي فيه الطاقة من البطارية للجهاز وترجع تاني',
-  //     'الدائرة المفتوحة: طريق مقطوع لا يمر فيه التيار فيتوقف الجهاز عن العمل',
-  //     'التيار الكهربائي: حركة الشحنات في السلك مثل حركة الماء في المواسير',
-  //     'البطارية: مصدر طاقة كيميائية تتحول لطاقة كهربية في الدائرة',
-  //     'السويتش: مفتاح يفتح ويقفل الطريق في الدائرة علشان نشغل ونطفي بسهولة',
-  //     'المقاومة المتغيّرة: جزء نقدر نلفّه علشان نزوّد ونقلّل التيار اللي رايح للجهاز',
-  //     'الليد: لمبة إلكترونية صغيرة تحول الطاقة الكهربية إلى طاقة ضوئية',
-  //     'الصفارة: عنصر يحوّل الطاقة الكهربية إلى طاقة صوتية',
-  //     'الموتور: عنصر يحوّل الطاقة الكهربية إلى طاقة حركية',
-  //     'طاقة كيميائية / كهربية / ضوئية / صوتية / حركية: أشكال مختلفة للطاقة شفناها في تجاربنا',
-  //     'مشروع إلكتروني: دائرة مكوّنة من بطارية وأسلاك ومكوّنات أخرى تخدم فكرة مفيدة أو ممتعة'
-  //   ],
-  //   images: []
-  // }
+
+  {
+    id: 4,
+    tone: 'indigo',
+    iconKey: 'cpu',
+    title: 'أول دائرة كهرباء ليك',
+    sectionTitle: 'Wake Up The Light!',
+    paragraphs: [
+      'في الجلسة دي هتبني أول دائرة كهرباء بنفسك باستخدام البطارية والـ LED والأسلاك.',
+      'لما توصلهم صح وتعمل دايرة كاملة، النور هيشتغل ولومي هتصحى.'
+    ],
+    bullets: [
+      'بنبص على البطارية وحامل البطارية: هنا الطاقة بتبدأ.',
+      'بنوصّل سلك من البطارية لرجل من رجلين الـ LED.',
+      'بنوصّل السلك التاني من البطارية للرجل التانية.',
+      'لو الدايرة كاملة النور هيولّع = الدائرة مقفولة.',
+      'لو فكّينا سلك واحد النور يطفي = الدائرة مفتوحة.',
+      'اسأل نفسك: هل الكهرباء ماشية في دايرة كاملة ولا الطريق مكسور؟'
+    ]
+  },
+
+  {
+    id: 5,
+    tone: 'orange',
+    iconKey: 'clipboard',
+    title: 'محقق الكهرباء الصغير',
+    sectionTitle: 'رسم الدائرة وواجب بسيط',
+    paragraphs: [
+      'دلوقتي دورك ترسم الدائرة اللي عملناها: بطارية + أسلاك + LED، وتكتب جنب كل جزء اسمه.',
+      'بعد كده هتدور في البيت على حاجات بتستخدم كهرباء، علشان تشوف الكهرباء حوالينك في كل مكان.'
+    ],
+
+    bullets: [
+      'على الورقة ارسم البطارية والأسلاك والـ LED في شكل دايرة.',
+      'اكتب أو انسخ كلمات بسيطة: battery – LED – wire.',
+      'في البيت، مع ماما أو بابا، دوّر على ٥ حاجات بتشتغل بالكهرباء وارسمها.',
+      'اكتب جنب كل حاجة: تنوّر / تتحرك / تطلع صوت.',
+      'اكتب أو قول ٣ جُمل عن لومي وبطّا: مين لومي؟ مين بطّا؟ إمتى لومي بتنور؟'
+    ]
+  }
 ];
 
 // --- Sub Components ---
@@ -689,20 +393,20 @@ const getIconForText = (text, defaultIcon) => {
 };
 
 const DefaultBullet = () => (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect
-        x="2"
-        y="2"
-        width="12"
-        height="12"
-        rx="4"
-        fill="currentColor"
-        fillOpacity="0.2"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <circle cx="8" cy="8" r="3" fill="currentColor" />
-    </svg>
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect
+      x="2"
+      y="2"
+      width="12"
+      height="12"
+      rx="4"
+      fill="currentColor"
+      fillOpacity="0.2"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <circle cx="8" cy="8" r="3" fill="currentColor" />
+  </svg>
 );
 
 const EnhancedParagraph = ({ text, theme, iconKey }) => {
@@ -753,14 +457,17 @@ const EnhancedTechList = ({ items, theme }) => {
             {getComponentIcon(item)}
           </div>
           <span className="text-slate-700 font-bold text-base">{item}</span>
-          <CheckCircle2 size={16} className={`mr-auto opacity-0 group-hover:opacity-100 transition-opacity ${theme.subText}`} />
+          <CheckCircle2
+            size={16}
+            className={`mr-auto opacity-0 group-hover:opacity-100 transition-opacity ${theme.subText}`}
+          />
         </div>
       ))}
     </div>
   );
 };
 
-// --- BLOCKS EDITOR (Paragraphs, Spaces, AND IMAGES) ---
+// --- BLOCKS EDITOR (Paragraphs, Spaces, Images, Bullets as blocks) ---
 
 const BlocksEditor = ({ blocks = [], onChange }) => {
   const safeBlocks = Array.isArray(blocks) ? blocks : [];
@@ -781,7 +488,10 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
       src: type === 'image' ? '' : undefined,
       width: type === 'image' ? 70 : undefined,
       borderRadius: type === 'image' ? 24 : undefined,
-      caption: type === 'image' ? '' : undefined
+      caption: type === 'image' ? '' : undefined,
+      // Bullets defaults
+      items: type === 'bullets' ? [''] : undefined,
+      title: type === 'bullets' ? '' : undefined
     };
     onChange([...safeBlocks, newBlock]);
   };
@@ -796,7 +506,9 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
       src: type === 'image' ? '' : undefined,
       width: type === 'image' ? 70 : undefined,
       borderRadius: type === 'image' ? 24 : undefined,
-      caption: type === 'image' ? '' : undefined
+      caption: type === 'image' ? '' : undefined,
+      items: type === 'bullets' ? [''] : undefined,
+      title: type === 'bullets' ? '' : undefined
     };
     const next = [...safeBlocks];
     next.splice(index + 1, 0, newBlock);
@@ -835,7 +547,7 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
     <div>
       <label className="block text-slate-400 mb-1 font-medium">محتوى الصفحة</label>
       <p className="text-[10px] text-slate-500 mb-2">
-        رتب المحتوى (نصوص، صور، مسافات) بالطريقة التي تفضلها.
+        رتب المحتوى (نصوص، صور، قوائم نقطية، مسافات) بالطريقة التي تفضلها.
       </p>
 
       <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
@@ -846,7 +558,7 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
         )}
 
         {safeBlocks.map((block, index) => {
-          // --- RENDER PARAGRAPH BLOCK ---
+          // --- PARAGRAPH BLOCK ---
           if (block.type === 'paragraph') {
             const currentIconKey = block.iconKey || 'auto';
             return (
@@ -857,16 +569,35 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[11px] text-slate-300 font-semibold">نص #{index + 1}</span>
                   <div className="flex items-center gap-1">
-                    <button type="button" onClick={() => moveBlock(index, -1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === 0}>
+                    <button
+                      type="button"
+                      onClick={() => moveBlock(index, -1)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
+                      disabled={index === 0}
+                    >
                       <ChevronUp size={12} />
                     </button>
-                    <button type="button" onClick={() => moveBlock(index, 1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === safeBlocks.length - 1}>
+                    <button
+                      type="button"
+                      onClick={() => moveBlock(index, 1)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
+                      disabled={index === safeBlocks.length - 1}
+                    >
                       <ChevronDown size={12} />
                     </button>
-                    <button type="button" onClick={() => addBlockAfter(index, 'space')} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-emerald-300 hover:border-emerald-500/70 transition-colors" title="إضافة مسافة بعد">
+                    <button
+                      type="button"
+                      onClick={() => addBlockAfter(index, 'space')}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-emerald-300 hover:border-emerald-500/70 transition-colors"
+                      title="إضافة مسافة بعد"
+                    >
                       <Plus size={12} />
                     </button>
-                    <button type="button" onClick={() => removeBlock(index)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => removeBlock(index)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors"
+                    >
                       <Trash2 size={12} />
                     </button>
                   </div>
@@ -876,12 +607,18 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
                   <span className="whitespace-nowrap">أيقونة:</span>
                   <select
                     value={currentIconKey}
-                    onChange={(e) => updateBlock(index, { iconKey: e.target.value === 'auto' ? undefined : e.target.value })}
+                    onChange={(e) =>
+                      updateBlock(index, {
+                        iconKey: e.target.value === 'auto' ? undefined : e.target.value
+                      })
+                    }
                     className="flex-1 rounded-lg bg-slate-900/80 border border-slate-700 px-2 py-1 text-[10px] text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500"
                   >
                     <option value="auto">تلقائي</option>
                     {ICON_OPTIONS.map((opt) => (
-                      <option key={opt.key} value={opt.key}>{opt.label}</option>
+                      <option key={opt.key} value={opt.key}>
+                        {opt.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -897,7 +634,7 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
             );
           }
 
-          // --- RENDER IMAGE BLOCK ---
+          // --- IMAGE BLOCK ---
           if (block.type === 'image') {
             const width = typeof block.width === 'number' ? block.width : 70;
             const radius = typeof block.borderRadius === 'number' ? block.borderRadius : 24;
@@ -907,19 +644,33 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
                 key={block.id || `img-${index}`}
                 className="rounded-2xl bg-slate-900/70 border border-slate-700 px-3 py-2 space-y-2"
               >
-                 <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <span className="text-[11px] text-slate-300 font-semibold flex items-center gap-1.5">
                     <ImageIcon size={12} className="text-emerald-400" />
                     صورة #{index + 1}
                   </span>
                   <div className="flex items-center gap-1">
-                    <button type="button" onClick={() => moveBlock(index, -1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === 0}>
+                    <button
+                      type="button"
+                      onClick={() => moveBlock(index, -1)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
+                      disabled={index === 0}
+                    >
                       <ChevronUp size={12} />
                     </button>
-                    <button type="button" onClick={() => moveBlock(index, 1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === safeBlocks.length - 1}>
+                    <button
+                      type="button"
+                      onClick={() => moveBlock(index, 1)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
+                      disabled={index === safeBlocks.length - 1}
+                    >
                       <ChevronDown size={12} />
                     </button>
-                    <button type="button" onClick={() => removeBlock(index)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => removeBlock(index)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors"
+                    >
                       <Trash2 size={12} />
                     </button>
                   </div>
@@ -936,7 +687,12 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
                   <div className="flex-1 space-y-1.5">
                     <label className="inline-block px-2 py-1 rounded-lg bg-slate-800 border border-slate-600 text-[10px] text-slate-200 cursor-pointer hover:border-sky-500/70 transition-colors">
                       {block.src ? 'تغيير الصورة' : 'رفع صورة'}
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, index)} />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleImageUpload(e, index)}
+                      />
                     </label>
                     <input
                       value={block.caption || ''}
@@ -948,58 +704,197 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 mt-1">
-                   <div>
-                     <span className="text-[9px] text-slate-400 block mb-0.5">العرض: {width}%</span>
-                     <input type="range" min={20} max={100} value={width} onChange={(e) => updateBlock(index, { width: Number(e.target.value) })} className="w-full h-1" />
-                   </div>
-                   <div>
-                     <span className="text-[9px] text-slate-400 block mb-0.5">الحواف: {radius}px</span>
-                     <input type="range" min={0} max={48} value={radius} onChange={(e) => updateBlock(index, { borderRadius: Number(e.target.value) })} className="w-full h-1" />
-                   </div>
+                  <div>
+                    <span className="text-[9px] text-slate-400 block mb-0.5">العرض: {width}%</span>
+                    <input
+                      type="range"
+                      min={20}
+                      max={100}
+                      value={width}
+                      onChange={(e) => updateBlock(index, { width: Number(e.target.value) })}
+                      className="w-full h-1"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-[9px] text-slate-400 block mb-0.5">الحواف: {radius}px</span>
+                    <input
+                      type="range"
+                      min={0}
+                      max={48}
+                      value={radius}
+                      onChange={(e) => updateBlock(index, { borderRadius: Number(e.target.value) })}
+                      className="w-full h-1"
+                    />
+                  </div>
                 </div>
               </div>
             );
           }
 
-          // --- RENDER SPACE BLOCK ---
-          const height = typeof block.height === 'number' ? block.height : 32;
-          return (
-            <div
-              key={block.id || `s-${index}`}
-              className="rounded-2xl bg-slate-900/80 border border-slate-700 px-3 py-2 space-y-2"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[11px] text-slate-300 font-semibold flex items-center gap-1.5">
-                  <Sparkles size={12} className="text-sky-400" />
-                  مسافة #{index + 1}
-                </span>
-                <div className="flex items-center gap-1">
-                  <button type="button" onClick={() => moveBlock(index, -1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === 0}>
-                    <ChevronUp size={12} />
-                  </button>
-                  <button type="button" onClick={() => moveBlock(index, 1)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40" disabled={index === safeBlocks.length - 1}>
-                    <ChevronDown size={12} />
-                  </button>
-                  <button type="button" onClick={() => removeBlock(index)} className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors">
-                    <Trash2 size={12} />
-                  </button>
+          // --- SPACE BLOCK ---
+          if (block.type === 'space') {
+            const height = typeof block.height === 'number' ? block.height : 32;
+            return (
+              <div
+                key={block.id || `s-${index}`}
+                className="rounded-2xl bg-slate-900/80 border border-slate-700 px-3 py-2 space-y-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] text-slate-300 font-semibold flex items-center gap-1.5">
+                    <Sparkles size={12} className="text-sky-400" />
+                    مسافة #{index + 1}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => moveBlock(index, -1)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
+                      disabled={index === 0}
+                    >
+                      <ChevronUp size={12} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveBlock(index, 1)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
+                      disabled={index === safeBlocks.length - 1}
+                    >
+                      <ChevronDown size={12} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeBlock(index)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="range"
+                    min={8}
+                    max={160}
+                    step={4}
+                    value={height}
+                    onChange={(e) => updateBlock(index, { height: Number(e.target.value) })}
+                    className="flex-1 h-1"
+                  />
+                  <span className="text-[9px] text-slate-400 w-8 text-left">{height}px</span>
                 </div>
               </div>
+            );
+          }
 
-              <div className="flex items-center gap-2">
-                 <input
-                  type="range"
-                  min={8}
-                  max={160}
-                  step={4}
-                  value={height}
-                  onChange={(e) => updateBlock(index, { height: Number(e.target.value) })}
-                  className="flex-1 h-1"
-                />
-                <span className="text-[9px] text-slate-400 w-8 text-left">{height}px</span>
+          // --- BULLETS BLOCK ---
+          if (block.type === 'bullets') {
+            const items = Array.isArray(block.items) ? block.items : [];
+
+            const handleItemChange = (i, value) => {
+              const nextItems = [...items];
+              nextItems[i] = value;
+              updateBlock(index, { items: nextItems });
+            };
+
+            const handleAddItem = () => {
+              updateBlock(index, { items: [...items, ''] });
+            };
+
+            const handleRemoveItem = (i) => {
+              const nextItems = items.filter((_, idx) => idx !== i);
+              updateBlock(index, { items: nextItems });
+            };
+
+            return (
+              <div
+                key={block.id || `bul-${index}`}
+                className="rounded-2xl bg-slate-900/70 border border-slate-700 px-3 py-2 space-y-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] text-slate-300 font-semibold flex items-center gap-1.5">
+                    <List size={12} className="text-sky-400" />
+                    قائمة نقطية #{index + 1}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => moveBlock(index, -1)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
+                      disabled={index === 0}
+                    >
+                      <ChevronUp size={12} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveBlock(index, 1)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
+                      disabled={index === safeBlocks.length - 1}
+                    >
+                      <ChevronDown size={12} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addBlockAfter(index, 'space')}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-emerald-300 hover:border-emerald-500/70 transition-colors"
+                      title="إضافة مسافة بعد"
+                    >
+                      <Plus size={12} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeBlock(index)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] text-slate-400 mb-0.5">عنوان القائمة</label>
+                  <input
+                    value={block.title || ''}
+                    onChange={(e) => updateBlock(index, { title: e.target.value })}
+                    className="w-full rounded-xl bg-slate-900/70 border border-slate-700 px-3 py-1.5 text-[11px] text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    placeholder="مثلاً: المكونات والأدوات المطلوبة"
+                  />
+                </div>
+
+                <div className="space-y-1.5 mt-1">
+                  {items.map((item, idxItem) => (
+                    <div key={idxItem} className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-500 w-4 text-center">•</span>
+                      <input
+                        value={item}
+                        onChange={(e) => handleItemChange(idxItem, e.target.value)}
+                        className="flex-1 rounded-xl bg-slate-900/70 border border-slate-700 px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-sky-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveItem(idxItem)}
+                        className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddItem}
+                  className="mt-1 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-700 text-[11px] text-slate-200 hover:bg-slate-800 transition-colors"
+                >
+                  <Plus size={12} />
+                  إضافة سطر
+                </button>
               </div>
-            </div>
-          );
+            );
+          }
+
+          // fallback (should not happen)
+          return null;
         })}
       </div>
 
@@ -1022,6 +917,14 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
         </button>
         <button
           type="button"
+          onClick={() => addBlock('bullets')}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-700 text-[11px] text-slate-200 hover:bg-slate-800 transition-colors"
+        >
+          <List size={12} />
+          قائمة نقطية
+        </button>
+        <button
+          type="button"
           onClick={() => addBlock('space')}
           className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-700 text-[11px] text-slate-200 hover:bg-slate-800 transition-colors"
         >
@@ -1033,7 +936,7 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
   );
 };
 
-// --- BULLETS EDITOR ---
+// --- BULLETS EDITOR (now unused but kept) ---
 
 const BulletsEditor = ({ bullets = [], onChange }) => {
   const handleChange = (index, value) => {
@@ -1091,7 +994,7 @@ const BulletsEditor = ({ bullets = [], onChange }) => {
   );
 };
 
-// --- IMAGES EDITOR (upload image + caption + dimensions + round corners) ---
+// --- IMAGES EDITOR (still unused standalone, but kept) ---
 
 const ImagesEditor = ({ images = [], onChange }) => {
   const safeImages = Array.isArray(images) ? images : [];
@@ -1353,9 +1256,7 @@ const BookSidebar = ({
           {pages.map((p, idx) => {
             const theme = toneStyles[p.tone] || toneStyles.default;
             const active = idx === currentIndex;
-            const description = p.noHeader
-              ? 'صفحة بدون ترويسة'
-              : p.sectionTitle || p.subtitle || 'صفحة عادية';
+            const description = p.noHeader ? 'صفحة بدون ترويسة' : p.sectionTitle || p.subtitle || 'صفحة عادية';
 
             return (
               <button
@@ -1381,9 +1282,7 @@ const BookSidebar = ({
                       {p.title || 'بدون عنوان'}
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-400 truncate">
-                    {description}
-                  </p>
+                  <p className="text-[10px] text-slate-400 truncate">{description}</p>
                 </div>
                 <span
                   className={`w-2 h-2 rounded-full border ${theme.border} ${
@@ -1405,7 +1304,6 @@ const PageEditorPanel = ({
   page,
   onFieldChange,
   onToneChange,
-  onBulletsChange,
   onBlocksChange
 }) => {
   if (!page) return null;
@@ -1529,11 +1427,8 @@ const PageEditorPanel = ({
         {/* Blocks */}
         <BlocksEditor blocks={page.blocks || []} onChange={onBlocksChange} />
 
-        {/* Bullets */}
-        <BulletsEditor bullets={page.bullets || []} onChange={onBulletsChange} />
-
         <p className="text-[10px] text-slate-500 mt-2">
-          عدل عنوان الصفحة والألوان والأيقونة والنصوص، واستخدم بلوكات المسافة والتحكم في أيقونة كل فقرة والصور
+          عدل عنوان الصفحة والألوان والأيقونة والنصوص، واستخدم بلوكات المسافة والقوائم النقطية والصور
           المرفوعة لعمل تصميم مرتب.
         </p>
       </div>
@@ -1541,7 +1436,7 @@ const PageEditorPanel = ({
   );
 };
 
-// --- Normalization helper (ensure blocks exist) ---
+// --- Normalization helper (ensure blocks exist + migrate bullets into block) ---
 
 const normalizePage = (raw) => {
   const p = { ...raw };
@@ -1560,29 +1455,77 @@ const normalizePage = (raw) => {
     }
   }
 
-  blocks = blocks.map((b, idx) => ({
-    id: b.id || `b-${idx}-${Date.now()}`,
-    type: (b.type === 'space' || b.type === 'image') ? b.type : 'paragraph',
-    text: b.text || '',
-    height:
-      b.type === 'space'
-        ? typeof b.height === 'number'
-          ? b.height
-          : 32
-        : undefined,
-    iconKey: b.iconKey || undefined,
-    // Image normalizers
-    src: b.type === 'image' ? b.src : undefined,
-    width: b.type === 'image' ? (typeof b.width === 'number' ? b.width : 70) : undefined,
-    borderRadius: b.type === 'image' ? (typeof b.borderRadius === 'number' ? b.borderRadius : 24) : undefined,
-    caption: b.type === 'image' ? (b.caption || '') : undefined
-  }));
+  // Normalize shapes & types
+  blocks = blocks.map((b, idx) => {
+    const rawType = b.type;
+    const type =
+      rawType === 'space' || rawType === 'image' || rawType === 'bullets'
+        ? rawType
+        : 'paragraph';
+
+    return {
+      id: b.id || `b-${idx}-${Date.now()}`,
+      type,
+      text: type === 'paragraph' ? (b.text || '') : '',
+      height:
+        type === 'space'
+          ? typeof b.height === 'number'
+            ? b.height
+            : 32
+          : undefined,
+      iconKey: b.iconKey || undefined,
+      // Image fields
+      src: type === 'image' ? b.src : undefined,
+      width:
+        type === 'image'
+          ? typeof b.width === 'number'
+            ? b.width
+            : 70
+          : undefined,
+      borderRadius:
+        type === 'image'
+          ? typeof b.borderRadius === 'number'
+            ? b.borderRadius
+            : 24
+          : undefined,
+      caption: type === 'image' ? (b.caption || '') : undefined,
+      // Bullets fields
+      items:
+        type === 'bullets'
+          ? Array.isArray(b.items)
+            ? b.items
+            : Array.isArray(p.bullets)
+            ? p.bullets
+            : []
+          : undefined,
+      title:
+        type === 'bullets'
+          ? b.title || p.bulletsTitle || 'المكونات والأدوات المطلوبة'
+          : undefined
+    };
+  });
+
+  // If no bullets-block exists but page.bullets is present, add one at the end
+  const hasBulletBlock = blocks.some((b) => b.type === 'bullets');
+  if (!hasBulletBlock && Array.isArray(p.bullets) && p.bullets.length) {
+    blocks.push({
+      id: `bul-${Date.now()}`,
+      type: 'bullets',
+      items: [...p.bullets],
+      title: p.bulletsTitle || 'المكونات والأدوات المطلوبة'
+    });
+  }
 
   const paragraphs = blocks
     .filter((b) => b.type === 'paragraph' && b.text && b.text.trim().length > 0)
     .map((b) => b.text);
 
-  return { ...p, blocks, paragraphs, images: [] }; // Reset images array to ensure old ones are gone
+  const bulletsFromBlocks = blocks
+    .filter((b) => b.type === 'bullets' && Array.isArray(b.items))
+    .flatMap((b) => b.items || [])
+    .filter((item) => item && item.trim().length > 0);
+
+  return { ...p, blocks, paragraphs, bullets: bulletsFromBlocks, images: [] };
 };
 
 // --- Page Renderer ---
@@ -1667,10 +1610,14 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
         <div className={`flex-1 px-10 md:px-14 ${showHeader ? 'py-10' : 'py-12'} relative z-10`}>
           {(page.subtitle || page.subheading) && (
             <div className="mb-10 relative">
-              <div className={`absolute right-0 top-0 bottom-0 w-2 rounded-full bg-gradient-to-b ${theme.gradient} opacity-80`} />
+              <div
+                className={`absolute right-0 top-0 bottom-0 w-2 rounded-full bg-gradient-to-b ${theme.gradient} opacity-80`}
+              />
               <div className="pr-8 py-2">
                 {page.subtitle && (
-                  <p className={`text-sm font-black uppercase tracking-widest ${theme.subText} mb-1 flex items-center gap-2`}>
+                  <p
+                    className={`text-sm font-black uppercase tracking-widest ${theme.subText} mb-1 flex items-center gap-2`}
+                  >
                     <Sparkles size={14} /> {page.subtitle}
                   </p>
                 )}
@@ -1689,22 +1636,22 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
           {blocks && blocks.length > 0 && (
             <div className="space-y-6 mb-10">
               {blocks.map((block, idx) => {
-                // RENDER IMAGE BLOCK
+                // IMAGE BLOCK
                 if (block.type === 'image') {
                   const width = typeof block.width === 'number' ? block.width : 70;
                   const radius = typeof block.borderRadius === 'number' ? block.borderRadius : 24;
                   if (!block.src) return null;
-                   return (
+                  return (
                     <div key={block.id || `img-b-${idx}`} className="flex flex-col items-center gap-3 my-4">
                       <div className="w-full flex justify-center">
                         <img
                           src={block.src}
                           alt={block.caption || `صورة ${idx + 1}`}
-                          className="border border-slate-200 object-contain"
+                          className="border border-slate-300 object-contain"
                           style={{
                             maxWidth: `${width}%`,
                             borderRadius: radius,
-                            boxShadow: '0 10px 25px rgba(15,23,42,0.2)'
+                            boxShadow: 'none'
                           }}
                         />
                       </div>
@@ -1715,13 +1662,42 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
                   );
                 }
 
-                // RENDER SPACE BLOCK
+                // SPACE BLOCK
                 if (block.type === 'space') {
                   const height = typeof block.height === 'number' ? block.height : 32;
                   return <div key={block.id || `space-${idx}`} style={{ height }} />;
                 }
 
-                // RENDER TEXT BLOCK
+                // BULLETS BLOCK
+                if (block.type === 'bullets') {
+                  const items = Array.isArray(block.items)
+                    ? block.items.filter((item) => item && item.trim().length > 0)
+                    : [];
+                  if (!items.length) return null;
+                  const title = block.title || 'المكونات والأدوات المطلوبة';
+
+                  return (
+                    <div
+                      key={block.id || `bul-${idx}`}
+                      className={`bg-slate-50/60 rounded-3xl p-8 border-2 border-dashed ${theme.border} relative overflow-hidden mb-2 shadow-sm`}
+                    >
+                      <CircuitPattern colorClass={theme.subText} opacity="0.03" />
+                      <div className="relative z-10">
+                        <h3
+                          className={`text-lg font-black ${theme.subText} mb-4 flex items-center gap-3 uppercase tracking-wider`}
+                        >
+                          <div className={`p-2 rounded-lg ${theme.bg} border ${theme.border}`}>
+                            <List size={20} />
+                          </div>
+                          {title}
+                        </h3>
+                        <EnhancedTechList items={items} theme={theme} />
+                      </div>
+                    </div>
+                  );
+                }
+
+                // TEXT BLOCK
                 return (
                   <EnhancedParagraph
                     key={block.id || `p-${idx}`}
@@ -1731,23 +1707,6 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
                   />
                 );
               })}
-            </div>
-          )}
-
-          {page.bullets && page.bullets.length > 0 && (
-            <div
-              className={`bg-slate-50/60 rounded-3xl p-8 border-2 border-dashed ${theme.border} relative overflow-hidden mb-10 shadow-sm`}
-            >
-              <CircuitPattern colorClass={theme.subText} opacity="0.03" />
-              <div className="relative z-10">
-                <h3 className={`text-lg font-black ${theme.subText} mb-4 flex items-center gap-3 uppercase tracking-wider`}>
-                  <div className={`p-2 rounded-lg ${theme.bg} border ${theme.border}`}>
-                    <List size={20} />
-                  </div>
-                  المكونات والأدوات المطلوبة
-                </h3>
-                <EnhancedTechList items={page.bullets} theme={theme} />
-              </div>
             </div>
           )}
         </div>
@@ -1852,13 +1811,13 @@ const BilingualBook = () => {
         const paragraphs = blocks
           .filter((b) => b.type === 'paragraph' && b.text && b.text.trim().length > 0)
           .map((b) => b.text);
-        return { ...p, blocks, paragraphs };
+        const bullets = blocks
+          .filter((b) => b.type === 'bullets' && Array.isArray(b.items))
+          .flatMap((b) => b.items || [])
+          .filter((item) => item && item.trim().length > 0);
+        return { ...p, blocks, paragraphs, bullets };
       })
     );
-  };
-
-  const updateCurrentPageBullets = (bullets) => {
-    updateCurrentPageField('bullets', bullets);
   };
 
   const addPage = () => {
@@ -2106,7 +2065,6 @@ const BilingualBook = () => {
               page={currentPage}
               onFieldChange={updateCurrentPageField}
               onToneChange={(tone) => updateCurrentPageField('tone', tone)}
-              onBulletsChange={updateCurrentPageBullets}
               onBlocksChange={updateCurrentPageBlocks}
             />
           </div>
