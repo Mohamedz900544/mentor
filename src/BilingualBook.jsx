@@ -120,7 +120,9 @@ const toneStyles = {
     border: 'border-indigo-200',
     text: 'text-indigo-900',
     subText: 'text-indigo-600',
-    shadow: 'shadow-indigo-200/50'
+    shadow: 'shadow-indigo-200/50',
+        headerBg: 'bg-indigo-600' // 👈 جديد
+
   },
   blue: {
     gradient: 'from-blue-600 to-cyan-700',
@@ -128,7 +130,9 @@ const toneStyles = {
     border: 'border-blue-200',
     text: 'text-blue-900',
     subText: 'text-blue-600',
-    shadow: 'shadow-blue-200/50'
+    shadow: 'shadow-blue-200/50',
+    headerBg: 'bg-blue-600' // 👈 جديد
+
   },
   yellow: {
     gradient: 'from-amber-400 to-orange-500',
@@ -136,7 +140,9 @@ const toneStyles = {
     border: 'border-amber-200',
     text: 'text-amber-900',
     subText: 'text-amber-600',
-    shadow: 'shadow-amber-200/50'
+    shadow: 'shadow-amber-200/50',
+            headerBg: 'bg-yellow-600' // 👈 جديد
+
   },
   amber: {
     gradient: 'from-orange-500 to-amber-600',
@@ -144,7 +150,9 @@ const toneStyles = {
     border: 'border-orange-200',
     text: 'text-orange-900',
     subText: 'text-orange-600',
-    shadow: 'shadow-amber-200/50'
+    shadow: 'shadow-amber-200/50',
+            headerBg: 'bg-amber-600' // 👈 جديد
+
   },
   red: {
     gradient: 'from-rose-500 to-red-600',
@@ -152,7 +160,9 @@ const toneStyles = {
     border: 'border-rose-200',
     text: 'text-rose-900',
     subText: 'text-rose-600',
-    shadow: 'shadow-rose-200/50'
+    shadow: 'shadow-rose-200/50',
+            headerBg: 'bg-red-600' // 👈 جديد
+
   },
   green: {
     gradient: 'from-emerald-500 to-green-600',
@@ -160,7 +170,9 @@ const toneStyles = {
     border: 'border-emerald-200',
     text: 'text-emerald-900',
     subText: 'text-emerald-600',
-    shadow: 'shadow-emerald-200/50'
+    shadow: 'shadow-emerald-200/50',
+            headerBg: 'bg-green-600' // 👈 جديد
+
   },
   teal: {
     gradient: 'from-teal-500 to-emerald-600',
@@ -168,7 +180,9 @@ const toneStyles = {
     border: 'border-teal-200',
     text: 'text-teal-900',
     subText: 'text-teal-600',
-    shadow: 'shadow-teal-200/50'
+    shadow: 'shadow-teal-200/50',
+            headerBg: 'bg-teal-600' // 👈 جديد
+
   },
   purple: {
     gradient: 'from-purple-600 to-fuchsia-700',
@@ -176,7 +190,9 @@ const toneStyles = {
     border: 'border-purple-200',
     text: 'text-purple-900',
     subText: 'text-purple-600',
-    shadow: 'shadow-purple-200/50'
+    shadow: 'shadow-purple-200/50',
+            headerBg: 'bg-purple-600' // 👈 جديد
+
   },
   pink: {
     gradient: 'from-pink-500 to-rose-500',
@@ -184,7 +200,9 @@ const toneStyles = {
     border: 'border-pink-200',
     text: 'text-pink-900',
     subText: 'text-pink-600',
-    shadow: 'shadow-pink-200/50'
+    shadow: 'shadow-pink-200/50',
+            headerBg: 'bg-pink-600' // 👈 جديد
+
   },
   default: {
     gradient: 'from-slate-600 to-slate-800',
@@ -192,7 +210,9 @@ const toneStyles = {
     border: 'border-slate-200',
     text: 'text-slate-900',
     subText: 'text-slate-600',
-    shadow: 'shadow-slate-200/50'
+    shadow: 'shadow-slate-200/50',
+            headerBg: 'bg-default-600' // 👈 جديد
+
   }
 };
 
@@ -1598,7 +1618,7 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, uiSettings, print
         <PageDecorations theme={theme} />
 
         {showHeader && (
-          <div className={`relative px-8 pt-12 pb-16 bg-gradient-to-bl ${theme.gradient} text-white overflow-hidden`}>
+<div className={`relative px-8 pt-12 pb-16 ${theme.headerBg || 'bg-slate-800'} text-white overflow-hidden`}>
             <div className="absolute top-[-50%] right-[-20%] w-[80%] h-[80%] bg-white opacity-[0.08] rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-[-20%] left-[-10%] w-[40%] h-[40%] bg-black opacity-[0.1] rounded-full blur-2xl pointer-events-none" />
 
@@ -1625,12 +1645,12 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, uiSettings, print
 
               <div className="shrink-0 relative -mt-4 -mr-4">
                 <div className="absolute inset-0 bg-white/30 blur-2xl rounded-full scale-110" />
-                <div className="relative w-28 h-28 bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md border-[3px] border-white/40 rounded-3xl flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.2)] transform rotate-6 group hover:rotate-0 transition-transform duration-500">
-                  <div className="text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.3)] scale-125">
-                    <IconComp size={40} />
-                  </div>
-                  <Zap size={20} className="absolute -top-2 -left-2 text-white opacity-80 rotate-45" />
-                </div>
+<div className="relative w-28 h-28 bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md border-[3px] border-white/40 rounded-3xl flex items-center justify-center transform rotate-6 group hover:rotate-0 transition-transform duration-500">
+  <div className="text-white scale-125">
+    <IconComp size={40} />
+  </div>
+  <Zap size={20} className="absolute -top-2 -left-2 text-white opacity-80 rotate-45" />
+</div>
               </div>
             </div>
 
