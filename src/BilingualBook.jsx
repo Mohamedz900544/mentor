@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Book,
   ChevronRight,
@@ -203,8 +203,8 @@ const defaultPages = [
 
 // --- Sub Components ---
 
-const QuestionCard = ({ question, note, theme }) => (
-  <div className="relative mt-8 mb-10 group">
+const QuestionCard = ({ question, note, theme, uiSettings }) => (
+  <div className="relative group">
     <div className="absolute -top-4 right-6 z-10 text-slate-400 drop-shadow-md transform -rotate-12 group-hover:rotate-0 transition-transform">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
         <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
@@ -222,7 +222,14 @@ const QuestionCard = ({ question, note, theme }) => (
           <HelpCircle size={26} />
         </div>
         <div className="space-y-2 flex-1 py-1">
-          <h3 className="font-bold text-xl text-slate-800 leading-snug">{question}</h3>
+          <h3
+            className="font-bold text-slate-800 leading-snug"
+            style={{
+              fontSize: `${Math.max(18, (uiSettings?.bodyFontPx ?? 19) + 3)}px`
+            }}
+          >
+            {question}
+          </h3>
           {note && (
             <div className="flex items-center gap-2 text-sm text-slate-500 font-medium bg-slate-50 py-1 px-3 rounded-lg inline-block border border-slate-100">
               <PenTool size={14} className={theme.subText} />
@@ -280,23 +287,47 @@ const EnhancedBlueprintImage = ({ desc, theme, index }) => (
   </div>
 );
 
-const getIconForText = (text, defaultIcon) => {
+const getIconForText = (text, defaultIcon, iconSize = 18) => {
   const lowerText = (text || '').toLowerCase();
-  if (lowerText.includes('بطارية') || lowerText.includes('شحنات')) return <BatteryCharging size={18} />;
+
+  if (lowerText.includes('بطارية') || lowerText.includes('شحنات'))
+    return <BatteryCharging size={iconSize} />;
+
   if (lowerText.includes('ليد') || lowerText.includes('ضوء') || lowerText.includes('مصباح') || lowerText.includes('لمبة'))
-    return <Lightbulb size={18} />;
-  if (lowerText.includes('موتور') || lowerText.includes('حركة') || lowerText.includes('مروحة')) return <Fan size={18} />;
-  if (lowerText.includes('مفتاح') || lowerText.includes('تحكم')) return <ToggleLeft size={18} />;
-  if (lowerText.includes('صوت') || lowerText.includes('صفارة') || lowerText.includes('جرس')) return <Speaker size={18} />;
-  if (lowerText.includes('توصيل') || lowerText.includes('دائرة')) return <GitBranch size={18} />;
-  if (lowerText.includes('كهرباء') || lowerText.includes('طاقة')) return <Zap size={18} />;
-  if (lowerText.includes('تجربة') || lowerText.includes('خطوة')) return <ClipboardList size={18} />;
-  if (lowerText.includes('تحذير')) return <AlertTriangle size={18} />;
+    return <Lightbulb size={iconSize} />;
+
+  if (lowerText.includes('موتور') || lowerText.includes('حركة') || lowerText.includes('مروحة'))
+    return <Fan size={iconSize} />;
+
+  if (lowerText.includes('مفتاح') || lowerText.includes('تحكم'))
+    return <ToggleLeft size={iconSize} />;
+
+  if (lowerText.includes('صوت') || lowerText.includes('صفارة') || lowerText.includes('جرس'))
+    return <Speaker size={iconSize} />;
+
+  if (lowerText.includes('توصيل') || lowerText.includes('دائرة'))
+    return <GitBranch size={iconSize} />;
+
+  if (lowerText.includes('كهرباء') || lowerText.includes('طاقة'))
+    return <Zap size={iconSize} />;
+
+  if (lowerText.includes('تجربة') || lowerText.includes('خطوة'))
+    return <ClipboardList size={iconSize} />;
+
+  if (lowerText.includes('تحذير'))
+    return <AlertTriangle size={iconSize} />;
+
   return defaultIcon;
 };
 
-const DefaultBullet = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+const DefaultBullet = ({ size = 16 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <rect
       x="2"
       y="2"
@@ -312,65 +343,81 @@ const DefaultBullet = () => (
   </svg>
 );
 
-const EnhancedParagraph = ({ text, theme, iconKey }) => {
+const EnhancedParagraph = ({ text, theme, iconKey, uiSettings }) => {
+  const fontSize = uiSettings?.bodyFontPx ?? 19;
+  const iconSize = Math.round(fontSize * 0.9);
+
   const IconElement = useMemo(() => {
     if (iconKey && iconRegistry[iconKey]) {
       const Comp = iconRegistry[iconKey];
-      return <Comp size={18} />;
+      return <Comp size={iconSize} />;
     }
 
-    return getIconForText(text, <DefaultBullet />);
-  }, [text, iconKey]);
+    return getIconForText(text, <DefaultBullet size={iconSize} />, iconSize);
+  }, [text, iconKey, iconSize]);
 
   return (
-    <div className="flex gap-4 group items-start">
+    <div className="flex gap-4 group items-center">
       <div
-        className={`mt-1.5 shrink-0 p-1.5 rounded-lg transition-colors ${theme.bg} border ${theme.border} ${theme.subText} group-hover:scale-110 transition-transform`}
+        className={`shrink-0 p-1.5 rounded-lg transition-colors ${theme.bg} border ${theme.border} ${theme.subText} group-hover:scale-110 transition-transform flex items-center justify-center`}
       >
         {IconElement}
       </div>
-      <p className="text-[19px] text-slate-700 leading-8 font-medium flex-1">{text}</p>
+      <p
+        className="text-slate-700 font-medium flex-1"
+        style={{
+          fontSize: `${fontSize}px`,
+          lineHeight: `${uiSettings?.bodyLinePx ?? 32}px`
+        }}
+      >
+        {text}
+      </p>
     </div>
   );
 };
 
-const EnhancedTechList = ({ items, theme }) => {
+
+
+const EnhancedTechList = ({ items, theme, uiSettings }) => {
+  const fontSize = uiSettings?.bodyFontPx ?? 19;
+  const iconSize = Math.round(fontSize * 0.85);
+
   const getComponentIcon = (item) => {
     const lowerItem = (item || '').toLowerCase();
-    if (lowerItem.includes('بطارية')) return <Battery size={18} />;
-    if (lowerItem.includes('موتور')) return <Fan size={18} />;
-    if (lowerItem.includes('مراوح')) return <Fan size={18} />;
-    if (lowerItem.includes('صافرة') || lowerItem.includes('صفارة')) return <Speaker size={18} />;
-    if (lowerItem.includes('مفتاح')) return <ToggleLeft size={18} />;
-    if (lowerItem.includes('لوح') || lowerItem.includes('توصيل')) return <Component size={18} />;
-    if (lowerItem.includes('أسلاك')) return <GitBranch size={18} />;
-    return <Boxes size={18} />;
+    if (lowerItem.includes('بطارية')) return <Battery size={iconSize} />;
+    if (lowerItem.includes('موتور')) return <Fan size={iconSize} />;
+    if (lowerItem.includes('مراوح')) return <Fan size={iconSize} />;
+    if (lowerItem.includes('صافرة') || lowerItem.includes('صفارة')) return <Speaker size={iconSize} />;
+    if (lowerItem.includes('مفتاح')) return <ToggleLeft size={iconSize} />;
+    if (lowerItem.includes('لوح') || lowerItem.includes('توصيل')) return <Component size={iconSize} />;
+    if (lowerItem.includes('أسلاك')) return <GitBranch size={iconSize} />;
+    return <Boxes size={iconSize} />;
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 my-6">
       {items.map((item, i) => (
-        <div
-          key={i}
-          className="flex items-center gap-3 p-3 rounded-xl bg-white border-2 border-slate-100 hover:border-slate-300 hover:shadow-md transition-all group relative overflow-hidden"
-        >
-          <div
-            className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${theme.bg} border ${theme.border} ${theme.subText} group-hover:scale-105 transition-transform shadow-sm`}
-          >
+        <div key={i} className="flex items-center gap-3 p-3 rounded-xl ...">
+          <div className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${theme.bg} border ${theme.border} ${theme.subText} group-hover:scale-105 transition-transform shadow-sm`}>
             {getComponentIcon(item)}
           </div>
-          <span className="text-slate-700 font-bold text-base">{item}</span>
-          <CheckCircle2
-            size={16}
-            className={`mr-auto opacity-0 group-hover:opacity-100 transition-opacity ${theme.subText}`}
-          />
+          <span
+            className="text-slate-700 font-bold"
+            style={{
+              fontSize: `${Math.max(12, fontSize - 3)}px`,
+              lineHeight: `${Math.max(16, (uiSettings?.bodyLinePx ?? 32) - 10)}px`
+            }}
+          >
+            {item}
+          </span>
+          ...
         </div>
       ))}
     </div>
   );
 };
 
-// --- BLOCKS EDITOR (Paragraphs, Spaces, Images, Bullets as blocks) ---
+// --- BLOCKS EDITOR (Paragraphs, Spaces, Images, Bullets, Questions as blocks) ---
 
 const BlocksEditor = ({ blocks = [], onChange }) => {
   const safeBlocks = Array.isArray(blocks) ? blocks : [];
@@ -385,6 +432,7 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
       id: `b-${Date.now()}-${Math.random()}`,
       type,
       text: '',
+      note: type === 'question' ? '' : undefined,
       height: type === 'space' ? 32 : undefined,
       iconKey: undefined,
       // Image defaults
@@ -404,6 +452,7 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
       id: `b-${Date.now()}-${Math.random()}`,
       type,
       text: '',
+      note: type === 'question' ? '' : undefined,
       height: type === 'space' ? 32 : undefined,
       iconKey: undefined,
       src: type === 'image' ? '' : undefined,
@@ -450,7 +499,7 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
     <div>
       <label className="block text-slate-400 mb-1 font-medium">محتوى الصفحة</label>
       <p className="text-[10px] text-slate-500 mb-2">
-        رتب المحتوى (نصوص، صور، قوائم نقطية، مسافات) بالطريقة التي تفضلها.
+        رتب المحتوى (سؤال، نصوص، صور، قوائم نقطية، مسافات) بالطريقة التي تفضلها.
       </p>
 
       <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
@@ -461,6 +510,62 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
         )}
 
         {safeBlocks.map((block, index) => {
+          // --- QUESTION BLOCK ---
+          if (block.type === 'question') {
+            return (
+              <div
+                key={block.id || `q-${index}`}
+                className="rounded-2xl bg-slate-900/70 border border-slate-700 px-3 py-2 space-y-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] text-slate-300 font-semibold flex items-center gap-1.5">
+                    <HelpCircle size={12} className="text-amber-300" />
+                    سؤال #{index + 1}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => moveBlock(index, -1)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
+                      disabled={index === 0}
+                    >
+                      <ChevronUp size={12} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveBlock(index, 1)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-sky-300 hover:border-sky-500/70 transition-colors disabled:opacity-40"
+                      disabled={index === safeBlocks.length - 1}
+                    >
+                      <ChevronDown size={12} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeBlock(index)}
+                      className="p-1.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/70 transition-colors"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                </div>
+
+                <input
+                  value={block.text || ''}
+                  onChange={(e) => updateBlock(index, { text: e.target.value })}
+                  className="w-full rounded-xl bg-slate-900/60 border border-slate-700 px-3 py-2 text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  placeholder="اكتب السؤال هنا..."
+                />
+
+                <input
+                  value={block.note || ''}
+                  onChange={(e) => updateBlock(index, { note: e.target.value })}
+                  className="w-full rounded-xl bg-slate-900/60 border border-slate-700 px-3 py-2 text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  placeholder="ملاحظة تحت السؤال (اختياري)"
+                />
+              </div>
+            );
+          }
+
           // --- PARAGRAPH BLOCK ---
           if (block.type === 'paragraph') {
             const currentIconKey = block.iconKey || 'auto';
@@ -796,12 +901,21 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
             );
           }
 
-          // fallback (should not happen)
+          // fallback
           return null;
         })}
       </div>
 
       <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+        <button
+          type="button"
+          onClick={() => addBlock('question')}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900/70 border border-slate-700 text-[11px] text-slate-200 hover:bg-slate-800 transition-colors"
+        >
+          <HelpCircle size={12} />
+          سؤال
+        </button>
+
         <button
           type="button"
           onClick={() => addBlock('paragraph')}
@@ -810,6 +924,7 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
           <Plus size={12} />
           فقرة
         </button>
+
         <button
           type="button"
           onClick={() => addBlock('image')}
@@ -818,6 +933,7 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
           <ImageIcon size={12} />
           صورة
         </button>
+
         <button
           type="button"
           onClick={() => addBlock('bullets')}
@@ -826,6 +942,7 @@ const BlocksEditor = ({ blocks = [], onChange }) => {
           <List size={12} />
           قائمة نقطية
         </button>
+
         <button
           type="button"
           onClick={() => addBlock('space')}
@@ -1232,12 +1349,7 @@ const BookSidebar = ({
 
 // --- Page Editor Panel ---
 
-const PageEditorPanel = ({
-  page,
-  onFieldChange,
-  onToneChange,
-  onBlocksChange
-}) => {
+const PageEditorPanel = ({ page, onFieldChange, onToneChange, onBlocksChange }) => {
   if (!page) return null;
 
   const toneOptions = Object.keys(toneStyles).filter((k) => k !== 'default');
@@ -1279,25 +1391,6 @@ const PageEditorPanel = ({
             onChange={(e) => onFieldChange('subtitle', e.target.value)}
             className="w-full rounded-xl bg-slate-900/70 border border-slate-700 px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-sky-500"
           />
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="block text-slate-400 mb-1 font-medium">Question</label>
-            <input
-              value={page.question || ''}
-              onChange={(e) => onFieldChange('question', e.target.value)}
-              className="w-full rounded-xl bg-slate-900/70 border border-slate-700 px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-sky-500"
-            />
-          </div>
-          <div>
-            <label className="block text-slate-400 mb-1 font-medium">Question note</label>
-            <input
-              value={page.questionNote || ''}
-              onChange={(e) => onFieldChange('questionNote', e.target.value)}
-              className="w-full rounded-xl bg-slate-900/70 border border-slate-700 px-3 py-1.5 text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-sky-500"
-            />
-          </div>
         </div>
 
         {/* Tone selector */}
@@ -1360,7 +1453,7 @@ const PageEditorPanel = ({
         <BlocksEditor blocks={page.blocks || []} onChange={onBlocksChange} />
 
         <p className="text-[10px] text-slate-500 mt-2">
-          عدل عنوان الصفحة والألوان والأيقونة والنصوص، واستخدم بلوكات المسافة والقوائم النقطية والصور
+          عدل عنوان الصفحة والألوان والأيقونة والنصوص، واستخدم بلوكات السؤال والمسافة والقوائم النقطية والصور
           المرفوعة لعمل تصميم مرتب.
         </p>
       </div>
@@ -1368,7 +1461,7 @@ const PageEditorPanel = ({
   );
 };
 
-// --- Normalization helper (ensure blocks exist + migrate bullets into block) ---
+// --- Normalization helper (ensure blocks exist + migrate bullets + migrate question into blocks) ---
 
 const normalizePage = (raw) => {
   const p = { ...raw };
@@ -1387,18 +1480,19 @@ const normalizePage = (raw) => {
     }
   }
 
-  // Normalize shapes & types
+  // Normalize shapes & types (include question)
   blocks = blocks.map((b, idx) => {
     const rawType = b.type;
     const type =
-      rawType === 'space' || rawType === 'image' || rawType === 'bullets'
+      rawType === 'space' || rawType === 'image' || rawType === 'bullets' || rawType === 'question'
         ? rawType
         : 'paragraph';
 
     return {
       id: b.id || `b-${idx}-${Date.now()}`,
       type,
-      text: type === 'paragraph' ? (b.text || '') : '',
+      text: type === 'paragraph' || type === 'question' ? (b.text || '') : '',
+      note: type === 'question' ? (b.note || '') : undefined,
       height:
         type === 'space'
           ? typeof b.height === 'number'
@@ -1448,6 +1542,17 @@ const normalizePage = (raw) => {
     });
   }
 
+  // If no question-block exists but old page.question is present, add it at the top
+  const hasQuestionBlock = blocks.some((b) => b.type === 'question');
+  if (!hasQuestionBlock && p.question && String(p.question).trim().length > 0) {
+    blocks.unshift({
+      id: `q-${Date.now()}`,
+      type: 'question',
+      text: String(p.question),
+      note: p.questionNote ? String(p.questionNote) : ''
+    });
+  }
+
   const paragraphs = blocks
     .filter((b) => b.type === 'paragraph' && b.text && b.text.trim().length > 0)
     .map((b) => b.text);
@@ -1462,7 +1567,7 @@ const normalizePage = (raw) => {
 
 // --- Page Renderer ---
 
-const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false }) => {
+const PageContent = ({ page, pageNumber, totalPages, bookMeta, uiSettings, printMode = false }) => {
   const theme = toneStyles[page.tone] || toneStyles.default;
   const levelTag = bookMeta?.levelTag || 'Sparvi Lab · Level 1';
   const IconComp = iconRegistry[page.iconKey] || Book;
@@ -1539,7 +1644,16 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
           </div>
         )}
 
-        <div className={`flex-1 px-10 md:px-14 ${showHeader ? 'py-10' : 'py-12'} relative z-10`}>
+        {/* INNER CONTENT PADDING (global control) */}
+        <div
+          className="flex-1 relative z-10"
+          style={{
+            paddingLeft: uiSettings?.contentPadX ?? 56,
+            paddingRight: uiSettings?.contentPadX ?? 56,
+            paddingTop: showHeader ? (uiSettings?.contentPadYWithHeader ?? 40) : (uiSettings?.contentPadYNoHeader ?? 48),
+            paddingBottom: showHeader ? (uiSettings?.contentPadYWithHeader ?? 40) : (uiSettings?.contentPadYNoHeader ?? 48)
+          }}
+        >
           {(page.subtitle || page.subheading) && (
             <div className="mb-10 relative">
               <div
@@ -1563,11 +1677,27 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
             </div>
           )}
 
-          {page.question && <QuestionCard question={page.question} note={page.questionNote} theme={theme} />}
-
           {blocks && blocks.length > 0 && (
-            <div className="space-y-6 mb-10">
+
+             <div
+    className="flex flex-col mb-10"
+    style={{ rowGap: uiSettings?.contentGapPx ?? 24 }} // 👈 كله من السلايدر
+  >
               {blocks.map((block, idx) => {
+                // QUESTION BLOCK
+                if (block.type === 'question') {
+                  if (!block.text || !block.text.trim()) return null;
+                  return (
+                    <QuestionCard
+                      key={block.id || `q-${idx}`}
+                      question={block.text}
+                      note={block.note || ''}
+                      theme={theme}
+                      uiSettings={uiSettings}
+                    />
+                  );
+                }
+
                 // IMAGE BLOCK
                 if (block.type === 'image') {
                   const width = typeof block.width === 'number' ? block.width : 70;
@@ -1588,7 +1718,12 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
                         />
                       </div>
                       {block.caption && (
-                        <p className="text-xs text-slate-500 text-center max-w-md">{block.caption}</p>
+                        <p
+                          className="text-slate-500 text-center max-w-md"
+                          style={{ fontSize: `${Math.max(11, (uiSettings?.bodyFontPx ?? 19) - 6)}px` }}
+                        >
+                          {block.caption}
+                        </p>
                       )}
                     </div>
                   );
@@ -1623,7 +1758,7 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
                           </div>
                           {title}
                         </h3>
-                        <EnhancedTechList items={items} theme={theme} />
+                        <EnhancedTechList items={items} theme={theme} uiSettings={uiSettings} />
                       </div>
                     </div>
                   );
@@ -1636,6 +1771,7 @@ const PageContent = ({ page, pageNumber, totalPages, bookMeta, printMode = false
                     text={block.text || ''}
                     theme={theme}
                     iconKey={block.iconKey}
+                    uiSettings={uiSettings}
                   />
                 );
               })}
@@ -1703,7 +1839,7 @@ const BookSchemaPanel = ({
       </div>
 
       <p className="text-[11px] text-slate-400 mb-2">
-        هذا الجزء يعطيك مخطط كامل للكتاب في شكل Array من الصفحات (id, tone, iconKey, title, sectionTitle, paragraphs, bullets...).
+        هذا الجزء يعطيك مخطط كامل للكتاب في شكل Array من الصفحات (id, tone, iconKey, title, sectionTitle, blocks...).
         يمكنك تعديله بسرعة أو لصقه من ملف، ثم تطبيقه على المصمم.
       </p>
 
@@ -1712,18 +1848,13 @@ const BookSchemaPanel = ({
         onChange={(e) => onChangeSchemaText(e.target.value)}
         rows={10}
         className="w-full rounded-xl bg-slate-950/80 border border-slate-700 px-3 py-2 text-[11px] text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-sky-500"
-        placeholder={`// مثال سريع (يمكنك لصق JSON أو كود يشبه JavaScript)\n[\n  {\n    "id": 5,\n    "tone": "orange",\n    "iconKey": "clipboard",\n    "title": "محقق الكهرباء الصغير",\n    "sectionTitle": "رسم الدائرة وواجب بسيط",\n    "paragraphs": [\n      "دلوقتي دورك ترسم الدائرة اللي عملناها...",\n      "بعد كده هتدور في البيت على حاجات بتستخدم كهرباء..." \n    ]\n  }\n]`}
+        placeholder={`// مثال سريع (يمكنك لصق JSON أو كود يشبه JavaScript)\n[\n  {\n    "id": 5,\n    "tone": "orange",\n    "iconKey": "book",\n    "title": "صفحة جديدة",\n    "sectionTitle": "عنوان القسم",\n    "blocks": [\n      { "type": "question", "text": "سؤال بسيط", "note": "اختياري" },\n      { "type": "paragraph", "text": "نص الشرح..." },\n      { "type": "bullets", "title": "الأدوات", "items": ["بطارية", "ليد"] }\n    ]\n  }\n]`}
       />
 
-      {error && (
-        <p className="mt-2 text-[11px] text-rose-400">
-          {error}
-        </p>
-      )}
+      {error && <p className="mt-2 text-[11px] text-rose-400">{error}</p>}
 
       <p className="mt-2 text-[10px] text-slate-500">
-        ملاحظة: عند تطبيق المخطط، يتم إنشاء الصفحات من الـ Array فقط (id, tone, iconKey, title, sectionTitle, subtitle,
-        paragraphs, bullets, question, questionNote, noHeader).
+        ملاحظة: عند تطبيق المخطط، يتم إنشاء الصفحات من الـ Array فقط (id, tone, iconKey, title, sectionTitle, subtitle, blocks, noHeader).
       </p>
     </div>
   );
@@ -1759,6 +1890,16 @@ const BilingualBook = () => {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [printMode, setPrintMode] = useState(false);
 
+  // --- Global UI settings (Font + Padding) ---
+  const [uiSettings, setUiSettings] = useState({
+    bodyFontPx: 19,
+    bodyLinePx: 32,
+    contentPadX: 56,
+    contentPadYWithHeader: 40,
+    contentPadYNoHeader: 48,
+    contentGapPx: 24   // 👈 المسافة بين البلوكات
+  });
+
   const [bookMeta, setBookMeta] = useState({
     brandName: 'Sparvi Lab',
     levelTag: 'Sparvi Lab · Level 1',
@@ -1789,23 +1930,65 @@ const BilingualBook = () => {
       if (parsed.bookMeta) {
         setBookMeta(parsed.bookMeta);
       }
+      if (parsed.uiSettings) {
+        setUiSettings((prev) => ({ ...prev, ...parsed.uiSettings }));
+      }
     } catch {
       // ignore
     }
   }, []);
 
-  // Auto save to localStorage
+  // --- Autosave every 5 seconds (only if changed) ---
+  const pagesRef = useRef(pages);
+  const metaRef = useRef(bookMeta);
+  const indexRef = useRef(currentPageIndex);
+  const uiRef = useRef(uiSettings);
+  const dirtyRef = useRef(false);
+
+  useEffect(() => {
+    pagesRef.current = pages;
+    dirtyRef.current = true;
+  }, [pages]);
+
+  useEffect(() => {
+    metaRef.current = bookMeta;
+    dirtyRef.current = true;
+  }, [bookMeta]);
+
+  useEffect(() => {
+    indexRef.current = currentPageIndex;
+    dirtyRef.current = true;
+  }, [currentPageIndex]);
+
+  useEffect(() => {
+    uiRef.current = uiSettings;
+    dirtyRef.current = true;
+  }, [uiSettings]);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    try {
-      window.localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ pages, bookMeta, currentPageIndex })
-      );
-    } catch {
-      // ignore
-    }
-  }, [pages, bookMeta, currentPageIndex]);
+
+    const id = setInterval(() => {
+      if (!dirtyRef.current) return;
+
+      try {
+        window.localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            pages: pagesRef.current,
+            bookMeta: metaRef.current,
+            currentPageIndex: indexRef.current,
+            uiSettings: uiRef.current
+          })
+        );
+        dirtyRef.current = false;
+      } catch {
+        // ignore
+      }
+    }, 5000);
+
+    return () => clearInterval(id);
+  }, []);
 
   const nextPage = () => {
     if (totalPages === 0) return;
@@ -1918,6 +2101,14 @@ const BilingualBook = () => {
       tagline: 'Digital Lab Manual',
       ageRange: '8–11 years'
     });
+    setUiSettings({
+  bodyFontPx: 19,
+  bodyLinePx: 32,
+  contentPadX: 56,
+  contentPadYWithHeader: 40,
+  contentPadYNoHeader: 48,
+  contentGapPx: 24
+    });
     setCurrentPageIndex(0);
     setSchemaText('');
     setSchemaError('');
@@ -1932,7 +2123,7 @@ const BilingualBook = () => {
     try {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ pages, bookMeta, currentPageIndex })
+        JSON.stringify({ pages, bookMeta, currentPageIndex, uiSettings })
       );
       alert('تم حفظ الكتاب في هذا المتصفح (localStorage).');
     } catch {
@@ -1961,10 +2152,8 @@ const BilingualBook = () => {
     setCurrentPageIndex((prevIndex) => {
       if (prevIndex === fromIndex) return toIndex;
       if (fromIndex < toIndex) {
-        // moved down
         if (prevIndex > fromIndex && prevIndex <= toIndex) return prevIndex - 1;
       } else if (fromIndex > toIndex) {
-        // moved up
         if (prevIndex >= toIndex && prevIndex < fromIndex) return prevIndex + 1;
       }
       return prevIndex;
@@ -1972,73 +2161,74 @@ const BilingualBook = () => {
   };
 
   // Book schema helpers
-const buildSchemaFromPages = () => {
-  return pages.map((p) => {
-    const blocks = Array.isArray(p.blocks) ? p.blocks : [];
+  const buildSchemaFromPages = () => {
+    return pages.map((p) => {
+      const blocks = Array.isArray(p.blocks) ? p.blocks : [];
 
-    const paragraphs = blocks
-      .filter((b) => b.type === 'paragraph' && b.text && b.text.trim().length > 0)
-      .map((b) => b.text);
+      const paragraphs = blocks
+        .filter((b) => b.type === 'paragraph' && b.text && b.text.trim().length > 0)
+        .map((b) => b.text);
 
-    const bullets = blocks
-      .filter((b) => b.type === 'bullets' && Array.isArray(b.items))
-      .flatMap((b) => b.items || [])
-      .filter((item) => item && item.trim().length > 0);
+      const bullets = blocks
+        .filter((b) => b.type === 'bullets' && Array.isArray(b.items))
+        .flatMap((b) => b.items || [])
+        .filter((item) => item && item.trim().length > 0);
 
-    // 🔹 this will show in JSON, including image blocks
-    const blocksSchema = blocks.map((b) => {
-      if (b.type === 'image') {
+      const blocksSchema = blocks.map((b) => {
+        if (b.type === 'image') {
+          return {
+            type: 'image',
+            src: b.src ? '' : '',
+            caption: b.caption || '',
+            width: typeof b.width === 'number' ? b.width : 70,
+            borderRadius: typeof b.borderRadius === 'number' ? b.borderRadius : 24
+          };
+        }
+
+        if (b.type === 'space') {
+          return {
+            type: 'space',
+            height: typeof b.height === 'number' ? b.height : 32
+          };
+        }
+
+        if (b.type === 'bullets') {
+          return {
+            type: 'bullets',
+            title: b.title || p.bulletsTitle || 'المكونات والأدوات المطلوبة',
+            items: Array.isArray(b.items) ? b.items : []
+          };
+        }
+
+        if (b.type === 'question') {
+          return {
+            type: 'question',
+            text: b.text || '',
+            note: b.note || ''
+          };
+        }
+
         return {
-          type: 'image',
-          // leave src empty so you can upload / fill later
-          // you *can* manually put a URL or base64 here if you want
-          src: b.src ? '' : '',
-          caption: b.caption || '',
-          width: typeof b.width === 'number' ? b.width : 70,
-          borderRadius: typeof b.borderRadius === 'number' ? b.borderRadius : 24
+          type: 'paragraph',
+          text: b.text || '',
+          iconKey: b.iconKey || undefined
         };
-      }
+      });
 
-      if (b.type === 'space') {
-        return {
-          type: 'space',
-          height: typeof b.height === 'number' ? b.height : 32
-        };
-      }
-
-      if (b.type === 'bullets') {
-        return {
-          type: 'bullets',
-          title: b.title || p.bulletsTitle || 'المكونات والأدوات المطلوبة',
-          items: Array.isArray(b.items) ? b.items : []
-        };
-      }
-
-      // paragraph
       return {
-        type: 'paragraph',
-        text: b.text || '',
-        iconKey: b.iconKey || undefined
+        id: p.id,
+        tone: p.tone,
+        iconKey: p.iconKey,
+        title: p.title,
+        sectionTitle: p.sectionTitle,
+        subtitle: p.subtitle,
+        noHeader: !!p.noHeader,
+        paragraphs,
+        bullets,
+        blocks: blocksSchema
       };
     });
-
-    return {
-      id: p.id,
-      tone: p.tone,
-      iconKey: p.iconKey,
-      title: p.title,
-      sectionTitle: p.sectionTitle,
-      subtitle: p.subtitle,
-      question: p.question,
-      questionNote: p.questionNote,
-      paragraphs,
-      bullets,
-      noHeader: !!p.noHeader,
-      // 🔥 this is the important part
-      blocks: blocksSchema
-    };
-  });
-};
+  };
 
   const handleGenerateSchemaFromPages = () => {
     try {
@@ -2046,7 +2236,7 @@ const buildSchemaFromPages = () => {
       const text = 'const bookPages = ' + JSON.stringify(schema, null, 2) + ';\n';
       setSchemaText(text);
       setSchemaError('');
-    } catch (err) {
+    } catch {
       setSchemaError('تعذر توليد المخطط من الصفحات.');
     }
   };
@@ -2059,7 +2249,6 @@ const buildSchemaFromPages = () => {
         return;
       }
 
-      // Try to extract the array part if there is "const bookPages = [...]"
       const start = text.indexOf('[');
       const end = text.lastIndexOf(']');
       if (start >= 0 && end > start) {
@@ -2071,23 +2260,21 @@ const buildSchemaFromPages = () => {
         throw new Error('المخطط يجب أن يكون Array من الصفحات.');
       }
 
- const newPages = parsed.map((obj) =>
-  normalizePage({
-    // keep all incoming fields, including blocks (paragraphs, bullets, images, spaces)
-    ...obj,
-    id: obj.id ?? Date.now(),
-    tone: obj.tone || 'blue',
-    iconKey: obj.iconKey || 'book',
-    title: obj.title || 'صفحة جديدة',
-    sectionTitle: obj.sectionTitle || '',
-    subtitle: obj.subtitle || '',
-    paragraphs: Array.isArray(obj.paragraphs) ? obj.paragraphs : [],
-    bullets: Array.isArray(obj.bullets) ? obj.bullets : [],
-    question: obj.question || '',
-    questionNote: obj.questionNote || '',
-    noHeader: !!obj.noHeader
-  })
-);
+      const newPages = parsed.map((obj) =>
+        normalizePage({
+          ...obj,
+          id: obj.id ?? Date.now(),
+          tone: obj.tone || 'blue',
+          iconKey: obj.iconKey || 'book',
+          title: obj.title || 'صفحة جديدة',
+          sectionTitle: obj.sectionTitle || '',
+          subtitle: obj.subtitle || '',
+          paragraphs: Array.isArray(obj.paragraphs) ? obj.paragraphs : [],
+          bullets: Array.isArray(obj.bullets) ? obj.bullets : [],
+          noHeader: !!obj.noHeader,
+          blocks: Array.isArray(obj.blocks) ? obj.blocks : []
+        })
+      );
 
       if (!newPages.length) {
         throw new Error('المخطط لا يحتوي على صفحات.');
@@ -2203,6 +2390,74 @@ const buildSchemaFromPages = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Font + Padding Controls */}
+       <div className="flex items-center gap-3 bg-slate-900/60 backdrop-blur-xl rounded-full p-2 border border-slate-700/50 shadow-2xl">
+  {/* Font slider */}
+  <div className="flex items-center gap-2 px-2">
+    <span className="text-[10px] text-slate-300 font-mono whitespace-nowrap">
+      Font {uiSettings.bodyFontPx}px
+    </span>
+    <input
+      type="range"
+      min={14}
+      max={26}
+      value={uiSettings.bodyFontPx}
+      onChange={(e) =>
+        setUiSettings((p) => ({
+          ...p,
+          bodyFontPx: Number(e.target.value),
+          bodyLinePx: Math.round(Number(e.target.value) * 1.7)
+        }))
+      }
+      className="w-24"
+    />
+  </div>
+
+  <div className="w-px h-7 bg-slate-700/60" />
+
+  {/* X padding slider */}
+  <div className="flex items-center gap-2 px-2">
+    <span className="text-[10px] text-slate-300 font-mono whitespace-nowrap">
+      Padding {uiSettings.contentPadX}px
+    </span>
+    <input
+      type="range"
+      min={32}
+      max={90}
+      value={uiSettings.contentPadX}
+      onChange={(e) =>
+        setUiSettings((p) => ({
+          ...p,
+          contentPadX: Number(e.target.value)
+        }))
+      }
+      className="w-24"
+    />
+  </div>
+
+  <div className="w-px h-7 bg-slate-700/60" />
+
+  {/* 👇 NEW: gap slider */}
+  <div className="flex items-center gap-2 px-2">
+    <span className="text-[10px] text-slate-300 font-mono whitespace-nowrap">
+      Gap {uiSettings.contentGapPx}px
+    </span>
+    <input
+      type="range"
+      min={8}
+      max={60}
+      value={uiSettings.contentGapPx}
+      onChange={(e) =>
+        setUiSettings((p) => ({
+          ...p,
+          contentGapPx: Number(e.target.value)
+        }))
+      }
+      className="w-24"
+    />
+  </div>
+</div>
+
           {/* Save Button */}
           <button
             onClick={handleManualSave}
@@ -2259,6 +2514,7 @@ const buildSchemaFromPages = () => {
                 pageNumber={idx + 1}
                 totalPages={totalPages}
                 bookMeta={bookMeta}
+                uiSettings={uiSettings}
                 printMode={true}
               />
             </div>
@@ -2290,6 +2546,7 @@ const buildSchemaFromPages = () => {
                     pageNumber={currentPageIndex + 1}
                     totalPages={totalPages}
                     bookMeta={bookMeta}
+                    uiSettings={uiSettings}
                   />
                 )}
               </div>
