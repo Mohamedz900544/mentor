@@ -26,6 +26,7 @@ const Post = () => {
   const [activeTab, setActiveTab] = useState('general'); // 'general' or 'cards'
   
   const [content, setContent] = useState({
+    logoUrl: 'https://i.ibb.co/gM58G3ry/logo-white.png', // رابط افتراضي
     subtitle: 'من 6 ل 18 سنه',
     title: 'ابنك ممكن يتعلم ايه ؟',
     cta: 'احجز حصة مجانية وخليه يجرب بنفسه',
@@ -62,6 +63,7 @@ const Post = () => {
   });
   
   const [sizes, setSizes] = useState({
+    logo: 60,
     subtitle: 32,
     title: 56,
     cta: 32
@@ -148,7 +150,7 @@ const Post = () => {
       downloadLink.click();
     } catch (err) {
       console.error("Export failed:", err);
-      alert("حدث خطأ أثناء تصدير الصورة.");
+      alert("حدث خطأ أثناء تصدير الصورة. يرجى التأكد من أن رابط اللوجو يدعم المشاركة (CORS).");
     } finally {
       setIsExporting(false);
     }
@@ -172,7 +174,7 @@ const Post = () => {
       </span>
     ));
 
-  const ControlField = ({ label, value, onChange, isTextarea = false, sizeLabel, sizeValue, onSizeChange, minSize, maxSize }) => (
+  const ControlField = ({ label, value, onChange, isTextarea = false, sizeLabel, sizeValue, onSizeChange, minSize, maxSize, isUrl = false }) => (
     <div className="mb-5 bg-[#1E293B] p-4 rounded-xl border border-white/5 shadow-sm">
       <label className="block text-sm font-semibold text-slate-300 mb-2">{label}</label>
       {isTextarea ? (
@@ -181,12 +183,14 @@ const Post = () => {
           className="w-full rounded-lg bg-[#0F172A] border border-slate-700 px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none placeholder-slate-500"
           value={value}
           onChange={onChange}
+          dir={isUrl ? "ltr" : "rtl"}
         />
       ) : (
         <input
           className="w-full rounded-lg bg-[#0F172A] border border-slate-700 px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-500"
           value={value}
           onChange={onChange}
+          dir={isUrl ? "ltr" : "rtl"}
         />
       )}
       <div className="mt-4 pt-4 border-t border-white/5 flex items-center gap-4">
@@ -214,7 +218,7 @@ const Post = () => {
             <Palette className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-white text-lg leading-tight">استوديو iSchool</h1>
+            <h1 className="font-bold text-white text-lg leading-tight">استوديو التصميم</h1>
             <p className="text-xs text-slate-400">محرر منشورات انستجرام</p>
           </div>
         </div>
@@ -239,6 +243,16 @@ const Post = () => {
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           {activeTab === 'general' ? (
             <div className="space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <ControlField
+                label="رابط اللوجو (PNG)"
+                value={content.logoUrl}
+                onChange={(e) => setContent(p => ({ ...p, logoUrl: e.target.value }))}
+                sizeLabel="حجم اللوجو"
+                sizeValue={sizes.logo}
+                onSizeChange={(e) => setSizes(p => ({ ...p, logo: Number(e.target.value) }))}
+                minSize={30} maxSize={200}
+                isUrl={true}
+              />
               <ControlField
                 label="السطر العلوي (الافتتاحي)"
                 value={content.subtitle}
@@ -393,11 +407,19 @@ const Post = () => {
 
               <div className="relative z-10 flex flex-col items-center pt-10 pb-12 px-12 h-full">
                 
-                <div className="w-full flex justify-start mb-10 px-6 mt-4">
-                  <div dir="ltr" className="flex items-center text-white text-[44px] font-black italic tracking-tighter drop-shadow-md">
-                    <span className="text-orange-500 mr-1 text-[56px]">i</span>School
-                    <span className="text-white text-xl align-top ml-1 relative -top-6">®</span>
-                  </div>
+                {/* Logo Image */}
+                <div className="w-full flex justify-end mb-10 px-6 mt-4">
+                  {content.logoUrl ? (
+                    <img 
+                      src={content.logoUrl} 
+                      alt="Logo"
+                      crossOrigin="anonymous" 
+                      style={{ height: `${sizes.logo}px`, objectFit: 'contain' }}
+                      className="drop-shadow-md"
+                    />
+                  ) : (
+                    <div style={{ height: `${sizes.logo}px` }} className="flex items-center text-white/50">بدون لوجو</div>
+                  )}
                 </div>
 
                 <div className="text-center mb-14 relative w-full">
@@ -423,7 +445,7 @@ const Post = () => {
                     ];
                     const iconBorders = [
                       "",
-                      "border-[1.5px] border-yellow-400/50",
+                      "",
                       "",
                       ""
                     ];
